@@ -14,7 +14,7 @@ class ViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        Task {
+        Task { 
             
             await requestMusicAuthorization()
             print(musicAuthStatus)
