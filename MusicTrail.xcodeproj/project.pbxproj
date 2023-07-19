@@ -10,6 +10,13 @@
 		5B5B68CD2A62089F00EA3D9B /* Artist.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5B68CC2A62089F00EA3D9B /* Artist.swift */; };
 		5B5B68CF2A6231AE00EA3D9B /* MusicKitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5B68CE2A6231AE00EA3D9B /* MusicKitManager.swift */; };
 		5B5B68D72A65E6A000EA3D9B /* RecordCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5B68D62A65E6A000EA3D9B /* RecordCell.swift */; };
+		5B5B68D92A65ECBC00EA3D9B /* ArtistCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5B68D82A65ECBC00EA3D9B /* ArtistCell.swift */; };
+		5B5B68DB2A673A8800EA3D9B /* NewMusicVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5B68DA2A673A8800EA3D9B /* NewMusicVC.swift */; };
+		5B5B68DD2A673AA500EA3D9B /* ArtistsListVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5B68DC2A673AA500EA3D9B /* ArtistsListVC.swift */; };
+		5B5B68DF2A673B3000EA3D9B /* MTTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5B68DE2A673B3000EA3D9B /* MTTabBarController.swift */; };
+		5B5B68E22A686C5F00EA3D9B /* ArtistImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5B68E12A686C5F00EA3D9B /* ArtistImageView.swift */; };
+		5B5B68E42A686C9B00EA3D9B /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5B68E32A686C9B00EA3D9B /* NetworkManager.swift */; };
+		5B5B68E62A687DF300EA3D9B /* LibraryArtistsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5B68E52A687DF300EA3D9B /* LibraryArtistsVC.swift */; };
 		5B920A292A5E17AC00464A8C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B920A282A5E17AC00464A8C /* AppDelegate.swift */; };
 		5B920A2B2A5E17AC00464A8C /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B920A2A2A5E17AC00464A8C /* SceneDelegate.swift */; };
 		5B920A2D2A5E17AC00464A8C /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B920A2C2A5E17AC00464A8C /* ViewController.swift */; };
@@ -41,6 +48,13 @@
 		5B5B68CC2A62089F00EA3D9B /* Artist.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Artist.swift; sourceTree = "<group>"; };
 		5B5B68CE2A6231AE00EA3D9B /* MusicKitManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicKitManager.swift; sourceTree = "<group>"; };
 		5B5B68D62A65E6A000EA3D9B /* RecordCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordCell.swift; sourceTree = "<group>"; };
+		5B5B68D82A65ECBC00EA3D9B /* ArtistCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtistCell.swift; sourceTree = "<group>"; };
+		5B5B68DA2A673A8800EA3D9B /* NewMusicVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewMusicVC.swift; sourceTree = "<group>"; };
+		5B5B68DC2A673AA500EA3D9B /* ArtistsListVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtistsListVC.swift; sourceTree = "<group>"; };
+		5B5B68DE2A673B3000EA3D9B /* MTTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MTTabBarController.swift; sourceTree = "<group>"; };
+		5B5B68E12A686C5F00EA3D9B /* ArtistImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtistImageView.swift; sourceTree = "<group>"; };
+		5B5B68E32A686C9B00EA3D9B /* NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
+		5B5B68E52A687DF300EA3D9B /* LibraryArtistsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryArtistsVC.swift; sourceTree = "<group>"; };
 		5B920A252A5E17AC00464A8C /* MusicTrail.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MusicTrail.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5B920A282A5E17AC00464A8C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		5B920A2A2A5E17AC00464A8C /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -92,6 +106,8 @@
 			isa = PBXGroup;
 			children = (
 				5B5B68D62A65E6A000EA3D9B /* RecordCell.swift */,
+				5B5B68D82A65ECBC00EA3D9B /* ArtistCell.swift */,
+				5B5B68E12A686C5F00EA3D9B /* ArtistImageView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -107,16 +123,21 @@
 			isa = PBXGroup;
 			children = (
 				5B920A2C2A5E17AC00464A8C /* ViewController.swift */,
+				5B5B68DA2A673A8800EA3D9B /* NewMusicVC.swift */,
+				5B5B68DC2A673AA500EA3D9B /* ArtistsListVC.swift */,
+				5B5B68DE2A673B3000EA3D9B /* MTTabBarController.swift */,
+				5B5B68E52A687DF300EA3D9B /* LibraryArtistsVC.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
 		};
-		5B5B68D42A65E32B00EA3D9B /* API */ = {
+		5B5B68D42A65E32B00EA3D9B /* Managers */ = {
 			isa = PBXGroup;
 			children = (
 				5B5B68CE2A6231AE00EA3D9B /* MusicKitManager.swift */,
+				5B5B68E32A686C9B00EA3D9B /* NetworkManager.swift */,
 			);
-			path = API;
+			path = Managers;
 			sourceTree = "<group>";
 		};
 		5B5B68D52A65E34500EA3D9B /* Support */ = {
@@ -128,6 +149,13 @@
 				5B920A332A5E17AD00464A8C /* LaunchScreen.storyboard */,
 			);
 			path = Support;
+			sourceTree = "<group>";
+		};
+		5B5B68E02A68621A00EA3D9B /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Extensions;
 			sourceTree = "<group>";
 		};
 		5B920A1C2A5E17AC00464A8C = {
@@ -153,8 +181,9 @@
 		5B920A272A5E17AC00464A8C /* MusicTrail */ = {
 			isa = PBXGroup;
 			children = (
+				5B5B68E02A68621A00EA3D9B /* Extensions */,
 				5B5B68D52A65E34500EA3D9B /* Support */,
-				5B5B68D42A65E32B00EA3D9B /* API */,
+				5B5B68D42A65E32B00EA3D9B /* Managers */,
 				5B5B68D32A65E31300EA3D9B /* ViewControllers */,
 				5B5B68D22A65E30C00EA3D9B /* ViewModels */,
 				5B5B68D12A65E30400EA3D9B /* Views */,
@@ -311,12 +340,19 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5B5B68E42A686C9B00EA3D9B /* NetworkManager.swift in Sources */,
 				5B920A2D2A5E17AC00464A8C /* ViewController.swift in Sources */,
+				5B5B68E62A687DF300EA3D9B /* LibraryArtistsVC.swift in Sources */,
+				5B5B68DD2A673AA500EA3D9B /* ArtistsListVC.swift in Sources */,
 				5B5B68CF2A6231AE00EA3D9B /* MusicKitManager.swift in Sources */,
+				5B5B68D92A65ECBC00EA3D9B /* ArtistCell.swift in Sources */,
+				5B5B68DF2A673B3000EA3D9B /* MTTabBarController.swift in Sources */,
 				5B920A292A5E17AC00464A8C /* AppDelegate.swift in Sources */,
 				5B5B68CD2A62089F00EA3D9B /* Artist.swift in Sources */,
 				5B5B68D72A65E6A000EA3D9B /* RecordCell.swift in Sources */,
 				5B920A2B2A5E17AC00464A8C /* SceneDelegate.swift in Sources */,
+				5B5B68DB2A673A8800EA3D9B /* NewMusicVC.swift in Sources */,
+				5B5B68E22A686C5F00EA3D9B /* ArtistImageView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -491,8 +527,8 @@
 				INFOPLIST_KEY_NSAppleMusicUsageDescription = "Allow MusicTrail to access artists";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -520,8 +556,8 @@
 				INFOPLIST_KEY_NSAppleMusicUsageDescription = "Allow MusicTrail to access artists";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
 				IPHONEOS_DEPLOYMENT_TARGET = 15.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

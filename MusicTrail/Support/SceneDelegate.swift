@@ -16,12 +16,19 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         guard let windowScene = (scene as? UIWindowScene) else { return }
         
-        let navController = UINavigationController(rootViewController: ViewController())
+//        let navController = UINavigationController(rootViewController: ViewController())
         
         window = UIWindow(frame: windowScene.coordinateSpace.bounds)
         window?.windowScene = windowScene
-        window?.rootViewController = navController
+//        window?.rootViewController = navController
+        window?.rootViewController = MTTabBarController()
         window?.makeKeyAndVisible()
+        
+        configureNavBar()
+    }
+    
+    func configureNavBar() {
+        UINavigationBar.appearance().tintColor = .systemIndigo
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
