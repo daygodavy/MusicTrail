@@ -13,12 +13,6 @@ class LibraryArtistsVC: UIViewController {
     var libraryArtists: [LibraryArtist] = []
     
     // MARK: - UI Components
-//    private let tableView: UITableView = {
-//        let tv = UITableView()
-//        tv.backgroundColor = .systemBackground
-//        tv.register(ArtistCell.self, forCellReuseIdentifier: ArtistCell.identifier)
-//        return tv
-//    }()
     let tableView = UITableView()
 
     override func viewDidLoad() {
@@ -32,7 +26,6 @@ class LibraryArtistsVC: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         // setup artists data
-        getLibraryArtists()
         
     }
     
@@ -44,17 +37,6 @@ class LibraryArtistsVC: UIViewController {
         tableView.dataSource = self
         
         tableView.register(ArtistCell.self, forCellReuseIdentifier: ArtistCell.identifier)
-        DispatchQueue.main.async {
-            self.tableView.reloadData()
-            self.view.bringSubviewToFront(self.tableView)
-        }
-    }
-    
-    func getLibraryArtists() {
-        DispatchQueue.main.async {
-            self.tableView.reloadData()
-            self.view.bringSubviewToFront(self.tableView)
-        }
     }
 
 }

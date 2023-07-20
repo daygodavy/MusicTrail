@@ -10,7 +10,6 @@ import UIKit
 class ArtistsListVC: UIViewController {
     
     // MARK: - Variables
-//    private var artists: [LibraryArtist] = LibraryArtist.getMockArray()
     private var artists: [LibraryArtist] = []
 
     // MARK: - UI Components
@@ -85,22 +84,20 @@ class ArtistsListVC: UIViewController {
     }
     
     func getLibraryArtists() -> [LibraryArtist] {
+        var allArtists: [LibraryArtist] = []
         Task {
             do {
-                let allArtists = try await fetchLibraryArtists()
+                allArtists = try await MusicKitManager.shared.fetchLibraryArtists()
                 let vcToPresent = LibraryArtistsVC()
                 vcToPresent.modalPresentationStyle = .popover
                 
                 vcToPresent.libraryArtists = allArtists
-                print("BEFORE PRESENT")
                 present(vcToPresent, animated: true)
-                print("GOT THE LIBRARY ARTISTS")
             } catch {
                 print("ERROR!!!!!!!!!!!")
                 return
             }
         }
-        print("RETURNING LIBRARY ARTISTS")
         return allArtists
     }
     
@@ -126,7 +123,7 @@ class ArtistsListVC: UIViewController {
     func addNewArtist(_ artistName: String) {
         Task {
             do {
-                let newArtist = try await fetchNewArtist(artistName)
+                let newArtist = try await MusicKitManager.shared.fetchNewArtist(artistName)
                 artists.append(newArtist)
                 DispatchQueue.main.async { [weak self] in
                     self?.tableView.reloadData()

@@ -31,24 +31,4 @@ class NetworkManager {
         }
     }
     
-//    func formatToCatalogArtworkURL(_ url: URL) -> URL {
-//        let urlString = url.absoluteString
-//        print("STARTING NOW")
-//        print(urlString)
-//        
-//        
-//        if let urlComponents = URLComponents(string: urlString),
-//           let queryItems = urlComponents.queryItems,
-//           let aatItem = queryItems.first(where: { $0.name == "aat" }),
-//           let aatValue = aatItem.value,
-//           let aatURL = URL(string: aatValue) {
-//            print(aatURL.absoluteString)
-//            print("=========")
-//            return aatURL
-//        }
-//        
-//        
-//        
-//        return url
-//    }
 }
