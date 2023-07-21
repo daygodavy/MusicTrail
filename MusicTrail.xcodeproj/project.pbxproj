@@ -21,6 +21,8 @@
 		5B5B68EA2A69AEC400EA3D9B /* MTTitleLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5B68E92A69AEC400EA3D9B /* MTTitleLabel.swift */; };
 		5B5B68EC2A69AF8200EA3D9B /* MTBodyLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5B68EB2A69AF8200EA3D9B /* MTBodyLabel.swift */; };
 		5B5B68EE2A69B09700EA3D9B /* MTButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5B68ED2A69B09700EA3D9B /* MTButton.swift */; };
+		5B5B68F02A69D3EE00EA3D9B /* LoginManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5B68EF2A69D3EE00EA3D9B /* LoginManager.swift */; };
+		5B5B68F22A6A045600EA3D9B /* InvalidAuthVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5B68F12A6A045600EA3D9B /* InvalidAuthVC.swift */; };
 		5B920A292A5E17AC00464A8C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B920A282A5E17AC00464A8C /* AppDelegate.swift */; };
 		5B920A2B2A5E17AC00464A8C /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B920A2A2A5E17AC00464A8C /* SceneDelegate.swift */; };
 		5B920A2D2A5E17AC00464A8C /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B920A2C2A5E17AC00464A8C /* ViewController.swift */; };
@@ -63,6 +65,8 @@
 		5B5B68E92A69AEC400EA3D9B /* MTTitleLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MTTitleLabel.swift; sourceTree = "<group>"; };
 		5B5B68EB2A69AF8200EA3D9B /* MTBodyLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MTBodyLabel.swift; sourceTree = "<group>"; };
 		5B5B68ED2A69B09700EA3D9B /* MTButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MTButton.swift; sourceTree = "<group>"; };
+		5B5B68EF2A69D3EE00EA3D9B /* LoginManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginManager.swift; sourceTree = "<group>"; };
+		5B5B68F12A6A045600EA3D9B /* InvalidAuthVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvalidAuthVC.swift; sourceTree = "<group>"; };
 		5B920A252A5E17AC00464A8C /* MusicTrail.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MusicTrail.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5B920A282A5E17AC00464A8C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		5B920A2A2A5E17AC00464A8C /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -139,6 +143,7 @@
 				5B5B68DE2A673B3000EA3D9B /* MTTabBarController.swift */,
 				5B5B68E52A687DF300EA3D9B /* LibraryArtistsVC.swift */,
 				5B5B68E72A69AE1900EA3D9B /* IntroAuthVC.swift */,
+				5B5B68F12A6A045600EA3D9B /* InvalidAuthVC.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -148,6 +153,7 @@
 			children = (
 				5B5B68CE2A6231AE00EA3D9B /* MusicKitManager.swift */,
 				5B5B68E32A686C9B00EA3D9B /* NetworkManager.swift */,
+				5B5B68EF2A69D3EE00EA3D9B /* LoginManager.swift */,
 			);
 			path = Managers;
 			sourceTree = "<group>";
@@ -356,7 +362,9 @@
 				5B920A2D2A5E17AC00464A8C /* ViewController.swift in Sources */,
 				5B5B68E62A687DF300EA3D9B /* LibraryArtistsVC.swift in Sources */,
 				5B5B68DD2A673AA500EA3D9B /* ArtistsListVC.swift in Sources */,
+				5B5B68F22A6A045600EA3D9B /* InvalidAuthVC.swift in Sources */,
 				5B5B68CF2A6231AE00EA3D9B /* MusicKitManager.swift in Sources */,
+				5B5B68F02A69D3EE00EA3D9B /* LoginManager.swift in Sources */,
 				5B5B68EA2A69AEC400EA3D9B /* MTTitleLabel.swift in Sources */,
 				5B5B68E82A69AE1900EA3D9B /* IntroAuthVC.swift in Sources */,
 				5B5B68D92A65ECBC00EA3D9B /* ArtistCell.swift in Sources */,

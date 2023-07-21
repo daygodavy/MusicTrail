@@ -26,13 +26,47 @@ class IntroAuthVC: UIViewController {
     }
     
     
+    // MARK: - Methods
+    @objc func startButtonTapped() {
+        var permissionStatus = false
+        var appleMusicStatus = false
+        
+        // request access to user's music data
+        Task {
+            permissionStatus = await LoginManager.shared.checkAuthorizationStatus()
+            print("permissionStatus: \(permissionStatus)")
+            
+            if permissionStatus {
+                // confirm apple music subscription
+                appleMusicStatus = await LoginManager.shared.checkAppleMusicStatus()
+                
+                if appleMusicStatus {
+                    // both confirmed -> continue
+                    print("Success: both confirmed")
+                    
+                } else {
+                    // no apple music subscription
+                    // show VC that they're blocked
+                    print("Sorry you need Apple Music")
+                }
+            } else {
+                // permission not granted
+                // show VC that they're blocked
+                print("Sorry you need to provide permission to access")
+            }
+        }
+    }
+    
+    
     // MARK: - Setup UI
     private func configureUI() {
         introTitleLabel.text = "Music Trail"
-        introBodyLabel.text = "A simple way to track all new music releases from the artists you love."
+        introBodyLabel.text = "A simple way to track new music releases from all the artists you love."
         
         introImageView.image = UIImage(named: "introAuthImage")
         introImageView.translatesAutoresizingMaskIntoConstraints = false
+        
+        startButton.addTarget(self, action: #selector(startButtonTapped), for: .touchUpInside)
     }
     
     private func setupUI() {

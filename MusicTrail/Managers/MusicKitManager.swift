@@ -13,23 +13,9 @@ class MusicKitManager {
     
     static let shared = MusicKitManager()
     
-    var isAuthorizedForMusicKit = false
-    var musicAuthStatus: MusicAuthorization.Status? = nil
-    var appleMusicSubStatus: Bool = false
     var allArtists: [LibraryArtist] = []
-    
     private init() {}
     
-    func requestMusicAuthorization() async {
-        musicAuthStatus = await MusicAuthorization.request()
-        
-    }
-
-    func checkAppleMusicStatus() async throws {
-        let currentSub = try await MusicSubscription.current
-        print(currentSub)
-
-    }
 
     func fetchNewArtist(_ name: String) async throws -> LibraryArtist {
         if #available(iOS 16.0, *) {
