@@ -38,8 +38,11 @@ class ArtistCell: UITableViewCell {
     }
     
     public func configure(with artist: LibraryArtist) {
-        guard let url = artist.imageUrl else { return }
-        self.artistImage.downloadArtistImage(url)
+        if let url = artist.imageUrl {
+            self.artistImage.downloadArtistImage(url)
+        } else {
+            self.artistImage.setDefault()
+        }
         self.artist = artist
         self.nameLabel.text = artist.name
     }

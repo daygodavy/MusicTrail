@@ -23,6 +23,7 @@ class ArtistImageView: UIImageView {
         layer.cornerRadius = 5
         clipsToBounds = true
         image = placeholderImage
+        tintColor = .systemGray
         contentMode = .scaleAspectFit
         translatesAutoresizingMaskIntoConstraints = false
     }
@@ -31,6 +32,11 @@ class ArtistImageView: UIImageView {
         Task {
             image = await NetworkManager.shared.downloadImage(from: url)?.withRenderingMode(.alwaysOriginal) ?? placeholderImage
         }
+    }
+    
+    func setDefault() {
+        image = placeholderImage
+        tintColor = .systemGray
     }
     
 }

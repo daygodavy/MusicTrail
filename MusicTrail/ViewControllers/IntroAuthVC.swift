@@ -43,7 +43,7 @@ class IntroAuthVC: UIViewController {
                 if appleMusicStatus {
                     // both confirmed -> continue
                     print("Success: both confirmed")
-                    
+                    presentTabBarVC()
                 } else {
                     // no apple music subscription
                     // show VC that they're blocked
@@ -55,6 +55,14 @@ class IntroAuthVC: UIViewController {
                 print("Sorry you need to provide permission to access")
             }
         }
+    }
+    
+    private func presentTabBarVC() {
+        let tabBarVC = MTTabBarController()
+        let navController = UINavigationController(rootViewController: tabBarVC)
+        navController.modalPresentationStyle = .fullScreen
+        navController.modalTransitionStyle = .crossDissolve
+        present(navController, animated: true)
     }
     
     

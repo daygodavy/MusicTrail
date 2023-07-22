@@ -48,19 +48,21 @@ class MusicKitManager {
         if #available(iOS 16.0, *) {
             var request = MusicLibraryRequest<Artist>()
             
-            request.limit = 20
-            request.sort(by: \.albumCount, ascending: false)
+//            request.limit = 20
+            request.sort(by: \.name, ascending: false)
             
             let response = try await request.response()
             
             for artist in response.items {
+                // edge case: artist in library no longer exists in catalog
+
+                var imageUrl = artist.artwork?.url(width: 168, height: 168)
                 
-                let imageUrl = artist.artwork?.url(width: 168, height: 168)
-                guard let libraryUrl = imageUrl else { fatalError() }
+                if let libraryUrl = imageUrl {
+                    imageUrl = formatToCatalogArtworkURL(libraryUrl)
+                }
                 
-                let url = formatToCatalogArtworkURL(libraryUrl)
-                
-                let person = LibraryArtist(name: artist.name, id: artist.id, imageUrl: url)
+                let person = LibraryArtist(name: artist.name, id: artist.id, imageUrl: imageUrl)
                 allArtists.append(person)
             }
             

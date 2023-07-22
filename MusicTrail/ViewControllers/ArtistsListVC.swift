@@ -58,7 +58,6 @@ class ArtistsListVC: UIViewController {
     }
     
     func updateUI() {
-        print(artists)
         if !artists.isEmpty {
             Task {
                 DispatchQueue.main.async {
