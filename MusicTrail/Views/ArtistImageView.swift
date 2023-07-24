@@ -8,7 +8,6 @@
 import UIKit
 
 class ArtistImageView: UIImageView {
-    let cache = NetworkManager.shared.cache
     let placeholderImage = UIImage(systemName: "questionmark")
     
     override init(frame: CGRect) {
@@ -35,8 +34,9 @@ class ArtistImageView: UIImageView {
     }
     
     func setDefault() {
+        image = nil
         image = placeholderImage
         tintColor = .systemGray
     }
-    
+
 }

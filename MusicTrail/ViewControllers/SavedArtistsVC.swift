@@ -7,10 +7,11 @@
 
 import UIKit
 
-class ArtistsListVC: UIViewController {
+class SavedArtistsVC: UIViewController {
     
     // MARK: - Variables
     private var artists: [LibraryArtist] = []
+    var savedArtists: [LibraryArtist] = []
 
     // MARK: - UI Components
     private let tableView: UITableView = {
@@ -58,7 +59,7 @@ class ArtistsListVC: UIViewController {
     }
     
     func updateUI() {
-        if !artists.isEmpty {
+        if !savedArtists.isEmpty {
             Task {
                 DispatchQueue.main.async {
                     self.tableView.reloadData()
@@ -69,36 +70,12 @@ class ArtistsListVC: UIViewController {
     }
     
     @objc func libraryButtonTapped() {
-        // fetch library artists
-        let myArtists = getLibraryArtists()
-        // pop up modal with tableView
-//        let vcToPresent = LibraryArtistsVC()
-//        vcToPresent.modalPresentationStyle = .popover
-//        
-//        vcToPresent.libraryArtists = myArtists
-//        print("BEFORE PRESENT")
-//        present(vcToPresent, animated: true)
-        
-        // show library artists
+        let vcToPresent = LibraryArtistsVC()
+        let navController = UINavigationController(rootViewController: vcToPresent)
+        navController.modalPresentationStyle = .fullScreen
+        present(navController, animated: true)
     }
-    
-    func getLibraryArtists() -> [LibraryArtist] {
-        var allArtists: [LibraryArtist] = []
-        Task {
-            do {
-                allArtists = try await MusicKitManager.shared.fetchLibraryArtists()
-                let vcToPresent = LibraryArtistsVC()
-                vcToPresent.modalPresentationStyle = .popover
-                
-                vcToPresent.libraryArtists = allArtists
-                present(vcToPresent, animated: true)
-            } catch {
-                print("ERROR!!!!!!!!!!!")
-                return
-            }
-        }
-        return allArtists
-    }
+
     
     @objc func addButtonTapped() {
         let ac = UIAlertController(title: "New Artist", message: nil, preferredStyle: .alert)
@@ -123,7 +100,7 @@ class ArtistsListVC: UIViewController {
         Task {
             do {
                 let newArtist = try await MusicKitManager.shared.fetchNewArtist(artistName)
-                artists.append(newArtist)
+                savedArtists.append(newArtist)
                 DispatchQueue.main.async { [weak self] in
                     self?.tableView.reloadData()
                 }
@@ -135,16 +112,16 @@ class ArtistsListVC: UIViewController {
 }
 
 
-extension ArtistsListVC: UITableViewDelegate, UITableViewDataSource {
+extension SavedArtistsVC: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return artists.count
+        return savedArtists.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: ArtistCell.identifier, for: indexPath) as? ArtistCell else { fatalError("Unable to dequeue ArtistCell in ViewController") }
         
-        let artist = artists[indexPath.row]
+        let artist = savedArtists[indexPath.row]
         cell.configure(with: artist)
         
         return cell

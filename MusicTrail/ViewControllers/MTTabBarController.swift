@@ -24,7 +24,7 @@ class MTTabBarController: UITabBarController {
     }
     
     func createArtistsListNC() -> UINavigationController {
-        let vc = ArtistsListVC()
+        let vc = SavedArtistsVC()
         vc.title = "Artists"
         vc.tabBarItem = UITabBarItem(title: "", image: UIImage(systemName: "person.3"), tag: 0)
         

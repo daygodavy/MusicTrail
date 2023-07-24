@@ -12,7 +12,7 @@
 		5B5B68D72A65E6A000EA3D9B /* RecordCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5B68D62A65E6A000EA3D9B /* RecordCell.swift */; };
 		5B5B68D92A65ECBC00EA3D9B /* ArtistCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5B68D82A65ECBC00EA3D9B /* ArtistCell.swift */; };
 		5B5B68DB2A673A8800EA3D9B /* NewMusicVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5B68DA2A673A8800EA3D9B /* NewMusicVC.swift */; };
-		5B5B68DD2A673AA500EA3D9B /* ArtistsListVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5B68DC2A673AA500EA3D9B /* ArtistsListVC.swift */; };
+		5B5B68DD2A673AA500EA3D9B /* SavedArtistsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5B68DC2A673AA500EA3D9B /* SavedArtistsVC.swift */; };
 		5B5B68DF2A673B3000EA3D9B /* MTTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5B68DE2A673B3000EA3D9B /* MTTabBarController.swift */; };
 		5B5B68E22A686C5F00EA3D9B /* ArtistImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5B68E12A686C5F00EA3D9B /* ArtistImageView.swift */; };
 		5B5B68E42A686C9B00EA3D9B /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5B68E32A686C9B00EA3D9B /* NetworkManager.swift */; };
@@ -22,10 +22,8 @@
 		5B5B68EC2A69AF8200EA3D9B /* MTBodyLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5B68EB2A69AF8200EA3D9B /* MTBodyLabel.swift */; };
 		5B5B68EE2A69B09700EA3D9B /* MTButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5B68ED2A69B09700EA3D9B /* MTButton.swift */; };
 		5B5B68F02A69D3EE00EA3D9B /* LoginManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5B68EF2A69D3EE00EA3D9B /* LoginManager.swift */; };
-		5B5B68F22A6A045600EA3D9B /* InvalidAuthVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5B68F12A6A045600EA3D9B /* InvalidAuthVC.swift */; };
 		5B920A292A5E17AC00464A8C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B920A282A5E17AC00464A8C /* AppDelegate.swift */; };
 		5B920A2B2A5E17AC00464A8C /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B920A2A2A5E17AC00464A8C /* SceneDelegate.swift */; };
-		5B920A2D2A5E17AC00464A8C /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B920A2C2A5E17AC00464A8C /* ViewController.swift */; };
 		5B920A322A5E17AD00464A8C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5B920A312A5E17AD00464A8C /* Assets.xcassets */; };
 		5B920A352A5E17AD00464A8C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 5B920A332A5E17AD00464A8C /* LaunchScreen.storyboard */; };
 		5B920A402A5E17AE00464A8C /* MusicTrailTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B920A3F2A5E17AE00464A8C /* MusicTrailTests.swift */; };
@@ -56,7 +54,7 @@
 		5B5B68D62A65E6A000EA3D9B /* RecordCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordCell.swift; sourceTree = "<group>"; };
 		5B5B68D82A65ECBC00EA3D9B /* ArtistCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtistCell.swift; sourceTree = "<group>"; };
 		5B5B68DA2A673A8800EA3D9B /* NewMusicVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewMusicVC.swift; sourceTree = "<group>"; };
-		5B5B68DC2A673AA500EA3D9B /* ArtistsListVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtistsListVC.swift; sourceTree = "<group>"; };
+		5B5B68DC2A673AA500EA3D9B /* SavedArtistsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedArtistsVC.swift; sourceTree = "<group>"; };
 		5B5B68DE2A673B3000EA3D9B /* MTTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MTTabBarController.swift; sourceTree = "<group>"; };
 		5B5B68E12A686C5F00EA3D9B /* ArtistImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtistImageView.swift; sourceTree = "<group>"; };
 		5B5B68E32A686C9B00EA3D9B /* NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
@@ -66,11 +64,9 @@
 		5B5B68EB2A69AF8200EA3D9B /* MTBodyLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MTBodyLabel.swift; sourceTree = "<group>"; };
 		5B5B68ED2A69B09700EA3D9B /* MTButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MTButton.swift; sourceTree = "<group>"; };
 		5B5B68EF2A69D3EE00EA3D9B /* LoginManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginManager.swift; sourceTree = "<group>"; };
-		5B5B68F12A6A045600EA3D9B /* InvalidAuthVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvalidAuthVC.swift; sourceTree = "<group>"; };
 		5B920A252A5E17AC00464A8C /* MusicTrail.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MusicTrail.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5B920A282A5E17AC00464A8C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		5B920A2A2A5E17AC00464A8C /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
-		5B920A2C2A5E17AC00464A8C /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		5B920A312A5E17AD00464A8C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		5B920A342A5E17AD00464A8C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		5B920A362A5E17AD00464A8C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -137,13 +133,11 @@
 		5B5B68D32A65E31300EA3D9B /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
-				5B920A2C2A5E17AC00464A8C /* ViewController.swift */,
 				5B5B68DA2A673A8800EA3D9B /* NewMusicVC.swift */,
-				5B5B68DC2A673AA500EA3D9B /* ArtistsListVC.swift */,
+				5B5B68DC2A673AA500EA3D9B /* SavedArtistsVC.swift */,
 				5B5B68DE2A673B3000EA3D9B /* MTTabBarController.swift */,
 				5B5B68E52A687DF300EA3D9B /* LibraryArtistsVC.swift */,
 				5B5B68E72A69AE1900EA3D9B /* IntroAuthVC.swift */,
-				5B5B68F12A6A045600EA3D9B /* InvalidAuthVC.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -359,10 +353,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				5B5B68E42A686C9B00EA3D9B /* NetworkManager.swift in Sources */,
-				5B920A2D2A5E17AC00464A8C /* ViewController.swift in Sources */,
 				5B5B68E62A687DF300EA3D9B /* LibraryArtistsVC.swift in Sources */,
-				5B5B68DD2A673AA500EA3D9B /* ArtistsListVC.swift in Sources */,
-				5B5B68F22A6A045600EA3D9B /* InvalidAuthVC.swift in Sources */,
+				5B5B68DD2A673AA500EA3D9B /* SavedArtistsVC.swift in Sources */,
 				5B5B68CF2A6231AE00EA3D9B /* MusicKitManager.swift in Sources */,
 				5B5B68F02A69D3EE00EA3D9B /* LoginManager.swift in Sources */,
 				5B5B68EA2A69AEC400EA3D9B /* MTTitleLabel.swift in Sources */,

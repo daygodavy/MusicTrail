@@ -49,11 +49,15 @@ class MusicKitManager {
             var request = MusicLibraryRequest<Artist>()
             
 //            request.limit = 20
-            request.sort(by: \.name, ascending: false)
+            request.sort(by: \.name, ascending: true)
             
             let response = try await request.response()
             
             for artist in response.items {
+                if artist.name.contains(",") || artist.name.contains("&") {
+                    continue
+                }
+                
                 // edge case: artist in library no longer exists in catalog
 
                 var imageUrl = artist.artwork?.url(width: 168, height: 168)

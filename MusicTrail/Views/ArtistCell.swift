@@ -13,12 +13,12 @@ class ArtistCell: UITableViewCell {
     
     // MARK: - Variables
     private(set) var artist: LibraryArtist!
-    var placeholderImage = UIImage(systemName: "questionmark")
+    let cache = NetworkManager.shared.cache
     
     // MARK: - UI Components
     private let artistImage = ArtistImageView(frame: .zero)
     
-    private let nameLabel: UILabel = {
+    private var nameLabel: UILabel = {
         let titleLabel = UILabel()
         titleLabel.textColor = .systemOrange
         titleLabel.textAlignment = .left
@@ -38,10 +38,9 @@ class ArtistCell: UITableViewCell {
     }
     
     public func configure(with artist: LibraryArtist) {
+        self.artistImage.setDefault()
         if let url = artist.imageUrl {
             self.artistImage.downloadArtistImage(url)
-        } else {
-            self.artistImage.setDefault()
         }
         self.artist = artist
         self.nameLabel.text = artist.name
@@ -49,6 +48,13 @@ class ArtistCell: UITableViewCell {
     
     
     // TODO: - Prepare for reuse
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        nameLabel.text = nil
+        artistImage.image = nil
+    }
+    
+    
     
     // MARK: - UI Setup
     private func setupUI() {
