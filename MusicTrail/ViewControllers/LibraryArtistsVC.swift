@@ -55,7 +55,9 @@ class LibraryArtistsVC: UIViewController {
         searchController.searchBar.placeholder = "Search"
         searchController.searchBar.image(for: .search, state: .normal)
 //        searchController.obscuresBackgroundDuringPresentation = false
+
         navigationItem.searchController = searchController
+        navigationItem.hidesSearchBarWhenScrolling = false
         
     }
     
@@ -99,6 +101,15 @@ extension LibraryArtistsVC: UITableViewDelegate, UITableViewDataSource {
         
         return cell
     }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        filteredArtists[indexPath.row].isSaved.toggle()
+        DispatchQueue.main.async {
+            self.tableView.reloadRows(at: [indexPath], with: .automatic)
+        }
+    }
+    
+    
 }
 
 extension LibraryArtistsVC: UISearchResultsUpdating {
@@ -118,8 +129,5 @@ extension LibraryArtistsVC: UISearchResultsUpdating {
         }
         updateData()
         
-        
     }
-    
-    
 }

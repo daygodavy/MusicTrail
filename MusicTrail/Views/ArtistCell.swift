@@ -13,10 +13,18 @@ class ArtistCell: UITableViewCell {
     
     // MARK: - Variables
     private(set) var artist: LibraryArtist!
-    let cache = NetworkManager.shared.cache
     
     // MARK: - UI Components
     private let artistImage = ArtistImageView(frame: .zero)
+    
+    
+    private var checkImage: UIImageView = {
+        let imageView = UIImageView()
+        imageView.image = UIImage(systemName: "checkmark")
+        imageView.tintColor = .systemMint
+        imageView.isHidden = true
+        return imageView
+    }()
     
     private var nameLabel: UILabel = {
         let titleLabel = UILabel()
@@ -40,7 +48,12 @@ class ArtistCell: UITableViewCell {
     public func configure(with artist: LibraryArtist) {
         self.artistImage.setDefault()
         if let url = artist.imageUrl {
-            self.artistImage.downloadArtistImage(url)
+            self.artistImage.downloadArtistImage(url, artist: artist.name)
+        }
+        if artist.isSaved {
+            checkImage.isHidden = false
+        } else {
+            checkImage.isHidden = true
         }
         self.artist = artist
         self.nameLabel.text = artist.name
@@ -60,9 +73,11 @@ class ArtistCell: UITableViewCell {
     private func setupUI() {
         self.addSubview(artistImage)
         self.addSubview(nameLabel)
+        self.addSubview(checkImage)
         
         artistImage.translatesAutoresizingMaskIntoConstraints = false
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
+        checkImage.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
 //            artistImage.topAnchor.constraint(equalTo: self.topAnchor),
@@ -75,9 +90,17 @@ class ArtistCell: UITableViewCell {
             nameLabel.topAnchor.constraint(equalTo: self.layoutMarginsGuide.topAnchor),
             nameLabel.leadingAnchor.constraint(equalTo: artistImage.trailingAnchor, constant: 50),
             nameLabel.trailingAnchor.constraint(equalTo: self.layoutMarginsGuide.trailingAnchor),
-            nameLabel.bottomAnchor.constraint(equalTo: self.layoutMarginsGuide.bottomAnchor)
+            nameLabel.bottomAnchor.constraint(equalTo: self.layoutMarginsGuide.bottomAnchor),
+            
+            checkImage.centerYAnchor.constraint(equalTo: nameLabel.centerYAnchor),
+            checkImage.trailingAnchor.constraint(equalTo: self.layoutMarginsGuide.trailingAnchor),
+            checkImage.heightAnchor.constraint(equalToConstant: 30),
+            checkImage.widthAnchor.constraint(equalToConstant: 30)
+            
         ])
     }
+    
+    
     
 
 }

@@ -8,13 +8,16 @@
 import Foundation
 import MusicKit
 
-
 struct LibraryArtist: Codable {
     let name: String
     let id: MusicItemID
     let imageUrl: URL?
     var isSaved = false
 }
+
+
+
+
 
 extension LibraryArtist {
     public static func getMockArray() -> [LibraryArtist] {

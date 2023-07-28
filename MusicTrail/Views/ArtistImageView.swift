@@ -8,10 +8,14 @@
 import UIKit
 
 class ArtistImageView: UIImageView {
+    
     let placeholderImage = UIImage(systemName: "questionmark")
+    var fetchImageTask: Task<Void, Never>?
+    
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        fetchImageTask = nil
     }
     
     required init?(coder: NSCoder) {
@@ -27,8 +31,9 @@ class ArtistImageView: UIImageView {
         translatesAutoresizingMaskIntoConstraints = false
     }
   
-    func downloadArtistImage(_ url: URL) {
-        Task {
+    func downloadArtistImage(_ url: URL, artist: String) {
+        fetchImageTask?.cancel()
+        fetchImageTask = Task {
             image = await NetworkManager.shared.downloadImage(from: url)?.withRenderingMode(.alwaysOriginal) ?? placeholderImage
         }
     }
