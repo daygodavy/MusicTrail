@@ -7,6 +7,7 @@
 
 import UIKit
 
+
 class ArtistImageView: UIImageView {
     
     let placeholderImage = UIImage(systemName: "questionmark")

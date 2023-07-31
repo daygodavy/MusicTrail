@@ -16,6 +16,30 @@ class MusicKitManager {
     var allArtists: [LibraryArtist] = []
     private init() {}
     
+    func fetchMockData(_ name: String) async throws -> [LibraryArtist] {
+        allArtists.removeAll()
+        if #available(iOS 16.0, *) {
+            var request = MusicCatalogSearchRequest(term: name, types: [Artist.self])
+            request.limit = 25
+            
+            let response = try await request.response()
+            
+            for artist in response.artists {
+                
+                // edge case: artist in library no longer exists in catalog
+                
+                var imageUrl = artist.artwork?.url(width: 168, height: 168)
+                
+                let person = LibraryArtist(name: artist.name, id: artist.id, imageUrl: imageUrl)
+                allArtists.append(person)
+            }
+        } else {
+            // Fallback on earlier versions
+        }
+        
+        return allArtists
+    }
+    
 
     func fetchNewArtist(_ name: String) async throws -> LibraryArtist {
         if #available(iOS 16.0, *) {
@@ -50,20 +74,20 @@ class MusicKitManager {
             
 //            request.limit = 20
             request.sort(by: \.name, ascending: true)
-            
             let response = try await request.response()
             
             for artist in response.items {
+                
+                // Omit artist objects that comprise of multiple artists
                 if artist.name.contains(",") || artist.name.contains("&") {
                     continue
                 }
                 
-                // edge case: artist in library no longer exists in catalog
-
+                // Convert artwork URL from library format to catalog format
                 var imageUrl = artist.artwork?.url(width: 168, height: 168)
                 
-                if let libraryUrl = imageUrl {
-                    imageUrl = formatToCatalogArtworkURL(libraryUrl)
+                if let libraryUrl = imageUrl?.absoluteString {
+                    imageUrl = libraryUrl.formatToCatalogArtworkURL()
                 }
                 
                 let person = LibraryArtist(name: artist.name, id: artist.id, imageUrl: imageUrl)
@@ -75,20 +99,6 @@ class MusicKitManager {
         }
         
         return allArtists
-    }
-
-
-    func formatToCatalogArtworkURL(_ url: URL) -> URL {
-        let urlString = url.absoluteString
-        
-        if let urlComponents = URLComponents(string: urlString),
-           let queryItems = urlComponents.queryItems,
-           let aatItem = queryItems.first(where: { $0.name == "aat" }),
-           let aatValue = aatItem.value,
-           let aatURL = URL(string: aatValue) {
-            return aatURL
-        }
-        return url
     }
 
 
@@ -107,9 +117,6 @@ class MusicKitManager {
                 allArtists.append(person)
             }
             print(allArtists)
-            
-
-
             
             var catalogRequest = MusicCatalogSearchRequest(term: "nocap", types: [Song.self])
             catalogRequest.limit = 10

@@ -70,6 +70,25 @@ class LibraryArtistsVC: UIViewController {
             do {
                 libraryArtists = try await MusicKitManager.shared.fetchLibraryArtists()
                 filteredArtists = libraryArtists
+//                libraryArtists.append(contentsOf: try await MusicKitManager.shared.fetchMockData("a"))
+//                libraryArtists.append(contentsOf: try await MusicKitManager.shared.fetchMockData("b"))
+//                libraryArtists.append(contentsOf: try await MusicKitManager.shared.fetchMockData("c"))
+//                libraryArtists.append(contentsOf: try await MusicKitManager.shared.fetchMockData("d"))
+//                libraryArtists.append(contentsOf: try await MusicKitManager.shared.fetchMockData("e"))
+//                libraryArtists.append(contentsOf: try await MusicKitManager.shared.fetchMockData("f"))
+//                libraryArtists.append(contentsOf: try await MusicKitManager.shared.fetchMockData("g"))
+//                libraryArtists.append(contentsOf: try await MusicKitManager.shared.fetchMockData("h"))
+//                libraryArtists.append(contentsOf: try await MusicKitManager.shared.fetchMockData("i"))
+//                libraryArtists.append(contentsOf: try await MusicKitManager.shared.fetchMockData("j"))
+//                libraryArtists.append(contentsOf: try await MusicKitManager.shared.fetchMockData("k"))
+//                libraryArtists.append(contentsOf: try await MusicKitManager.shared.fetchMockData("l"))
+//                libraryArtists.append(contentsOf: try await MusicKitManager.shared.fetchMockData("m"))
+//                libraryArtists.append(contentsOf: try await MusicKitManager.shared.fetchMockData("n"))
+//                libraryArtists.append(contentsOf: try await MusicKitManager.shared.fetchMockData("o"))
+//                libraryArtists.append(contentsOf: try await MusicKitManager.shared.fetchMockData("lil"))
+//                filteredArtists = libraryArtists
+                
+                
                 updateData()
             } catch {
                 print("ERROR!!!!!!!!!!!")

@@ -22,6 +22,7 @@
 		5B5B68EC2A69AF8200EA3D9B /* MTBodyLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5B68EB2A69AF8200EA3D9B /* MTBodyLabel.swift */; };
 		5B5B68EE2A69B09700EA3D9B /* MTButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5B68ED2A69B09700EA3D9B /* MTButton.swift */; };
 		5B5B68F02A69D3EE00EA3D9B /* LoginManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5B68EF2A69D3EE00EA3D9B /* LoginManager.swift */; };
+		5B5B695C2A78449700EA3D9B /* String+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5B695B2A78449700EA3D9B /* String+Ext.swift */; };
 		5B920A292A5E17AC00464A8C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B920A282A5E17AC00464A8C /* AppDelegate.swift */; };
 		5B920A2B2A5E17AC00464A8C /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B920A2A2A5E17AC00464A8C /* SceneDelegate.swift */; };
 		5B920A322A5E17AD00464A8C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5B920A312A5E17AD00464A8C /* Assets.xcassets */; };
@@ -64,6 +65,7 @@
 		5B5B68EB2A69AF8200EA3D9B /* MTBodyLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MTBodyLabel.swift; sourceTree = "<group>"; };
 		5B5B68ED2A69B09700EA3D9B /* MTButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MTButton.swift; sourceTree = "<group>"; };
 		5B5B68EF2A69D3EE00EA3D9B /* LoginManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginManager.swift; sourceTree = "<group>"; };
+		5B5B695B2A78449700EA3D9B /* String+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Ext.swift"; sourceTree = "<group>"; };
 		5B920A252A5E17AC00464A8C /* MusicTrail.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MusicTrail.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5B920A282A5E17AC00464A8C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		5B920A2A2A5E17AC00464A8C /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -166,6 +168,7 @@
 		5B5B68E02A68621A00EA3D9B /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
+				5B5B695B2A78449700EA3D9B /* String+Ext.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -352,6 +355,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5B5B695C2A78449700EA3D9B /* String+Ext.swift in Sources */,
 				5B5B68E42A686C9B00EA3D9B /* NetworkManager.swift in Sources */,
 				5B5B68E62A687DF300EA3D9B /* LibraryArtistsVC.swift in Sources */,
 				5B5B68DD2A673AA500EA3D9B /* SavedArtistsVC.swift in Sources */,
