@@ -46,7 +46,7 @@ class ArtistCell: UITableViewCell {
     }
     
     public func configure(with artist: LibraryArtist) {
-        self.artistImage.setDefault()
+//        self.artistImage.setDefault()
         if let url = artist.imageUrl {
             self.artistImage.downloadArtistImage(url, artist: artist.name)
         }

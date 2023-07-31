@@ -13,11 +13,12 @@ class MusicKitManager {
     
     static let shared = MusicKitManager()
     
-    var allArtists: [LibraryArtist] = []
+//    var allArtists: [LibraryArtist] = []
     private init() {}
     
     func fetchMockData(_ name: String) async throws -> [LibraryArtist] {
-        allArtists.removeAll()
+        var allArtists: [LibraryArtist] = []
+        
         if #available(iOS 16.0, *) {
             var request = MusicCatalogSearchRequest(term: name, types: [Artist.self])
             request.limit = 25
@@ -43,6 +44,8 @@ class MusicKitManager {
 
     func fetchNewArtist(_ name: String) async throws -> LibraryArtist {
         if #available(iOS 16.0, *) {
+            var allArtists: [LibraryArtist] = []
+            
             var request = MusicCatalogSearchRequest(term: name, types: [Artist.self])
             request.limit = 1
     //        request.sort(by: \.albumCount, ascending: false)
@@ -69,6 +72,8 @@ class MusicKitManager {
 
 
     func fetchLibraryArtists() async throws -> [LibraryArtist] {
+        var allArtists: [LibraryArtist] = []
+        
         if #available(iOS 16.0, *) {
             var request = MusicLibraryRequest<Artist>()
             
@@ -103,6 +108,8 @@ class MusicKitManager {
 
 
     func searchAppleMusic() async throws {
+        var allArtists: [LibraryArtist] = []
+        
         if #available(iOS 16.0, *) {
             var libraryRequest = MusicLibraryRequest<Artist>()
             libraryRequest.limit = 5

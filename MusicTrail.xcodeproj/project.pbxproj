@@ -23,6 +23,10 @@
 		5B5B68EE2A69B09700EA3D9B /* MTButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5B68ED2A69B09700EA3D9B /* MTButton.swift */; };
 		5B5B68F02A69D3EE00EA3D9B /* LoginManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5B68EF2A69D3EE00EA3D9B /* LoginManager.swift */; };
 		5B5B695C2A78449700EA3D9B /* String+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5B695B2A78449700EA3D9B /* String+Ext.swift */; };
+		5B5B695F2A785A3A00EA3D9B /* MusicTrail.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 5B5B695D2A785A3A00EA3D9B /* MusicTrail.xcdatamodeld */; };
+		5B5B69622A785ABA00EA3D9B /* PersistanceContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5B69612A785ABA00EA3D9B /* PersistanceContainer.swift */; };
+		5B5B69642A785CB400EA3D9B /* CoreDataRepo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5B69632A785CB400EA3D9B /* CoreDataRepo.swift */; };
+		5B5B69662A785CE700EA3D9B /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5B69652A785CE700EA3D9B /* User.swift */; };
 		5B920A292A5E17AC00464A8C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B920A282A5E17AC00464A8C /* AppDelegate.swift */; };
 		5B920A2B2A5E17AC00464A8C /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B920A2A2A5E17AC00464A8C /* SceneDelegate.swift */; };
 		5B920A322A5E17AD00464A8C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5B920A312A5E17AD00464A8C /* Assets.xcassets */; };
@@ -66,6 +70,10 @@
 		5B5B68ED2A69B09700EA3D9B /* MTButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MTButton.swift; sourceTree = "<group>"; };
 		5B5B68EF2A69D3EE00EA3D9B /* LoginManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginManager.swift; sourceTree = "<group>"; };
 		5B5B695B2A78449700EA3D9B /* String+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Ext.swift"; sourceTree = "<group>"; };
+		5B5B695E2A785A3A00EA3D9B /* MusicTrail.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MusicTrail.xcdatamodel; sourceTree = "<group>"; };
+		5B5B69612A785ABA00EA3D9B /* PersistanceContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistanceContainer.swift; sourceTree = "<group>"; };
+		5B5B69632A785CB400EA3D9B /* CoreDataRepo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataRepo.swift; sourceTree = "<group>"; };
+		5B5B69652A785CE700EA3D9B /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		5B920A252A5E17AC00464A8C /* MusicTrail.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MusicTrail.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5B920A282A5E17AC00464A8C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		5B920A2A2A5E17AC00464A8C /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -108,6 +116,7 @@
 			isa = PBXGroup;
 			children = (
 				5B5B68CC2A62089F00EA3D9B /* Artist.swift */,
+				5B5B69652A785CE700EA3D9B /* User.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -173,6 +182,15 @@
 			path = Extensions;
 			sourceTree = "<group>";
 		};
+		5B5B69602A785AA900EA3D9B /* Data */ = {
+			isa = PBXGroup;
+			children = (
+				5B5B69612A785ABA00EA3D9B /* PersistanceContainer.swift */,
+				5B5B69632A785CB400EA3D9B /* CoreDataRepo.swift */,
+			);
+			path = Data;
+			sourceTree = "<group>";
+		};
 		5B920A1C2A5E17AC00464A8C = {
 			isa = PBXGroup;
 			children = (
@@ -196,6 +214,7 @@
 		5B920A272A5E17AC00464A8C /* MusicTrail */ = {
 			isa = PBXGroup;
 			children = (
+				5B5B69602A785AA900EA3D9B /* Data */,
 				5B5B68E02A68621A00EA3D9B /* Extensions */,
 				5B5B68D52A65E34500EA3D9B /* Support */,
 				5B5B68D42A65E32B00EA3D9B /* Managers */,
@@ -204,6 +223,7 @@
 				5B5B68D12A65E30400EA3D9B /* Views */,
 				5B5B68D02A65E2FB00EA3D9B /* Models */,
 				5B920A362A5E17AD00464A8C /* Info.plist */,
+				5B5B695D2A785A3A00EA3D9B /* MusicTrail.xcdatamodeld */,
 			);
 			path = MusicTrail;
 			sourceTree = "<group>";
@@ -356,6 +376,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5B5B695C2A78449700EA3D9B /* String+Ext.swift in Sources */,
+				5B5B69622A785ABA00EA3D9B /* PersistanceContainer.swift in Sources */,
 				5B5B68E42A686C9B00EA3D9B /* NetworkManager.swift in Sources */,
 				5B5B68E62A687DF300EA3D9B /* LibraryArtistsVC.swift in Sources */,
 				5B5B68DD2A673AA500EA3D9B /* SavedArtistsVC.swift in Sources */,
@@ -364,9 +385,12 @@
 				5B5B68EA2A69AEC400EA3D9B /* MTTitleLabel.swift in Sources */,
 				5B5B68E82A69AE1900EA3D9B /* IntroAuthVC.swift in Sources */,
 				5B5B68D92A65ECBC00EA3D9B /* ArtistCell.swift in Sources */,
+				5B5B69662A785CE700EA3D9B /* User.swift in Sources */,
+				5B5B695F2A785A3A00EA3D9B /* MusicTrail.xcdatamodeld in Sources */,
 				5B5B68DF2A673B3000EA3D9B /* MTTabBarController.swift in Sources */,
 				5B920A292A5E17AC00464A8C /* AppDelegate.swift in Sources */,
 				5B5B68CD2A62089F00EA3D9B /* Artist.swift in Sources */,
+				5B5B69642A785CB400EA3D9B /* CoreDataRepo.swift in Sources */,
 				5B5B68EC2A69AF8200EA3D9B /* MTBodyLabel.swift in Sources */,
 				5B5B68D72A65E6A000EA3D9B /* RecordCell.swift in Sources */,
 				5B5B68EE2A69B09700EA3D9B /* MTButton.swift in Sources */,
@@ -708,6 +732,19 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCVersionGroup section */
+		5B5B695D2A785A3A00EA3D9B /* MusicTrail.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				5B5B695E2A785A3A00EA3D9B /* MusicTrail.xcdatamodel */,
+			);
+			currentVersion = 5B5B695E2A785A3A00EA3D9B /* MusicTrail.xcdatamodel */;
+			path = MusicTrail.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = 5B920A1D2A5E17AC00464A8C /* Project object */;
 }

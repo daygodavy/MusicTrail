@@ -36,11 +36,11 @@ class ArtistImageView: UIImageView {
         fetchImageTask?.cancel()
         fetchImageTask = Task {
             image = await NetworkManager.shared.downloadImage(from: url)?.withRenderingMode(.alwaysOriginal) ?? placeholderImage
+            tintColor = .systemGray
         }
     }
     
     func setDefault() {
-        image = nil
         image = placeholderImage
         tintColor = .systemGray
     }
