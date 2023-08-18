@@ -12,7 +12,7 @@ class RecordCell: UICollectionViewCell {
     static let identifier = "RecordCell"
     
     // MARK: - Variables
-    private(set) var record: LibraryArtist!
+    private(set) var record: MTArtist!
     
     // MARK: - UI Components
     private let recordImage: UIImageView = {
@@ -46,7 +46,7 @@ class RecordCell: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    public func configure(with record: LibraryArtist) {
+    public func configure(with record: MTArtist) {
         self.record = record
         // set the remaining labels here
     }

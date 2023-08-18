@@ -1,5 +1,5 @@
 //
-//  ArtistsListVC.swift
+//  SavedArtistsVC.swift
 //  MusicTrail
 //
 //  Created by Davy Chuon on 7/18/23.
@@ -10,8 +10,8 @@ import UIKit
 class SavedArtistsVC: UIViewController {
     
     // MARK: - Variables
-    private var artists: [LibraryArtist] = []
-    var savedArtists: [LibraryArtist] = []
+    private var savedArtists: [MTArtist] = []
+    private let musicArtistRepo: MusicArtistRepo = MusicArtistRepo()
 
     // MARK: - UI Components
     private let tableView: UITableView = {
@@ -21,21 +21,25 @@ class SavedArtistsVC: UIViewController {
         return tv
     }()
     
+    
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemPink
         
+        savedArtists = musicArtistRepo.fetchSavedArtists()
         setupUI()
         setupNavBar()
         tableView.delegate = self
         tableView.dataSource = self
     }
     
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         updateUI()
     }
+    
     
     // MARK: - Setup UI
     func setupUI() {
@@ -50,13 +54,14 @@ class SavedArtistsVC: UIViewController {
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -20),
         ])
-        
     }
+    
     
     func setupNavBar() {
         navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addButtonTapped))
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .bookmarks, target: self, action: #selector(libraryButtonTapped))
     }
+    
     
     func updateUI() {
         if !savedArtists.isEmpty {
@@ -69,8 +74,13 @@ class SavedArtistsVC: UIViewController {
         }
     }
     
+    
+    // MARK: - Methods
     @objc func libraryButtonTapped() {
         let vcToPresent = LibraryArtistsVC()
+        vcToPresent.delegate = self
+        vcToPresent.savedArtists = self.savedArtists
+        
         let navController = UINavigationController(rootViewController: vcToPresent)
         navController.modalPresentationStyle = .fullScreen
         present(navController, animated: true)
@@ -96,6 +106,7 @@ class SavedArtistsVC: UIViewController {
         present(ac, animated: true)
     }
     
+    
     func addNewArtist(_ artistName: String) {
         Task {
             do {
@@ -105,13 +116,21 @@ class SavedArtistsVC: UIViewController {
                     self?.tableView.reloadData()
                 }
             } catch {
-                print("ERROR!!!!!!!!!!!")
+                print("ERROR!")
             }
         }
+    }
+    
+    
+    func deleteArtist(_ index: IndexPath) {
+        let artistToDelete = savedArtists.remove(at: index.row)
+        self.tableView.deleteRows(at: [index], with: .fade)
+        musicArtistRepo.unsaveArtist(artistToDelete)
     }
 }
 
 
+// MARK: - UITableView protocols
 extension SavedArtistsVC: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -129,5 +148,28 @@ extension SavedArtistsVC: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 84.0
+    }
+    
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        
+        let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { [weak self] (_, _, completionHandler) in
+            guard let self = self else { return }
+            
+            self.deleteArtist(indexPath)
+            completionHandler(true)
+        }
+        
+        let config = UISwipeActionsConfiguration(actions: [deleteAction])
+        return config
+    }
+}
+
+
+// MARK: - LibraryArtistVC protocols
+extension SavedArtistsVC: LibraryArtistVCDelegate {
+    func importSavedArtists(_ newArtists: [MTArtist]) {
+        savedArtists.append(contentsOf: newArtists)
+        musicArtistRepo.saveLibraryArtists(newArtists)
+        updateUI()
     }
 }

@@ -7,12 +7,20 @@
 
 import UIKit
 
+protocol LibraryArtistVCDelegate: AnyObject {
+    func importSavedArtists(_ newArtists: [MTArtist])
+}
+
 class LibraryArtistsVC: UIViewController {
     
     // MARK: - Variables
-    var libraryArtists: [LibraryArtist] = []
-    var filteredArtists: [LibraryArtist] = []
+    var libraryArtists: [MTArtist] = []
+    var filteredArtists: [MTArtist] = []
+    var selectedArtists: [MTArtist] = []
+    var savedArtists: [MTArtist] = []
     var isSearching: Bool = false
+    
+    weak var delegate: LibraryArtistVCDelegate?
     
     // MARK: - UI Components
     let tableView = UITableView()
@@ -20,7 +28,7 @@ class LibraryArtistsVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundColor = .systemRed
+//        view.backgroundColor = .systemRed
         
         setupNavBar()
         // setup tableview
@@ -32,11 +40,13 @@ class LibraryArtistsVC: UIViewController {
         super.viewWillAppear(animated)
         // setup artists data
         getLibraryArtists()
-        
     }
     
     private func setupNavBar() {
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Back", style: .plain, target: self, action: #selector(backButtonTapped))
+        
+        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Import", style: .plain, target: self, action: #selector(importButtonTapped))
+        navigationItem.rightBarButtonItem?.isEnabled = false
     }
     
     private func configureTableView() {
@@ -65,12 +75,16 @@ class LibraryArtistsVC: UIViewController {
         dismiss(animated: true)
     }
     
+    @objc private func importButtonTapped() {
+        delegate?.importSavedArtists(selectedArtists)
+        dismiss(animated: true)
+    }
+    
     private func getLibraryArtists() {
         Task {
             do {
-                libraryArtists = try await MusicKitManager.shared.fetchLibraryArtists()
+                libraryArtists = try await MusicKitManager.shared.fetchLibraryArtists(savedArtists)
                 filteredArtists = libraryArtists
-                
                 updateData()
             } catch {
                 print("ERROR!!!!!!!!!!!")
@@ -86,6 +100,26 @@ class LibraryArtistsVC: UIViewController {
     }
     
     
+    private func updateLocalTracked(_ index: Int) {
+        filteredArtists[index].isTracked.toggle()
+        if let idxMatch = libraryArtists.firstIndex(where: {$0.name.contains(filteredArtists[index].name)}) {
+            libraryArtists[idxMatch].isTracked = filteredArtists[index].isTracked
+        }
+        
+        if filteredArtists[index].isTracked {
+            selectedArtists.append(filteredArtists[index])
+        } else {
+            selectedArtists.removeAll(where: {$0.name == filteredArtists[index].name})
+        }
+    }
+    
+    private func updateSavedStatus() {
+        if !selectedArtists.isEmpty {
+            navigationItem.rightBarButtonItem?.isEnabled = true
+        } else {
+            navigationItem.rightBarButtonItem?.isEnabled = false
+        }
+    }
 }
 
 
@@ -104,13 +138,14 @@ extension LibraryArtistsVC: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        filteredArtists[indexPath.row].isSaved.toggle()
+        // check logic here
+        updateLocalTracked(indexPath.row)
+        updateSavedStatus()
+
         DispatchQueue.main.async {
             self.tableView.reloadRows(at: [indexPath], with: .automatic)
         }
     }
-    
-    
 }
 
 extension LibraryArtistsVC: UISearchResultsUpdating {
@@ -129,6 +164,5 @@ extension LibraryArtistsVC: UISearchResultsUpdating {
             $0.name.lowercased().contains(filter.lowercased())
         }
         updateData()
-        
     }
 }

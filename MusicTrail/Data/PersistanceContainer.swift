@@ -9,13 +9,15 @@ import CoreData
 import Foundation
 
 class PersistanceContainer {
-    let container: NSPersistentContainer
+    private let container: NSPersistentContainer
+    let viewContext: NSManagedObjectContext
     let backgroundContext: NSManagedObjectContext
     static let shared = PersistanceContainer()
     
     init() {
         self.container = NSPersistentContainer(name: "MusicTrail")
         self.backgroundContext = container.newBackgroundContext()
+        self.viewContext = container.viewContext
         
         container.loadPersistentStores { (description, error) in
             if let error = error as NSError? {

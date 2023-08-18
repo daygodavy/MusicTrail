@@ -12,7 +12,7 @@ class ArtistCell: UITableViewCell {
     static let identifier = "ArtistCell"
     
     // MARK: - Variables
-    private(set) var artist: LibraryArtist!
+    private(set) var artist: MTArtist!
     
     // MARK: - UI Components
     private let artistImage = ArtistImageView(frame: .zero)
@@ -45,12 +45,12 @@ class ArtistCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    public func configure(with artist: LibraryArtist) {
+    public func configure(with artist: MTArtist) {
 //        self.artistImage.setDefault()
         if let url = artist.imageUrl {
             self.artistImage.downloadArtistImage(url, artist: artist.name)
         }
-        if artist.isSaved {
+        if artist.isTracked {
             checkImage.isHidden = false
         } else {
             checkImage.isHidden = true

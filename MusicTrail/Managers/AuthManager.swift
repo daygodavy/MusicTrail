@@ -8,9 +8,9 @@
 import MusicKit
 import UIKit
 
-class LoginManager {
+class AuthManager {
     
-    static let shared = LoginManager()
+    static let shared = AuthManager()
     
     func checkAuthorizationStatus() async -> Bool {
         let status = await MusicAuthorization.request()

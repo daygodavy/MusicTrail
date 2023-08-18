@@ -16,8 +16,8 @@ class MusicKitManager {
 //    var allArtists: [LibraryArtist] = []
     private init() {}
     
-    func fetchMockData(_ name: String) async throws -> [LibraryArtist] {
-        var allArtists: [LibraryArtist] = []
+    func fetchMockData(_ name: String) async throws -> [MTArtist] {
+        var allArtists: [MTArtist] = []
         
         if #available(iOS 16.0, *) {
             var request = MusicCatalogSearchRequest(term: name, types: [Artist.self])
@@ -31,7 +31,7 @@ class MusicKitManager {
                 
                 var imageUrl = artist.artwork?.url(width: 168, height: 168)
                 
-                let person = LibraryArtist(name: artist.name, id: artist.id, imageUrl: imageUrl)
+                let person = MTArtist(name: artist.name, id: artist.id, imageUrl: imageUrl)
                 allArtists.append(person)
             }
         } else {
@@ -42,9 +42,9 @@ class MusicKitManager {
     }
     
 
-    func fetchNewArtist(_ name: String) async throws -> LibraryArtist {
+    func fetchNewArtist(_ name: String) async throws -> MTArtist {
         if #available(iOS 16.0, *) {
-            var allArtists: [LibraryArtist] = []
+            var allArtists: [MTArtist] = []
             
             var request = MusicCatalogSearchRequest(term: name, types: [Artist.self])
             request.limit = 1
@@ -59,7 +59,7 @@ class MusicKitManager {
             guard let name = artistData?.name,
                   let id = artistData?.id,
                   let url = artworkUrl else { fatalError() }
-            var artist: LibraryArtist = LibraryArtist(name: name, id: id, imageUrl: url)
+            var artist: MTArtist = MTArtist(name: name, id: id, imageUrl: url)
             
             return artist
             
@@ -71,20 +71,23 @@ class MusicKitManager {
     }
 
 
-    func fetchLibraryArtists() async throws -> [LibraryArtist] {
-        var allArtists: [LibraryArtist] = []
+    func fetchLibraryArtists(_ savedArtists: [MTArtist]) async throws -> [MTArtist] {
+        var allArtists: [MTArtist] = []
         
         if #available(iOS 16.0, *) {
             var request = MusicLibraryRequest<Artist>()
             
 //            request.limit = 20
             request.sort(by: \.name, ascending: true)
+            
             let response = try await request.response()
             
             for artist in response.items {
                 
                 // Omit artist objects that comprise of multiple artists
-                if artist.name.contains(",") || artist.name.contains("&") {
+                if artist.name.contains(",") ||
+                    artist.name.contains("&") ||
+                    savedArtists.contains(where: {$0.name == artist.name}) {
                     continue
                 }
                 
@@ -95,7 +98,7 @@ class MusicKitManager {
                     imageUrl = libraryUrl.formatToCatalogArtworkURL()
                 }
                 
-                let person = LibraryArtist(name: artist.name, id: artist.id, imageUrl: imageUrl)
+                let person = MTArtist(name: artist.name, id: artist.id, imageUrl: imageUrl)
                 allArtists.append(person)
             }
             
@@ -108,7 +111,7 @@ class MusicKitManager {
 
 
     func searchAppleMusic() async throws {
-        var allArtists: [LibraryArtist] = []
+        var allArtists: [MTArtist] = []
         
         if #available(iOS 16.0, *) {
             var libraryRequest = MusicLibraryRequest<Artist>()
@@ -120,7 +123,7 @@ class MusicKitManager {
             
             for artist in response.items {
                 print(artist)
-                let person = LibraryArtist(name: artist.name, id: artist.id, imageUrl: artist.url)
+                let person = MTArtist(name: artist.name, id: artist.id, imageUrl: artist.url)
                 allArtists.append(person)
             }
             print(allArtists)

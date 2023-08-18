@@ -9,11 +9,11 @@ import CoreData
 import Foundation
 
 class CoreDataRepo {
-    private let context = PersistanceContainer.shared.container.viewContext
+    private let container = PersistanceContainer.shared
     
-    func fetch<M: NSManagedObject>(_ type: M.Type, predicate: NSPredicate?=nil, sort: NSSortDescriptor?=nil) -> [M]? {
+    func fetch<M: NSManagedObject>(_ type: M.Type, predicate: NSPredicate?=nil, sort: NSSortDescriptor?=nil) -> [M] {
         
-        var fetched: [M]?
+        var fetched: [M]
         let entity = String(describing: type)
         let request = NSFetchRequest<M>(entityName: entity)
         
@@ -21,12 +21,26 @@ class CoreDataRepo {
         request.sortDescriptors = [sort] as? [NSSortDescriptor]
         
         do {
-            fetched = try context.fetch(request)
+            fetched = try container.viewContext.fetch(request)
+            return fetched
         } catch {
             print("Error during fetch: \(error)")
         }
         
-        return fetched
+        return []
+    }
+    
+    func save() {
+        container.saveContext()
+    }
+    
+    func getContext() -> NSManagedObjectContext {
+        return container.viewContext
+    }
+    
+    func delete(_ entity: NSManagedObject) {
+        container.viewContext.delete(entity)
+        save()
     }
     
 //    func add<M: NSManagedObject>(_ type: M.Type) -> M? {

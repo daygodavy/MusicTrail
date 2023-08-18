@@ -33,12 +33,12 @@ class IntroAuthVC: UIViewController {
         
         // request access to user's music data
         Task {
-            permissionStatus = await LoginManager.shared.checkAuthorizationStatus()
+            permissionStatus = await AuthManager.shared.checkAuthorizationStatus()
             print("permissionStatus: \(permissionStatus)")
             
             if permissionStatus {
                 // confirm apple music subscription
-                appleMusicStatus = await LoginManager.shared.checkAppleMusicStatus()
+                appleMusicStatus = await AuthManager.shared.checkAppleMusicStatus()
                 
                 if appleMusicStatus {
                     // both confirmed -> continue
