@@ -10,10 +10,11 @@
 		5B28BBAB2A90002700300C8A /* MusicArtistRepo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B28BBAA2A90002700300C8A /* MusicArtistRepo.swift */; };
 		5B28BBAE2A900EDF00300C8A /* MusicArtist+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B28BBAC2A900EDF00300C8A /* MusicArtist+CoreDataClass.swift */; };
 		5B28BBAF2A900EDF00300C8A /* MusicArtist+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B28BBAD2A900EDF00300C8A /* MusicArtist+CoreDataProperties.swift */; };
+		5B28BBB22A93F74900300C8A /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B28BBB12A93F74900300C8A /* Constants.swift */; };
 		5B5B68CD2A62089F00EA3D9B /* Artist.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5B68CC2A62089F00EA3D9B /* Artist.swift */; };
 		5B5B68CF2A6231AE00EA3D9B /* MusicKitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5B68CE2A6231AE00EA3D9B /* MusicKitManager.swift */; };
 		5B5B68D72A65E6A000EA3D9B /* RecordCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5B68D62A65E6A000EA3D9B /* RecordCell.swift */; };
-		5B5B68D92A65ECBC00EA3D9B /* ArtistCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5B68D82A65ECBC00EA3D9B /* ArtistCell.swift */; };
+		5B5B68D92A65ECBC00EA3D9B /* ArtistTVCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5B68D82A65ECBC00EA3D9B /* ArtistTVCell.swift */; };
 		5B5B68DB2A673A8800EA3D9B /* NewMusicVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5B68DA2A673A8800EA3D9B /* NewMusicVC.swift */; };
 		5B5B68DD2A673AA500EA3D9B /* SavedArtistsVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5B68DC2A673AA500EA3D9B /* SavedArtistsVC.swift */; };
 		5B5B68DF2A673B3000EA3D9B /* MTTabBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5B68DE2A673B3000EA3D9B /* MTTabBarController.swift */; };
@@ -59,10 +60,11 @@
 		5B28BBAA2A90002700300C8A /* MusicArtistRepo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicArtistRepo.swift; sourceTree = "<group>"; };
 		5B28BBAC2A900EDF00300C8A /* MusicArtist+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MusicArtist+CoreDataClass.swift"; sourceTree = "<group>"; };
 		5B28BBAD2A900EDF00300C8A /* MusicArtist+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MusicArtist+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		5B28BBB12A93F74900300C8A /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		5B5B68CC2A62089F00EA3D9B /* Artist.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Artist.swift; sourceTree = "<group>"; };
 		5B5B68CE2A6231AE00EA3D9B /* MusicKitManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicKitManager.swift; sourceTree = "<group>"; };
 		5B5B68D62A65E6A000EA3D9B /* RecordCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordCell.swift; sourceTree = "<group>"; };
-		5B5B68D82A65ECBC00EA3D9B /* ArtistCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtistCell.swift; sourceTree = "<group>"; };
+		5B5B68D82A65ECBC00EA3D9B /* ArtistTVCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtistTVCell.swift; sourceTree = "<group>"; };
 		5B5B68DA2A673A8800EA3D9B /* NewMusicVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewMusicVC.swift; sourceTree = "<group>"; };
 		5B5B68DC2A673AA500EA3D9B /* SavedArtistsVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SavedArtistsVC.swift; sourceTree = "<group>"; };
 		5B5B68DE2A673B3000EA3D9B /* MTTabBarController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MTTabBarController.swift; sourceTree = "<group>"; };
@@ -116,6 +118,14 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		5B28BBB02A93F73E00300C8A /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				5B28BBB12A93F74900300C8A /* Constants.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
 		5B5B68D02A65E2FB00EA3D9B /* Models */ = {
 			isa = PBXGroup;
 			children = (
@@ -130,20 +140,13 @@
 			isa = PBXGroup;
 			children = (
 				5B5B68D62A65E6A000EA3D9B /* RecordCell.swift */,
-				5B5B68D82A65ECBC00EA3D9B /* ArtistCell.swift */,
+				5B5B68D82A65ECBC00EA3D9B /* ArtistTVCell.swift */,
 				5B5B68E12A686C5F00EA3D9B /* ArtistImageView.swift */,
 				5B5B68E92A69AEC400EA3D9B /* MTTitleLabel.swift */,
 				5B5B68EB2A69AF8200EA3D9B /* MTBodyLabel.swift */,
 				5B5B68ED2A69B09700EA3D9B /* MTButton.swift */,
 			);
 			path = Views;
-			sourceTree = "<group>";
-		};
-		5B5B68D22A65E30C00EA3D9B /* ViewModels */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = ViewModels;
 			sourceTree = "<group>";
 		};
 		5B5B68D32A65E31300EA3D9B /* ViewControllers */ = {
@@ -220,12 +223,12 @@
 		5B920A272A5E17AC00464A8C /* MusicTrail */ = {
 			isa = PBXGroup;
 			children = (
+				5B28BBB02A93F73E00300C8A /* Utilities */,
 				5B5B69602A785AA900EA3D9B /* Data */,
 				5B5B68E02A68621A00EA3D9B /* Extensions */,
 				5B5B68D52A65E34500EA3D9B /* Support */,
 				5B5B68D42A65E32B00EA3D9B /* Managers */,
 				5B5B68D32A65E31300EA3D9B /* ViewControllers */,
-				5B5B68D22A65E30C00EA3D9B /* ViewModels */,
 				5B5B68D12A65E30400EA3D9B /* Views */,
 				5B5B68D02A65E2FB00EA3D9B /* Models */,
 				5B920A362A5E17AD00464A8C /* Info.plist */,
@@ -381,6 +384,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5B28BBB22A93F74900300C8A /* Constants.swift in Sources */,
 				5B5B695C2A78449700EA3D9B /* String+Ext.swift in Sources */,
 				5B5B69622A785ABA00EA3D9B /* PersistanceContainer.swift in Sources */,
 				5B5B68E42A686C9B00EA3D9B /* NetworkManager.swift in Sources */,
@@ -391,7 +395,7 @@
 				5B5B68F02A69D3EE00EA3D9B /* AuthManager.swift in Sources */,
 				5B5B68EA2A69AEC400EA3D9B /* MTTitleLabel.swift in Sources */,
 				5B5B68E82A69AE1900EA3D9B /* IntroAuthVC.swift in Sources */,
-				5B5B68D92A65ECBC00EA3D9B /* ArtistCell.swift in Sources */,
+				5B5B68D92A65ECBC00EA3D9B /* ArtistTVCell.swift in Sources */,
 				5B5B695F2A785A3A00EA3D9B /* MusicTrail.xcdatamodeld in Sources */,
 				5B5B68DF2A673B3000EA3D9B /* MTTabBarController.swift in Sources */,
 				5B28BBAE2A900EDF00300C8A /* MusicArtist+CoreDataClass.swift in Sources */,
