@@ -17,7 +17,7 @@ class SavedArtistsVC: UIViewController {
     private let tableView: UITableView = {
         let tv = UITableView()
         tv.backgroundColor = .systemBackground
-        tv.register(ArtistCell.self, forCellReuseIdentifier: ArtistCell.identifier)
+        tv.register(ArtistTVCell.self, forCellReuseIdentifier: ArtistTVCell.identifier)
         return tv
     }()
     
@@ -138,10 +138,10 @@ extension SavedArtistsVC: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: ArtistCell.identifier, for: indexPath) as? ArtistCell else { fatalError("Unable to dequeue ArtistCell in ViewController") }
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: ArtistTVCell.identifier, for: indexPath) as? ArtistTVCell else { fatalError("Unable to dequeue ArtistCell in ViewController") }
         
         let artist = savedArtists[indexPath.row]
-        cell.configure(with: artist)
+        cell.configure(with: artist, state: .saved)
         
         return cell
     }

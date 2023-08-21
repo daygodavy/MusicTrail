@@ -5,9 +5,15 @@
 //  Created by Davy Chuon on 7/17/23.
 //
 
+
 import UIKit
 
-class ArtistCell: UITableViewCell {
+enum ArtistViewState {
+    case library
+    case saved
+}
+
+class ArtistTVCell: UITableViewCell {
 
     static let identifier = "ArtistCell"
     
@@ -16,7 +22,6 @@ class ArtistCell: UITableViewCell {
     
     // MARK: - UI Components
     private let artistImage = ArtistImageView(frame: .zero)
-    
     
     private var checkImage: UIImageView = {
         let imageView = UIImageView()
@@ -45,17 +50,22 @@ class ArtistCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    public func configure(with artist: MTArtist) {
+    public func configure(with artist: MTArtist, state: ArtistViewState) {
         if let url = artist.imageUrl {
             self.artistImage.downloadArtistImage(url, artist: artist.name)
         }
-        if artist.isTracked {
+        
+        self.artist = artist
+        self.nameLabel.text = artist.name
+        updateCheck(state)
+    }
+    
+    private func updateCheck(_ state: ArtistViewState) {
+        if artist.isTracked && state == .library {
             checkImage.isHidden = false
         } else {
             checkImage.isHidden = true
         }
-        self.artist = artist
-        self.nameLabel.text = artist.name
     }
     
     
@@ -78,9 +88,7 @@ class ArtistCell: UITableViewCell {
         checkImage.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-//            artistImage.topAnchor.constraint(equalTo: self.topAnchor),
             artistImage.leadingAnchor.constraint(equalTo: self.layoutMarginsGuide.leadingAnchor),
-//            artistImage.bottomAnchor.constraint(equalTo: self.bottomAnchor),
             artistImage.centerYAnchor.constraint(equalTo: centerYAnchor),
             artistImage.heightAnchor.constraint(equalToConstant: 84),
             artistImage.widthAnchor.constraint(equalToConstant: 84),

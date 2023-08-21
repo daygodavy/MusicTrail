@@ -56,7 +56,7 @@ class LibraryArtistsVC: UIViewController {
         tableView.delegate = self
         tableView.dataSource = self
         
-        tableView.register(ArtistCell.self, forCellReuseIdentifier: ArtistCell.identifier)
+        tableView.register(ArtistTVCell.self, forCellReuseIdentifier: ArtistTVCell.identifier)
     }
     
     private func configureSearchBar() {
@@ -129,10 +129,10 @@ extension LibraryArtistsVC: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: ArtistCell.identifier, for: indexPath) as? ArtistCell else { fatalError("Unable to dequeue ArtistCell in ViewController") }
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: ArtistTVCell.identifier, for: indexPath) as? ArtistTVCell else { fatalError("Unable to dequeue ArtistCell in ViewController") }
         
         let artist = filteredArtists[indexPath.row]
-        cell.configure(with: artist)
+        cell.configure(with: artist, state: .library)
         
         return cell
     }
