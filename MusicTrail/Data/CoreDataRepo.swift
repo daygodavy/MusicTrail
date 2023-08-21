@@ -42,9 +42,5 @@ class CoreDataRepo {
         container.viewContext.delete(entity)
         save()
     }
-    
-//    func add<M: NSManagedObject>(_ type: M.Type) -> M? {
-//        return nil
-//    }
 }
 

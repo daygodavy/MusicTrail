@@ -46,7 +46,6 @@ class ArtistCell: UITableViewCell {
     }
     
     public func configure(with artist: MTArtist) {
-//        self.artistImage.setDefault()
         if let url = artist.imageUrl {
             self.artistImage.downloadArtistImage(url, artist: artist.name)
         }
@@ -66,7 +65,6 @@ class ArtistCell: UITableViewCell {
         nameLabel.text = nil
         artistImage.image = nil
     }
-    
     
     
     // MARK: - UI Setup
@@ -96,11 +94,6 @@ class ArtistCell: UITableViewCell {
             checkImage.trailingAnchor.constraint(equalTo: self.layoutMarginsGuide.trailingAnchor),
             checkImage.heightAnchor.constraint(equalToConstant: 30),
             checkImage.widthAnchor.constraint(equalToConstant: 30)
-            
         ])
     }
-    
-    
-    
-
 }
