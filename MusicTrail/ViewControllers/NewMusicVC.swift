@@ -8,22 +8,33 @@
 import UIKit
 
 class NewMusicVC: UIViewController {
+    
+    // MARK: - Variables
+    
+    // MARK: - UI Components
 
+    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemTeal
-        // Do any additional setup after loading the view.
+        
+        // TODO: - fetch new music
+        fetchNewRecords()
     }
     
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+    func fetchNewRecords() {
+        Task {
+            do {
+                try await MusicKitManager.shared.fetchNewMusic()
+            } catch {
+                print("ERROR!")
+            }
+        }
     }
-    */
-
+    
+    
+    
+    // MARK: - UI Setup
+    
+    // MARK: - Methods
 }

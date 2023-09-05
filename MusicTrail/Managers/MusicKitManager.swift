@@ -61,6 +61,54 @@ class MusicKitManager {
                   let url = artworkUrl else { fatalError() }
             var artist: MTArtist = MTArtist(name: name, id: id, imageUrl: url)
             
+            guard let finalArtist = artistData else { fatalError() }
+//            let allAlbums = try await finalArtist.with(
+//                [
+//                    .albums
+//                ],
+//                preferredSource: .catalog
+//            )
+            
+
+//            let test = try await finalArtist.with([.albums]).albums
+//
+//            print("!!!!!!!!!!!!!!")
+//            print(test)
+//            print(test?.count)
+            
+            
+            var musicReq = MusicCatalogResourceRequest<Artist>(matching: \.id, equalTo: finalArtist.id)
+            musicReq.properties = [.albums, .appearsOnAlbums, .singles, .compilationAlbums, .featuredAlbums]
+
+            let musicRep = try await musicReq.response()
+            let testArtist = musicRep.items.first
+            
+//            var checker = finalArtist.albums ?? []
+            var checker = testArtist?.albums ?? []
+            var batchIdx = 0
+            var totalAlbums: [String] = []
+            print("batch number \(batchIdx + 1) => \(checker.count) albums, hasNextBatch: \(checker.hasNextBatch)")
+            repeat {
+                for record in checker {
+                    totalAlbums.append("\(record.artistName): \(record.title)")
+                }
+                if let nextBatchOfAlbums = try await checker.nextBatch() {
+                    checker = nextBatchOfAlbums
+                    batchIdx += 1
+                    print("batch number \(batchIdx + 1) => \(checker.count) albums, hasNextBatch: \(checker.hasNextBatch)")
+                } else {
+                    print("no more batches")
+                    break
+                }
+                
+            } while checker.hasNextBatch
+            print(totalAlbums)
+            print(totalAlbums.count)
+            
+            
+            
+            
+            
             return artist
             
         } else {
@@ -138,15 +186,67 @@ class MusicKitManager {
             // Fallback on earlier versions
         }
     }
+
+    func fetchNewMusic() async throws {
+        if #available(iOS 16.0, *) {
+            var allArtists: [MTArtist] = []
+            
+            var request = MusicCatalogSearchRequest(term: "nocap", types: [Artist.self])
+            request.limit = 1
+            
+            let response = try await request.response()
+            
+            let artistData = response.artists.first
+            let artworkUrl = artistData?.artwork?.url(width: 168, height: 168)
+            guard let name = artistData?.name,
+                  let id = artistData?.id,
+                  let url = artworkUrl else { fatalError() }
+            var artist: MTArtist = MTArtist(name: name, id: id, imageUrl: url)
+            
+            guard let finalArtist = artistData else { fatalError() }
+            let allAlbums = try await finalArtist.with(
+                [
+                    .albums, // Y
+                    .appearsOnAlbums, // Y
+                    .compilationAlbums, // N
+                    .featuredAlbums, // N
+                    .topSongs
+                ],
+                preferredSource: .catalog
+            )
+
+            var checker = allAlbums.albums ?? []
+            var batchIdx = 0
+            var totalAlbums: [String] = []
+            print("batch number \(batchIdx + 1) => \(checker.count) albums, hasNextBatch: \(checker.hasNextBatch)")
+            repeat {
+                print("ADDING IN BATCH NUMBER \(batchIdx + 1)")
+                for record in checker {
+                    totalAlbums.append("\(record.artistName): \(record.title)")
+                }
+                print("BATCH NUMBER \(batchIdx + 1) ALBUM COUNT: \(totalAlbums.count)")
+                if let nextBatchOfAlbums = try await checker.nextBatch() {
+                    checker = nextBatchOfAlbums
+                    batchIdx += 1
+                    print("batch number \(batchIdx + 1) => \(checker.count) albums, hasNextBatch: \(checker.hasNextBatch)")
+                } else {
+                    print("no more batches")
+                    break
+                }
+                
+            } while checker.hasNextBatch
+            
+            for record in checker {
+                totalAlbums.append("\(record.artistName): \(record.title)")
+            }
+        
+            print(totalAlbums)
+            print(totalAlbums.count)
+               
+            
+        } else {
+            // Fallback on earlier versions
+        }
+    }
 }
 
-
-
-//            var testRequest = MusicCatalogSearchRequest(term: "nocap", types: [Song.self])
-//            let currentYear = Calendar.current.component(.year, from: Date())
-//            let startDate = DateComponents(calendar: .current, year: currentYear, month: 1, day: 1).date!
-//            let dateFormatter = ISO8601DateFormatter()
-//            testRequest.filterItems { item in
-//                guard let releaseDate = item.releaseDate else { return false }
-//                return releaseDate >= dateFormatter.string(from: startDate)
-//            }

@@ -25,7 +25,6 @@ class SavedArtistsVC: UIViewController {
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .systemPink
         
         savedArtists = musicArtistRepo.fetchSavedArtists()
         setupUI()
@@ -49,10 +48,10 @@ class SavedArtistsVC: UIViewController {
         tableView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            tableView.topAnchor.constraint(equalTo: view.topAnchor, constant: 100),
+            tableView.topAnchor.constraint(equalTo: view.topAnchor),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -20),
+            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
     }
     
@@ -111,10 +110,10 @@ class SavedArtistsVC: UIViewController {
         Task {
             do {
                 let newArtist = try await MusicKitManager.shared.fetchNewArtist(artistName)
-                savedArtists.append(newArtist)
-                DispatchQueue.main.async { [weak self] in
-                    self?.tableView.reloadData()
-                }
+//                savedArtists.append(newArtist)
+//                DispatchQueue.main.async { [weak self] in
+//                    self?.tableView.reloadData()
+//                }
             } catch {
                 print("ERROR!")
             }

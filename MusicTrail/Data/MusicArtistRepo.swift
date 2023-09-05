@@ -47,7 +47,6 @@ class MusicArtistRepo {
             guard let artistId = artist.artistId, let artistName = artist.name else { continue }
             
             let currentArtist = MTArtist(name: artistName, id: MusicItemID(artistId), imageUrl: artist.imageUrl)
-            
             fetchedArtists.append(currentArtist)
         }
         
