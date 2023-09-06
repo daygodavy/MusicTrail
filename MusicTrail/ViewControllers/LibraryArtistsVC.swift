@@ -99,7 +99,6 @@ class LibraryArtistsVC: UIViewController {
         }
     }
     
-    
     private func updateLocalTracked(_ index: Int) {
         filteredArtists[index].isTracked.toggle()
         if let idxMatch = libraryArtists.firstIndex(where: {$0.name.contains(filteredArtists[index].name)}) {

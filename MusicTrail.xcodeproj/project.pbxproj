@@ -37,6 +37,8 @@
 		5B920A402A5E17AE00464A8C /* MusicTrailTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B920A3F2A5E17AE00464A8C /* MusicTrailTests.swift */; };
 		5B920A4A2A5E17AE00464A8C /* MusicTrailUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B920A492A5E17AE00464A8C /* MusicTrailUITests.swift */; };
 		5B920A4C2A5E17AE00464A8C /* MusicTrailUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B920A4B2A5E17AE00464A8C /* MusicTrailUITestsLaunchTests.swift */; };
+		5BE3E2BA2AA7DF1000C825AB /* ArtistCVCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BE3E2B92AA7DF1000C825AB /* ArtistCVCell.swift */; };
+		5BE3E2BC2AA9017800C825AB /* UIHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BE3E2BB2AA9017800C825AB /* UIHelper.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -91,6 +93,8 @@
 		5B920A452A5E17AE00464A8C /* MusicTrailUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MusicTrailUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		5B920A492A5E17AE00464A8C /* MusicTrailUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicTrailUITests.swift; sourceTree = "<group>"; };
 		5B920A4B2A5E17AE00464A8C /* MusicTrailUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicTrailUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		5BE3E2B92AA7DF1000C825AB /* ArtistCVCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtistCVCell.swift; sourceTree = "<group>"; };
+		5BE3E2BB2AA9017800C825AB /* UIHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIHelper.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -122,6 +126,7 @@
 			isa = PBXGroup;
 			children = (
 				5B28BBB12A93F74900300C8A /* Constants.swift */,
+				5BE3E2BB2AA9017800C825AB /* UIHelper.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -145,6 +150,7 @@
 				5B5B68E92A69AEC400EA3D9B /* MTTitleLabel.swift */,
 				5B5B68EB2A69AF8200EA3D9B /* MTBodyLabel.swift */,
 				5B5B68ED2A69B09700EA3D9B /* MTButton.swift */,
+				5BE3E2B92AA7DF1000C825AB /* ArtistCVCell.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -389,12 +395,14 @@
 				5B5B69622A785ABA00EA3D9B /* PersistanceContainer.swift in Sources */,
 				5B5B68E42A686C9B00EA3D9B /* NetworkManager.swift in Sources */,
 				5B5B68E62A687DF300EA3D9B /* LibraryArtistsVC.swift in Sources */,
+				5BE3E2BC2AA9017800C825AB /* UIHelper.swift in Sources */,
 				5B5B68DD2A673AA500EA3D9B /* SavedArtistsVC.swift in Sources */,
 				5B5B68CF2A6231AE00EA3D9B /* MusicKitManager.swift in Sources */,
 				5B28BBAB2A90002700300C8A /* MusicArtistRepo.swift in Sources */,
 				5B5B68F02A69D3EE00EA3D9B /* AuthManager.swift in Sources */,
 				5B5B68EA2A69AEC400EA3D9B /* MTTitleLabel.swift in Sources */,
 				5B5B68E82A69AE1900EA3D9B /* IntroAuthVC.swift in Sources */,
+				5BE3E2BA2AA7DF1000C825AB /* ArtistCVCell.swift in Sources */,
 				5B5B68D92A65ECBC00EA3D9B /* ArtistTVCell.swift in Sources */,
 				5B5B695F2A785A3A00EA3D9B /* MusicTrail.xcdatamodeld in Sources */,
 				5B5B68DF2A673B3000EA3D9B /* MTTabBarController.swift in Sources */,
