@@ -12,6 +12,8 @@ import UIKit
 class MusicKitManager {
     
     static let shared = MusicKitManager()
+    let imageWidth: Int = 336
+    let imageHeight: Int = 336
     
 //    var allArtists: [LibraryArtist] = []
     private init() {}
@@ -29,7 +31,7 @@ class MusicKitManager {
                 
                 // edge case: artist in library no longer exists in catalog
                 
-                var imageUrl = artist.artwork?.url(width: 168, height: 168)
+                var imageUrl = artist.artwork?.url(width: imageWidth, height: imageHeight)
                 
                 let person = MTArtist(name: artist.name, id: artist.id, imageUrl: imageUrl)
                 allArtists.append(person)
@@ -55,57 +57,16 @@ class MusicKitManager {
             let artistData = response.artists.first
     //        let artworkUrl = artistData?.artwork?.url(width: artistData?.artwork?.maximumWidth ?? 0, height: artistData?.artwork?.maximumHeight ?? 0)
             // TODO: - maxwidth/height = 2400
-            let artworkUrl = artistData?.artwork?.url(width: 168, height: 168)
+            let artworkUrl = artistData?.artwork?.url(width: imageWidth, height: imageHeight)
             guard let name = artistData?.name,
                   let id = artistData?.id,
                   let url = artworkUrl else { fatalError() }
             var artist: MTArtist = MTArtist(name: name, id: id, imageUrl: url)
             
+            print("CATALOG ID: \(name) - \(id)")
+            print("CATALOG ID RAWVAL: \(name) - \(id.rawValue)")
+            
             guard let finalArtist = artistData else { fatalError() }
-//            let allAlbums = try await finalArtist.with(
-//                [
-//                    .albums
-//                ],
-//                preferredSource: .catalog
-//            )
-            
-
-//            let test = try await finalArtist.with([.albums]).albums
-//
-//            print("!!!!!!!!!!!!!!")
-//            print(test)
-//            print(test?.count)
-            
-            
-            var musicReq = MusicCatalogResourceRequest<Artist>(matching: \.id, equalTo: finalArtist.id)
-            musicReq.properties = [.albums, .appearsOnAlbums, .singles, .compilationAlbums, .featuredAlbums]
-
-            let musicRep = try await musicReq.response()
-            let testArtist = musicRep.items.first
-            
-//            var checker = finalArtist.albums ?? []
-            var checker = testArtist?.albums ?? []
-            var batchIdx = 0
-            var totalAlbums: [String] = []
-            print("batch number \(batchIdx + 1) => \(checker.count) albums, hasNextBatch: \(checker.hasNextBatch)")
-            repeat {
-                for record in checker {
-                    totalAlbums.append("\(record.artistName): \(record.title)")
-                }
-                if let nextBatchOfAlbums = try await checker.nextBatch() {
-                    checker = nextBatchOfAlbums
-                    batchIdx += 1
-                    print("batch number \(batchIdx + 1) => \(checker.count) albums, hasNextBatch: \(checker.hasNextBatch)")
-                } else {
-                    print("no more batches")
-                    break
-                }
-                
-            } while checker.hasNextBatch
-            print(totalAlbums)
-            print(totalAlbums.count)
-            
-            
             
             
             
@@ -132,6 +93,11 @@ class MusicKitManager {
             
             for artist in response.items {
                 
+                if artist.name == "NoCap" {
+                    print("LIBRARY ID: \(artist.name) - \(artist.id)")
+                    print("LIBRARY ID RAWVALUE: \(artist.name) - \(artist.id.rawValue)")
+                }
+                
                 // Omit artist objects that comprise of multiple artists
                 if artist.name.contains(",") ||
                     artist.name.contains("&") ||
@@ -140,7 +106,7 @@ class MusicKitManager {
                 }
                 
                 // Convert artwork URL from library format to catalog format
-                var imageUrl = artist.artwork?.url(width: 168, height: 168)
+                var imageUrl = artist.artwork?.url(width: imageWidth, height: imageHeight)
                 
                 if let libraryUrl = imageUrl?.absoluteString {
                     imageUrl = libraryUrl.formatToCatalogArtworkURL()
@@ -197,7 +163,7 @@ class MusicKitManager {
             let response = try await request.response()
             
             let artistData = response.artists.first
-            let artworkUrl = artistData?.artwork?.url(width: 168, height: 168)
+            let artworkUrl = artistData?.artwork?.url(width: imageWidth, height: imageHeight)
             guard let name = artistData?.name,
                   let id = artistData?.id,
                   let url = artworkUrl else { fatalError() }

@@ -8,7 +8,7 @@
 import Foundation
 import MusicKit
 
-struct MTArtist: Codable {
+struct MTArtist: Codable, Hashable {
     let name: String
     let id: MusicItemID
     let imageUrl: URL?

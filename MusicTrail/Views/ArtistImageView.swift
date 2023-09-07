@@ -17,6 +17,7 @@ class ArtistImageView: UIImageView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         fetchImageTask = nil
+        configure()
     }
     
     required init?(coder: NSCoder) {
@@ -28,6 +29,10 @@ class ArtistImageView: UIImageView {
         clipsToBounds = true
         image = placeholderImage
         tintColor = .systemGray
+        
+        layer.borderWidth = 1
+        layer.borderColor = UIColor.systemGray5.cgColor
+        
         contentMode = .scaleAspectFit
         translatesAutoresizingMaskIntoConstraints = false
     }

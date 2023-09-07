@@ -37,6 +37,7 @@ class ArtistTVCell: UITableViewCell {
         titleLabel.textAlignment = .left
         titleLabel.font = .systemFont(ofSize: 20, weight: .semibold)
         titleLabel.text = "Error"
+        titleLabel.numberOfLines = 0
         return titleLabel
     }()
     
@@ -90,18 +91,18 @@ class ArtistTVCell: UITableViewCell {
         NSLayoutConstraint.activate([
             artistImage.leadingAnchor.constraint(equalTo: self.layoutMarginsGuide.leadingAnchor),
             artistImage.centerYAnchor.constraint(equalTo: centerYAnchor),
-            artistImage.heightAnchor.constraint(equalToConstant: 84),
-            artistImage.widthAnchor.constraint(equalToConstant: 84),
-            
-            nameLabel.topAnchor.constraint(equalTo: self.layoutMarginsGuide.topAnchor),
-            nameLabel.leadingAnchor.constraint(equalTo: artistImage.trailingAnchor, constant: 50),
-            nameLabel.trailingAnchor.constraint(equalTo: self.layoutMarginsGuide.trailingAnchor),
-            nameLabel.bottomAnchor.constraint(equalTo: self.layoutMarginsGuide.bottomAnchor),
+            artistImage.heightAnchor.constraint(equalToConstant: 80),
+            artistImage.widthAnchor.constraint(equalToConstant: 80),
             
             checkImage.centerYAnchor.constraint(equalTo: nameLabel.centerYAnchor),
-            checkImage.trailingAnchor.constraint(equalTo: self.layoutMarginsGuide.trailingAnchor),
+            checkImage.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -5),
             checkImage.heightAnchor.constraint(equalToConstant: 30),
-            checkImage.widthAnchor.constraint(equalToConstant: 30)
+            checkImage.widthAnchor.constraint(equalToConstant: 30),
+            
+            nameLabel.topAnchor.constraint(equalTo: self.layoutMarginsGuide.topAnchor),
+            nameLabel.leadingAnchor.constraint(equalTo: artistImage.trailingAnchor, constant: 30),
+            nameLabel.trailingAnchor.constraint(equalTo: checkImage.leadingAnchor, constant: -5),
+            nameLabel.bottomAnchor.constraint(equalTo: self.layoutMarginsGuide.bottomAnchor)
         ])
     }
 }

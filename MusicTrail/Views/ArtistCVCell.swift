@@ -19,9 +19,10 @@ class ArtistCVCell: UICollectionViewCell {
     private var nameLabel: UILabel = {
         let titleLabel = UILabel()
         titleLabel.textColor = .systemOrange
-        titleLabel.textAlignment = .left
-        titleLabel.font = .systemFont(ofSize: 14, weight: .semibold)
+        titleLabel.textAlignment = .center
+        titleLabel.font = .systemFont(ofSize: 14, weight: .bold)
         titleLabel.text = "Error"
+        titleLabel.numberOfLines = 0
         return titleLabel
     }()
     
@@ -51,11 +52,13 @@ class ArtistCVCell: UICollectionViewCell {
         artistImage.translatesAutoresizingMaskIntoConstraints = false
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
         
+        let padding: CGFloat = 6
+        
         NSLayoutConstraint.activate([
-            artistImage.topAnchor.constraint(equalTo: topAnchor),
-            artistImage.leadingAnchor.constraint(equalTo: leadingAnchor),
-            artistImage.trailingAnchor.constraint(equalTo: trailingAnchor),
-            artistImage.heightAnchor.constraint(equalToConstant: 84),
+            artistImage.topAnchor.constraint(equalTo: topAnchor, constant: padding),
+            artistImage.leadingAnchor.constraint(equalTo: leadingAnchor, constant: padding),
+            artistImage.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -padding),
+            artistImage.heightAnchor.constraint(equalTo: artistImage.widthAnchor),
             
             nameLabel.topAnchor.constraint(equalTo: artistImage.bottomAnchor),
             nameLabel.leadingAnchor.constraint(equalTo: leadingAnchor),

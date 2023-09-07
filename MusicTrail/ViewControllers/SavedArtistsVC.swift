@@ -9,69 +9,109 @@ import UIKit
 
 class SavedArtistsVC: UIViewController {
     
+    enum Section { case main }
+    
     // MARK: - Variables
     private var savedArtists: [MTArtist] = []
+    private var filteredArtists: [MTArtist] = []
     private let musicArtistRepo: MusicArtistRepo = MusicArtistRepo()
+    private var isEditMode: Bool = false
+    private var isSearching: Bool = false
 
     // MARK: - UI Components
-    private let tableView: UITableView = {
-        let tv = UITableView()
-        tv.backgroundColor = .systemBackground
-        tv.register(ArtistTVCell.self, forCellReuseIdentifier: ArtistTVCell.identifier)
-        return tv
-    }()
+    private var collectionView: UICollectionView!
+    private var dataSource: UICollectionViewDiffableDataSource<Section, MTArtist>!
     
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        savedArtists = musicArtistRepo.fetchSavedArtists()
-        setupUI()
+        getSavedArtists()
+        setupSearchController()
+        setupCollectionView()
+        setupDataSource()
         setupNavBar()
-        tableView.delegate = self
-        tableView.dataSource = self
     }
-    
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        updateUI()
+    }
+    
+    func getSavedArtists() {
+        savedArtists = musicArtistRepo.fetchSavedArtists()
+        updateCVUI(with: savedArtists)
+        
+        print("FETCHED SAVED ARTISTS:")
+        savedArtists.forEach { print($0.isTracked) }
     }
     
     
     // MARK: - Setup UI
-    func setupUI() {
-        view.backgroundColor = .systemBlue
-        view.addSubview(tableView)
+    private func setupNavBar() {
+        let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addButtonTapped))
         
-        tableView.translatesAutoresizingMaskIntoConstraints = false
+        let libraryButton = UIBarButtonItem(image: UIImage(systemName: "music.note.list"), style: .plain, target: self, action: #selector(libraryButtonTapped))
         
-        NSLayoutConstraint.activate([
-            tableView.topAnchor.constraint(equalTo: view.topAnchor),
-            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
-        ])
+        navigationItem.rightBarButtonItems = [addButton, libraryButton]
+        
+        navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Edit", style: .plain, target: self, action: #selector(editButtonTapped))
+    }
+    
+    @objc private func editButtonTapped() {
+//        toggleEditMode()
+    }
+    
+    private func setupSearchController() {
+        let searchController = UISearchController()
+        searchController.searchResultsUpdater = self
+        searchController.searchBar.placeholder = "Artist"
+        searchController.searchBar.image(for: .search, state: .normal)
+        searchController.obscuresBackgroundDuringPresentation = false
+        navigationItem.searchController = searchController
     }
     
     
-    func setupNavBar() {
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addButtonTapped))
-        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .bookmarks, target: self, action: #selector(libraryButtonTapped))
+    private func setupCollectionView() {
+        collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: UIHelper.createThreeColumnFlowLayout(in: view))
+        view.addSubview(collectionView)
+        collectionView.delegate = self
+        collectionView.backgroundColor = .systemBackground
+        collectionView.register(ArtistCVCell.self, forCellWithReuseIdentifier: ArtistCVCell.reuseID)
     }
     
+    private func setupDataSource() {
+        dataSource = UICollectionViewDiffableDataSource<Section, MTArtist>(collectionView: collectionView, cellProvider: { (collectionView, indexPath, artist) -> UICollectionViewCell? in
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ArtistCVCell.reuseID, for: indexPath) as! ArtistCVCell
+            
+            cell.set(artist: artist)
+            
+            cell.backgroundColor = UIColor.systemGray.withAlphaComponent(0.5)
+            cell.layer.cornerRadius = 5
+            
+            return cell
+        })
+    }
     
-    func updateUI() {
+    func updateCVUI(with artists: [MTArtist]) {
+        
         if !savedArtists.isEmpty {
-            Task {
-                DispatchQueue.main.async {
-                    self.tableView.reloadData()
-                    self.view.bringSubviewToFront(self.tableView)
-                }
-            }
+            updateData(on: savedArtists)
+        } else {
+            // TODO: - empty state
         }
     }
+    
+    func updateData(on artists: [MTArtist]) {
+        var snapshot = NSDiffableDataSourceSnapshot<Section, MTArtist>()
+        snapshot.appendSections([.main])
+        snapshot.appendItems(artists)
+        
+        DispatchQueue.main.async {
+            self.dataSource.apply(snapshot, animatingDifferences: true)
+        }
+    }
+    
     
     
     // MARK: - Methods
@@ -122,44 +162,54 @@ class SavedArtistsVC: UIViewController {
     
     
     func deleteArtist(_ index: IndexPath) {
-        let artistToDelete = savedArtists.remove(at: index.row)
-        self.tableView.deleteRows(at: [index], with: .fade)
+        let artistToDelete = savedArtists.remove(at: index.item)
+        updateData(on: savedArtists)
         musicArtistRepo.unsaveArtist(artistToDelete)
     }
+    
+
 }
 
 
-// MARK: - UITableView protocols
-extension SavedArtistsVC: UITableViewDelegate, UITableViewDataSource {
-    
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return savedArtists.count
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: ArtistTVCell.identifier, for: indexPath) as? ArtistTVCell else { fatalError("Unable to dequeue ArtistCell in ViewController") }
+// MARK: - UICollectionView protocols
+extension SavedArtistsVC: UICollectionViewDelegate {
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let currentArtists = isSearching ? filteredArtists : savedArtists
+        let selectedArtist = currentArtists[indexPath.item]
+        print(selectedArtist.name)
         
-        let artist = savedArtists[indexPath.row]
-        cell.configure(with: artist, state: .saved)
+//        let selectedCell = collectionView.cellForItem(at: indexPath) as! ArtistCVCell
+//        
+//        if selectedCell.isSelected {
+//            // Deselect the cell
+//            collectionView.deselectItem(at: indexPath, animated: true)
+//            selectedCell.isSelected = false
+//        } else {
+//            // Select the cell
+//            collectionView.selectItem(at: indexPath, animated: true, scrollPosition: [])
+//            selectedCell.isSelected = true
+//        }
         
-        return cell
+//        deleteArtist(indexPath)
     }
-    
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 84.0
-    }
-    
-    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        
-        let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { [weak self] (_, _, completionHandler) in
-            guard let self = self else { return }
-            
-            self.deleteArtist(indexPath)
-            completionHandler(true)
+}
+
+extension SavedArtistsVC: UISearchResultsUpdating {
+    func updateSearchResults(for searchController: UISearchController) {
+        guard let filter = searchController.searchBar.text, !filter.isEmpty else {
+            filteredArtists.removeAll()
+            updateData(on: savedArtists)
+            isSearching = false
+            return
         }
         
-        let config = UISwipeActionsConfiguration(actions: [deleteAction])
-        return config
+        isSearching = true
+        filteredArtists = savedArtists.filter {
+            $0.name.lowercased().contains(filter.lowercased())
+        }
+        updateData(on: filteredArtists)
+        
+        
     }
 }
 
@@ -169,6 +219,12 @@ extension SavedArtistsVC: LibraryArtistVCDelegate {
     func importSavedArtists(_ newArtists: [MTArtist]) {
         savedArtists.append(contentsOf: newArtists)
         musicArtistRepo.saveLibraryArtists(newArtists)
-        updateUI()
+        updateCVUI(with: savedArtists)
+//        updateUI()
+        
+        print("NEW ARTISTS:")
+        newArtists.forEach { print($0.isTracked) }
+        print("ALL ARTISTS:")
+        savedArtists.forEach { print($0.isTracked) }
     }
 }

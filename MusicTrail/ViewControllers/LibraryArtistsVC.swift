@@ -25,10 +25,9 @@ class LibraryArtistsVC: UIViewController {
     // MARK: - UI Components
     let tableView = UITableView()
 
+    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-//        view.backgroundColor = .systemRed
         
         setupNavBar()
         // setup tableview
@@ -41,6 +40,7 @@ class LibraryArtistsVC: UIViewController {
         // setup artists data
         getLibraryArtists()
     }
+    
     
     private func setupNavBar() {
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Back", style: .plain, target: self, action: #selector(backButtonTapped))
@@ -68,7 +68,6 @@ class LibraryArtistsVC: UIViewController {
 
         navigationItem.searchController = searchController
         navigationItem.hidesSearchBarWhenScrolling = false
-        
     }
     
     @objc private func backButtonTapped() {
@@ -76,8 +75,15 @@ class LibraryArtistsVC: UIViewController {
     }
     
     @objc private func importButtonTapped() {
+        resetTracked()
         delegate?.importSavedArtists(selectedArtists)
         dismiss(animated: true)
+    }
+    
+    private func resetTracked() {
+        for i in 0..<selectedArtists.count {
+            selectedArtists[i].isTracked = false
+        }
     }
     
     private func getLibraryArtists() {
