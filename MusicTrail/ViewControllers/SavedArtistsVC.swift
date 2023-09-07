@@ -14,6 +14,7 @@ class SavedArtistsVC: UIViewController {
     // MARK: - Variables
     private var savedArtists: [MTArtist] = []
     private var filteredArtists: [MTArtist] = []
+    private var selectedArtists: [MTArtist] = []
     private let musicArtistRepo: MusicArtistRepo = MusicArtistRepo()
     private var isEditMode: Bool = false
     private var isSearching: Bool = false
@@ -21,6 +22,7 @@ class SavedArtistsVC: UIViewController {
     // MARK: - UI Components
     private var collectionView: UICollectionView!
     private var dataSource: UICollectionViewDiffableDataSource<Section, MTArtist>!
+    private var searchController = UISearchController()
     
     
     // MARK: - Lifecycle
@@ -31,7 +33,7 @@ class SavedArtistsVC: UIViewController {
         setupSearchController()
         setupCollectionView()
         setupDataSource()
-        setupNavBar()
+        setupDefaultNavBar()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -42,13 +44,11 @@ class SavedArtistsVC: UIViewController {
         savedArtists = musicArtistRepo.fetchSavedArtists()
         updateCVUI(with: savedArtists)
         
-        print("FETCHED SAVED ARTISTS:")
-        savedArtists.forEach { print($0.isTracked) }
     }
     
     
     // MARK: - Setup UI
-    private func setupNavBar() {
+    private func setupDefaultNavBar() {
         let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addButtonTapped))
         
         let libraryButton = UIBarButtonItem(image: UIImage(systemName: "music.note.list"), style: .plain, target: self, action: #selector(libraryButtonTapped))
@@ -58,12 +58,51 @@ class SavedArtistsVC: UIViewController {
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Edit", style: .plain, target: self, action: #selector(editButtonTapped))
     }
     
-    @objc private func editButtonTapped() {
-//        toggleEditMode()
+    private func setupEditNavBar() {
+        navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(cancelButtonTapped))
+        
+        navigationItem.rightBarButtonItems = [UIBarButtonItem(title: "Unfollow", style: .plain, target: self, action: #selector(unfollowButtonTapped))]
+        navigationItem.rightBarButtonItem?.isEnabled = !selectedArtists.isEmpty
     }
     
+    private func updateNavBar() {
+        switch isEditMode {
+        case true:
+            setupEditNavBar()
+            searchController.searchBar.isHidden = true
+        case false:
+            setupDefaultNavBar()
+            searchController.searchBar.isHidden = false
+        }
+    }
+    
+    @objc private func editButtonTapped() {
+        isEditMode.toggle()
+        updateNavBar()
+    }
+
+    @objc private func unfollowButtonTapped() {
+        // MARK: - CHECK LOGIC BELOW
+        editButtonTapped()
+        
+        // delete isTracked in savedArtists
+        for artist in selectedArtists {
+            guard let index = savedArtists.firstIndex(of: artist) else { return }
+            deleteArtist(index)
+        }
+        
+        selectedArtists.removeAll()
+    }
+    
+    
+    @objc private func cancelButtonTapped() {
+        editButtonTapped()
+        resetTracked()
+        updateData(on: savedArtists)
+    }
+    
+    
     private func setupSearchController() {
-        let searchController = UISearchController()
         searchController.searchResultsUpdater = self
         searchController.searchBar.placeholder = "Artist"
         searchController.searchBar.image(for: .search, state: .normal)
@@ -77,6 +116,8 @@ class SavedArtistsVC: UIViewController {
         view.addSubview(collectionView)
         collectionView.delegate = self
         collectionView.backgroundColor = .systemBackground
+        collectionView.alwaysBounceVertical = true
+        collectionView.showsVerticalScrollIndicator = false
         collectionView.register(ArtistCVCell.self, forCellWithReuseIdentifier: ArtistCVCell.reuseID)
     }
     
@@ -86,7 +127,11 @@ class SavedArtistsVC: UIViewController {
             
             cell.set(artist: artist)
             
-            cell.backgroundColor = UIColor.systemGray.withAlphaComponent(0.5)
+            if artist.isTracked {
+                cell.backgroundColor = UIColor.systemGray.withAlphaComponent(0.5)
+            } else {
+                cell.backgroundColor = .clear
+            }
             cell.layer.cornerRadius = 5
             
             return cell
@@ -99,6 +144,8 @@ class SavedArtistsVC: UIViewController {
             updateData(on: savedArtists)
         } else {
             // TODO: - empty state
+            // Hide search bar
+            // Disable vertical scroll bounce for collection view
         }
     }
     
@@ -161,12 +208,18 @@ class SavedArtistsVC: UIViewController {
     }
     
     
-    func deleteArtist(_ index: IndexPath) {
-        let artistToDelete = savedArtists.remove(at: index.item)
+    private func deleteArtist(_ index: Int) {
+        let artistToDelete = savedArtists.remove(at: index)
         updateData(on: savedArtists)
         musicArtistRepo.unsaveArtist(artistToDelete)
     }
     
+    
+    private func resetTracked() {
+        for i in 0..<savedArtists.count {
+            savedArtists[i].isTracked = false
+        }
+    }
 
 }
 
@@ -174,21 +227,23 @@ class SavedArtistsVC: UIViewController {
 // MARK: - UICollectionView protocols
 extension SavedArtistsVC: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let currentArtists = isSearching ? filteredArtists : savedArtists
-        let selectedArtist = currentArtists[indexPath.item]
-        print(selectedArtist.name)
+//        let currentArtists = isSearching ? filteredArtists : savedArtists
+//        let selectedArtist = currentArtists[indexPath.item]
+//        print(selectedArtist.name)
         
-//        let selectedCell = collectionView.cellForItem(at: indexPath) as! ArtistCVCell
-//        
-//        if selectedCell.isSelected {
-//            // Deselect the cell
-//            collectionView.deselectItem(at: indexPath, animated: true)
-//            selectedCell.isSelected = false
-//        } else {
-//            // Select the cell
-//            collectionView.selectItem(at: indexPath, animated: true, scrollPosition: [])
-//            selectedCell.isSelected = true
-//        }
+        
+        if isEditMode && !isSearching {
+            savedArtists[indexPath.item].isTracked.toggle()
+            
+            let selectedArtist = savedArtists[indexPath.item]
+            selectedArtist.isTracked ?
+            selectedArtists.append(selectedArtist) :
+            selectedArtists.removeAll(where: { $0.name == selectedArtist.name })
+            
+            updateData(on: savedArtists)
+            updateNavBar()
+        }
+    
         
 //        deleteArtist(indexPath)
     }
@@ -219,12 +274,9 @@ extension SavedArtistsVC: LibraryArtistVCDelegate {
     func importSavedArtists(_ newArtists: [MTArtist]) {
         savedArtists.append(contentsOf: newArtists)
         musicArtistRepo.saveLibraryArtists(newArtists)
+        resetTracked()
         updateCVUI(with: savedArtists)
 //        updateUI()
         
-        print("NEW ARTISTS:")
-        newArtists.forEach { print($0.isTracked) }
-        print("ALL ARTISTS:")
-        savedArtists.forEach { print($0.isTracked) }
     }
 }
