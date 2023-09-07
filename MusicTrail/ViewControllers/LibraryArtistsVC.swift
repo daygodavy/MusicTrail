@@ -11,7 +11,7 @@ protocol LibraryArtistVCDelegate: AnyObject {
     func importSavedArtists(_ newArtists: [MTArtist])
 }
 
-class LibraryArtistsVC: UIViewController {
+class LibraryArtistsVC: MTDataLoadingVC {
     
     // MARK: - Variables
     var libraryArtists: [MTArtist] = []
@@ -29,16 +29,16 @@ class LibraryArtistsVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+
+        getLibraryArtists()
         setupNavBar()
-        // setup tableview
         configureTableView()
         configureSearchBar()
+        showLoadingView()
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        // setup artists data
-        getLibraryArtists()
     }
     
     
@@ -92,6 +92,7 @@ class LibraryArtistsVC: UIViewController {
                 libraryArtists = try await MusicKitManager.shared.fetchLibraryArtists(savedArtists)
                 filteredArtists = libraryArtists
                 updateData()
+                dismissLoadingView()
             } catch {
                 print("ERROR!!!!!!!!!!!")
                 return

@@ -43,7 +43,6 @@ class SavedArtistsVC: UIViewController {
     func getSavedArtists() {
         savedArtists = musicArtistRepo.fetchSavedArtists()
         updateCVUI(with: savedArtists)
-        
     }
     
     
