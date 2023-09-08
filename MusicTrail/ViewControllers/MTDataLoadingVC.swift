@@ -10,7 +10,20 @@ import UIKit
 class MTDataLoadingVC: UIViewController {
     
     var containerView: UIView!
-
+    
+    func showLoadingNavBarButton() {
+        let spinner = UIActivityIndicatorView(style: .medium)
+        let navBarSpinner = UIBarButtonItem(customView: spinner)
+        
+        navigationItem.rightBarButtonItems = [navBarSpinner]
+        navigationItem.leftBarButtonItems = nil
+        spinner.startAnimating()
+    }
+    
+    func dismissLoadingNavBarButton() {
+        navigationItem.rightBarButtonItem = nil
+    }
+    
     func showLoadingView() {
         containerView = UIView(frame: view.bounds)
         view.addSubview(containerView)

@@ -15,33 +15,7 @@ class MusicKitManager {
     let imageWidth: Int = 336
     let imageHeight: Int = 336
     
-//    var allArtists: [LibraryArtist] = []
     private init() {}
-    
-    func fetchMockData(_ name: String) async throws -> [MTArtist] {
-        var allArtists: [MTArtist] = []
-        
-        if #available(iOS 16.0, *) {
-            var request = MusicCatalogSearchRequest(term: name, types: [Artist.self])
-            request.limit = 25
-            
-            let response = try await request.response()
-            
-            for artist in response.artists {
-                
-                // edge case: artist in library no longer exists in catalog
-                
-                var imageUrl = artist.artwork?.url(width: imageWidth, height: imageHeight)
-                
-                let person = MTArtist(name: artist.name, id: artist.id, imageUrl: imageUrl)
-                allArtists.append(person)
-            }
-        } else {
-            // Fallback on earlier versions
-        }
-        
-        return allArtists
-    }
     
 
     func fetchNewArtist(_ name: String) async throws -> MTArtist {
@@ -55,21 +29,16 @@ class MusicKitManager {
             let response = try await request.response()
             
             let artistData = response.artists.first
-    //        let artworkUrl = artistData?.artwork?.url(width: artistData?.artwork?.maximumWidth ?? 0, height: artistData?.artwork?.maximumHeight ?? 0)
-            // TODO: - maxwidth/height = 2400
+
             let artworkUrl = artistData?.artwork?.url(width: imageWidth, height: imageHeight)
             guard let name = artistData?.name,
                   let id = artistData?.id,
                   let url = artworkUrl else { fatalError() }
             var artist: MTArtist = MTArtist(name: name, id: id, imageUrl: url)
             
-            print("CATALOG ID: \(name) - \(id)")
-            print("CATALOG ID RAWVAL: \(name) - \(id.rawValue)")
-            
             guard let finalArtist = artistData else { fatalError() }
             
-            
-            
+            print(artist.name) // MARK: - DELETE
             return artist
             
         } else {
@@ -78,6 +47,16 @@ class MusicKitManager {
         
         throw fatalError()
     }
+    
+    func mapLibraryToCatalog(_ artists: [MTArtist]) async throws -> [MTArtist] {
+        var catalogArtists: [MTArtist] = []
+        
+        for artist in artists {
+            catalogArtists.append(try await fetchNewArtist(artist.name))
+        }
+        
+        return catalogArtists
+    }
 
 
     func fetchLibraryArtists(_ savedArtists: [MTArtist]) async throws -> [MTArtist] {
@@ -85,18 +64,11 @@ class MusicKitManager {
         
         if #available(iOS 16.0, *) {
             var request = MusicLibraryRequest<Artist>()
-            
-//            request.limit = 20
             request.sort(by: \.name, ascending: true)
             
             let response = try await request.response()
             
             for artist in response.items {
-                
-                if artist.name == "NoCap" {
-                    print("LIBRARY ID: \(artist.name) - \(artist.id)")
-                    print("LIBRARY ID RAWVALUE: \(artist.name) - \(artist.id.rawValue)")
-                }
                 
                 // Omit artist objects that comprise of multiple artists
                 if artist.name.contains(",") ||
@@ -122,36 +94,8 @@ class MusicKitManager {
         
         return allArtists
     }
+    
 
-
-    func searchAppleMusic() async throws {
-        var allArtists: [MTArtist] = []
-        
-        if #available(iOS 16.0, *) {
-            var libraryRequest = MusicLibraryRequest<Artist>()
-            libraryRequest.limit = 5
-            libraryRequest.sort(by: \.albumCount, ascending: false)
-            let response = try await libraryRequest.response()
-            var artistsList = response.debugDescription
-            print(artistsList)
-            
-            for artist in response.items {
-                print(artist)
-                let person = MTArtist(name: artist.name, id: artist.id, imageUrl: artist.url)
-                allArtists.append(person)
-            }
-            print(allArtists)
-            
-            var catalogRequest = MusicCatalogSearchRequest(term: "nocap", types: [Song.self])
-            catalogRequest.limit = 10
-            let response2 = try await catalogRequest.response()
-            print(response2.debugDescription)
-            
-            
-        } else {
-            // Fallback on earlier versions
-        }
-    }
 
     func fetchNewMusic() async throws {
         if #available(iOS 16.0, *) {

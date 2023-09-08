@@ -7,7 +7,7 @@
 
 import UIKit
 
-class SavedArtistsVC: UIViewController {
+class SavedArtistsVC: MTDataLoadingVC {
     
     enum Section { case main }
     
@@ -18,6 +18,7 @@ class SavedArtistsVC: UIViewController {
     private let musicArtistRepo: MusicArtistRepo = MusicArtistRepo()
     private var isEditMode: Bool = false
     private var isSearching: Bool = false
+    private var isImporting: Bool = false
 
     // MARK: - UI Components
     private var collectionView: UICollectionView!
@@ -29,6 +30,7 @@ class SavedArtistsVC: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        showLoadingView()
         getSavedArtists()
         setupSearchController()
         setupCollectionView()
@@ -43,6 +45,7 @@ class SavedArtistsVC: UIViewController {
     func getSavedArtists() {
         savedArtists = musicArtistRepo.fetchSavedArtists()
         updateCVUI(with: savedArtists)
+        dismissLoadingView()
     }
     
     
@@ -153,8 +156,16 @@ class SavedArtistsVC: UIViewController {
         snapshot.appendSections([.main])
         snapshot.appendItems(artists)
         
-        DispatchQueue.main.async {
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            print("MAIN QUEUE APPLYING SNAPSHOT")
             self.dataSource.apply(snapshot, animatingDifferences: true)
+            
+            if self.isImporting {
+                self.isImporting = false
+                dismissLoadingNavBarButton()
+                updateNavBar()
+            }
         }
     }
     
@@ -270,12 +281,23 @@ extension SavedArtistsVC: UISearchResultsUpdating {
 
 // MARK: - LibraryArtistVC protocols
 extension SavedArtistsVC: LibraryArtistVCDelegate {
+    
     func importSavedArtists(_ newArtists: [MTArtist]) {
+        print("IMPORTING SAVED ARTISTS")
+//        isImporting = true
+//        showLoadingView()
+        
         savedArtists.append(contentsOf: newArtists)
         musicArtistRepo.saveLibraryArtists(newArtists)
         resetTracked()
         updateCVUI(with: savedArtists)
-//        updateUI()
         
     }
+    
+    
+    func importInProgress() {
+        isImporting = true
+        showLoadingNavBarButton()
+    }
+    
 }

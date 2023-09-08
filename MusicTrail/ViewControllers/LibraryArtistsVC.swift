@@ -9,6 +9,7 @@ import UIKit
 
 protocol LibraryArtistVCDelegate: AnyObject {
     func importSavedArtists(_ newArtists: [MTArtist])
+    func importInProgress()
 }
 
 class LibraryArtistsVC: MTDataLoadingVC {
@@ -29,20 +30,16 @@ class LibraryArtistsVC: MTDataLoadingVC {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-
         getLibraryArtists()
-        setupNavBar()
+        configureNavBar()
         configureTableView()
         configureSearchBar()
         showLoadingView()
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-    }
     
-    
-    private func setupNavBar() {
+    // MARK: - UI Setup
+    private func configureNavBar() {
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Back", style: .plain, target: self, action: #selector(backButtonTapped))
         
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Import", style: .plain, target: self, action: #selector(importButtonTapped))
@@ -64,27 +61,54 @@ class LibraryArtistsVC: MTDataLoadingVC {
         searchController.searchResultsUpdater = self
         searchController.searchBar.placeholder = "Search"
         searchController.searchBar.image(for: .search, state: .normal)
-//        searchController.obscuresBackgroundDuringPresentation = false
-
         navigationItem.searchController = searchController
         navigationItem.hidesSearchBarWhenScrolling = false
     }
     
+    
+    // MARK: - Methods
     @objc private func backButtonTapped() {
         dismiss(animated: true)
     }
     
-    @objc private func importButtonTapped() {
-        resetTracked()
-        delegate?.importSavedArtists(selectedArtists)
-        dismiss(animated: true)
-    }
+//    @objc private func importButtonTapped() {
+//        showLoadingView()
+//        Task {
+//            do {
+//                selectedArtists = try await MusicKitManager.shared.mapLibraryToCatalog(selectedArtists)
+//                
+//                delegate?.importSavedArtists(selectedArtists)
+//                
+//                dismissLoadingView()
+//                dismiss(animated: true)
+//            } catch {
+//                dismissLoadingView()
+//                print("ERROR!!!!!!!!!!!")
+//                return
+//            }
+//        }
+//    }
     
-    private func resetTracked() {
-        for i in 0..<selectedArtists.count {
-            selectedArtists[i].isTracked = false
+    @objc private func importButtonTapped() {
+        
+        Task.init(priority: .background) {
+            do {
+                delegate?.importInProgress()
+                
+                dismiss(animated: true)
+                
+                selectedArtists = try await MusicKitManager.shared.mapLibraryToCatalog(selectedArtists)
+                
+                delegate?.importSavedArtists(selectedArtists)
+
+            } catch {
+                print("ERROR!!!!!!!!!!!")
+                return
+            }
+            
         }
     }
+    
     
     private func getLibraryArtists() {
         Task {
@@ -106,7 +130,7 @@ class LibraryArtistsVC: MTDataLoadingVC {
         }
     }
     
-    private func updateLocalTracked(_ index: Int) {
+    private func updateTrackedArtist(_ index: Int) {
         filteredArtists[index].isTracked.toggle()
         if let idxMatch = libraryArtists.firstIndex(where: {$0.name.contains(filteredArtists[index].name)}) {
             libraryArtists[idxMatch].isTracked = filteredArtists[index].isTracked
@@ -119,7 +143,7 @@ class LibraryArtistsVC: MTDataLoadingVC {
         }
     }
     
-    private func updateSavedStatus() {
+    private func updateImportStatus() {
         if !selectedArtists.isEmpty {
             navigationItem.rightBarButtonItem?.isEnabled = true
         } else {
@@ -129,6 +153,7 @@ class LibraryArtistsVC: MTDataLoadingVC {
 }
 
 
+// MARK: - UITableView Protocols
 extension LibraryArtistsVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return filteredArtists.count
@@ -144,16 +169,17 @@ extension LibraryArtistsVC: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        // check logic here
-        updateLocalTracked(indexPath.row)
-        updateSavedStatus()
+        updateTrackedArtist(indexPath.row)
+        updateImportStatus()
 
-        DispatchQueue.main.async {
-            self.tableView.reloadRows(at: [indexPath], with: .automatic)
+        DispatchQueue.main.async { [weak self] in
+            self?.tableView.reloadRows(at: [indexPath], with: .automatic)
         }
     }
 }
 
+
+// MARK: - UISearchController Protocols
 extension LibraryArtistsVC: UISearchResultsUpdating {
     
     func updateSearchResults(for searchController: UISearchController) {
