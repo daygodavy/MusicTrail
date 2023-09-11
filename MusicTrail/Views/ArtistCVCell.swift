@@ -37,10 +37,7 @@ class ArtistCVCell: UICollectionViewCell {
     }
     
     func set(artist: MTArtist) {
-        if let url = artist.imageUrl {
-            self.artistImage.downloadArtistImage(url, artist: artist.name)
-        }
-        
+        self.artistImage.downloadArtistImage(artist.imageUrl, artist: artist.name)
         self.artist = artist
         self.nameLabel.text = artist.name
     }

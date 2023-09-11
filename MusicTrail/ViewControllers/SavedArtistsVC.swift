@@ -67,42 +67,6 @@ class SavedArtistsVC: MTDataLoadingVC {
         navigationItem.rightBarButtonItem?.isEnabled = !selectedArtists.isEmpty
     }
     
-    private func updateNavBar() {
-        switch isEditMode {
-        case true:
-            setupEditNavBar()
-            searchController.searchBar.isHidden = true
-        case false:
-            setupDefaultNavBar()
-            searchController.searchBar.isHidden = false
-        }
-    }
-    
-    @objc private func editButtonTapped() {
-        isEditMode.toggle()
-        updateNavBar()
-    }
-
-    @objc private func unfollowButtonTapped() {
-        // MARK: - CHECK LOGIC BELOW
-        editButtonTapped()
-        
-        // delete isTracked in savedArtists
-        for artist in selectedArtists {
-            guard let index = savedArtists.firstIndex(of: artist) else { return }
-            deleteArtist(index)
-        }
-        
-        selectedArtists.removeAll()
-    }
-    
-    
-    @objc private func cancelButtonTapped() {
-        editButtonTapped()
-        resetTracked()
-        updateData(on: savedArtists)
-    }
-    
     
     private func setupSearchController() {
         searchController.searchResultsUpdater = self
@@ -143,6 +107,7 @@ class SavedArtistsVC: MTDataLoadingVC {
     func updateCVUI(with artists: [MTArtist]) {
         
         if !savedArtists.isEmpty {
+//            savedArtists.sort { $0.name < $1.name }
             updateData(on: savedArtists)
         } else {
             // TODO: - empty state
@@ -152,13 +117,14 @@ class SavedArtistsVC: MTDataLoadingVC {
     }
     
     func updateData(on artists: [MTArtist]) {
+//        var sortedArtists = artists.sorted { $0.name < $1.name }
+        
         var snapshot = NSDiffableDataSourceSnapshot<Section, MTArtist>()
         snapshot.appendSections([.main])
         snapshot.appendItems(artists)
         
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
-            print("MAIN QUEUE APPLYING SNAPSHOT")
             self.dataSource.apply(snapshot, animatingDifferences: true)
             
             if self.isImporting {
@@ -184,22 +150,50 @@ class SavedArtistsVC: MTDataLoadingVC {
 
     
     @objc func addButtonTapped() {
-        let ac = UIAlertController(title: "New Artist", message: nil, preferredStyle: .alert)
-        ac.addTextField { textField in
-            textField.placeholder = "Enter artist name"
-        }
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
-        let addAction = UIAlertAction(title: "Add", style: .default) { [weak self] _ in
-            guard let textField = ac.textFields?.first,
-                  let artist = textField.text,
-                  !artist.isEmpty else { return }
-            
-            self?.addNewArtist(artist)
+        let vcToPresent = AddNewArtistVC()
+        vcToPresent.delegate = self
+        vcToPresent.savedArtists = self.savedArtists
+        
+        let navController = UINavigationController(rootViewController: vcToPresent)
+        navController.modalPresentationStyle = .popover
+        present(navController, animated: true)
+    }
+
+    
+    @objc private func editButtonTapped() {
+        isEditMode.toggle()
+        updateNavBar()
+    }
+
+    @objc private func unfollowButtonTapped() {
+        // MARK: - CHECK LOGIC BELOW
+        editButtonTapped()
+        
+        // delete isTracked in savedArtists
+        for artist in selectedArtists {
+            guard let index = savedArtists.firstIndex(of: artist) else { return }
+            deleteArtist(index)
         }
         
-        ac.addAction(cancelAction)
-        ac.addAction(addAction)
-        present(ac, animated: true)
+        selectedArtists.removeAll()
+    }
+    
+    
+    @objc private func cancelButtonTapped() {
+        editButtonTapped()
+        resetTracked()
+        updateData(on: savedArtists)
+    }
+    
+    private func updateNavBar() {
+        switch isEditMode {
+        case true:
+            setupEditNavBar()
+            searchController.searchBar.isHidden = true
+        case false:
+            setupDefaultNavBar()
+            searchController.searchBar.isHidden = false
+        }
     }
     
     
@@ -237,10 +231,6 @@ class SavedArtistsVC: MTDataLoadingVC {
 // MARK: - UICollectionView protocols
 extension SavedArtistsVC: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-//        let currentArtists = isSearching ? filteredArtists : savedArtists
-//        let selectedArtist = currentArtists[indexPath.item]
-//        print(selectedArtist.name)
-        
         
         if isEditMode && !isSearching {
             savedArtists[indexPath.item].isTracked.toggle()
@@ -252,10 +242,12 @@ extension SavedArtistsVC: UICollectionViewDelegate {
             
             updateData(on: savedArtists)
             updateNavBar()
+        } else {
+            //        let currentArtists = isSearching ? filteredArtists : savedArtists
+            //        let selectedArtist = currentArtists[indexPath.item]
+            //        print(selectedArtist.name)
         }
     
-        
-//        deleteArtist(indexPath)
     }
 }
 
@@ -274,22 +266,16 @@ extension SavedArtistsVC: UISearchResultsUpdating {
         }
         updateData(on: filteredArtists)
         
-        
     }
 }
 
 
-// MARK: - LibraryArtistVC protocols
+// MARK: - LibraryArtistVC Protocols
 extension SavedArtistsVC: LibraryArtistVCDelegate {
     
     func importSavedArtists(_ newArtists: [MTArtist]) {
-        print("IMPORTING SAVED ARTISTS")
-//        isImporting = true
-//        showLoadingView()
-        
         savedArtists.append(contentsOf: newArtists)
         musicArtistRepo.saveLibraryArtists(newArtists)
-        resetTracked()
         updateCVUI(with: savedArtists)
         
     }
@@ -299,5 +285,16 @@ extension SavedArtistsVC: LibraryArtistVCDelegate {
         isImporting = true
         showLoadingNavBarButton()
     }
+}
+
+
+// MARK: - AddNewArtistVC Protocols
+extension SavedArtistsVC: AddNewArtistVCDelegate {
     
+    func saveNewArtist(_ newArtist: MTArtist) {
+        savedArtists.append(newArtist)
+        musicArtistRepo.saveLibraryArtists([newArtist])
+        resetTracked()
+        updateCVUI(with: savedArtists)
+    }
 }

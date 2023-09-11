@@ -17,6 +17,36 @@ class MusicKitManager {
     
     private init() {}
     
+    func fetchSearchedArtists(_ searchTerm: String, savedArtists: [MTArtist]) async throws -> [MTArtist] {
+        if #available(iOS 16.0, *) {
+            var resultArtists: [MTArtist] = []
+            
+            var request = MusicCatalogSearchRequest(term: searchTerm, types: [Artist.self])
+            request.limit = 15
+            
+            let response = try await request.response()
+            
+            let searchedArtists = response.artists
+            for artist in searchedArtists {
+                if !savedArtists.isEmpty && savedArtists.contains(where: {$0.name == artist.name}) {
+                    continue
+                }
+                let artworkUrl = artist.artwork?.url(width: imageWidth, height: imageHeight)
+                print(artist.name)
+                print(artworkUrl)
+                let currentArtist = MTArtist(name: artist.name, id: artist.id, imageUrl: artworkUrl)
+                resultArtists.append(currentArtist)
+            }
+            
+            return resultArtists
+            
+        } else {
+            // Fallback on earlier versions
+        }
+        
+        throw fatalError()
+    }
+    
 
     func fetchNewArtist(_ name: String) async throws -> MTArtist {
         if #available(iOS 16.0, *) {
@@ -48,6 +78,7 @@ class MusicKitManager {
         throw fatalError()
     }
     
+    
     func mapLibraryToCatalog(_ artists: [MTArtist]) async throws -> [MTArtist] {
         var catalogArtists: [MTArtist] = []
         
@@ -73,7 +104,7 @@ class MusicKitManager {
                 // Omit artist objects that comprise of multiple artists
                 if artist.name.contains(",") ||
                     artist.name.contains("&") ||
-                    savedArtists.contains(where: {$0.name == artist.name}) {
+                    (!savedArtists.isEmpty && savedArtists.contains(where: {$0.name == artist.name})) {
                     continue
                 }
                 

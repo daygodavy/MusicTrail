@@ -40,6 +40,7 @@
 		5BE3E2BA2AA7DF1000C825AB /* ArtistCVCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BE3E2B92AA7DF1000C825AB /* ArtistCVCell.swift */; };
 		5BE3E2BC2AA9017800C825AB /* UIHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BE3E2BB2AA9017800C825AB /* UIHelper.swift */; };
 		5BE3E2BE2AAA6FAE00C825AB /* MTDataLoadingVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BE3E2BD2AAA6FAE00C825AB /* MTDataLoadingVC.swift */; };
+		5BE3E2C02AAFA44A00C825AB /* AddNewArtistVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BE3E2BF2AAFA44A00C825AB /* AddNewArtistVC.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -97,6 +98,7 @@
 		5BE3E2B92AA7DF1000C825AB /* ArtistCVCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtistCVCell.swift; sourceTree = "<group>"; };
 		5BE3E2BB2AA9017800C825AB /* UIHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIHelper.swift; sourceTree = "<group>"; };
 		5BE3E2BD2AAA6FAE00C825AB /* MTDataLoadingVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MTDataLoadingVC.swift; sourceTree = "<group>"; };
+		5BE3E2BF2AAFA44A00C825AB /* AddNewArtistVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddNewArtistVC.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -166,6 +168,7 @@
 				5B5B68E52A687DF300EA3D9B /* LibraryArtistsVC.swift */,
 				5B5B68E72A69AE1900EA3D9B /* IntroAuthVC.swift */,
 				5BE3E2BD2AAA6FAE00C825AB /* MTDataLoadingVC.swift */,
+				5BE3E2BF2AAFA44A00C825AB /* AddNewArtistVC.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -418,6 +421,7 @@
 				5B5B68EE2A69B09700EA3D9B /* MTButton.swift in Sources */,
 				5B920A2B2A5E17AC00464A8C /* SceneDelegate.swift in Sources */,
 				5B5B68DB2A673A8800EA3D9B /* NewMusicVC.swift in Sources */,
+				5BE3E2C02AAFA44A00C825AB /* AddNewArtistVC.swift in Sources */,
 				5B28BBAF2A900EDF00300C8A /* MusicArtist+CoreDataProperties.swift in Sources */,
 				5BE3E2BE2AAA6FAE00C825AB /* MTDataLoadingVC.swift in Sources */,
 				5B5B68E22A686C5F00EA3D9B /* ArtistImageView.swift in Sources */,

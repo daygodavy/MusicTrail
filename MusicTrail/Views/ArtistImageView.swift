@@ -10,7 +10,7 @@ import UIKit
 
 class ArtistImageView: UIImageView {
     
-    let placeholderImage = UIImage(systemName: "questionmark")
+    let placeholderImage = UIImage(systemName: "person.fill")
     var fetchImageTask: Task<Void, Never>?
     
     
@@ -37,8 +37,14 @@ class ArtistImageView: UIImageView {
         translatesAutoresizingMaskIntoConstraints = false
     }
   
-    func downloadArtistImage(_ url: URL, artist: String) {
+    func downloadArtistImage(_ url: URL?, artist: String) {
         fetchImageTask?.cancel()
+        
+        guard let url = url else {
+            setDefault()
+            return
+        }
+        
         fetchImageTask = Task {
             image = await NetworkManager.shared.downloadImage(from: url)?.withRenderingMode(.alwaysOriginal) ?? placeholderImage
             tintColor = .systemGray

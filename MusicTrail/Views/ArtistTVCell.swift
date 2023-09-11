@@ -11,6 +11,7 @@ import UIKit
 enum ArtistViewState {
     case library
     case saved
+    case adding
 }
 
 class ArtistTVCell: UITableViewCell {
@@ -52,10 +53,7 @@ class ArtistTVCell: UITableViewCell {
     }
     
     public func configure(with artist: MTArtist, state: ArtistViewState) {
-        if let url = artist.imageUrl {
-            self.artistImage.downloadArtistImage(url, artist: artist.name)
-        }
-        
+        self.artistImage.downloadArtistImage(artist.imageUrl, artist: artist.name)
         self.artist = artist
         self.nameLabel.text = artist.name
         updateCheck(state)
@@ -91,8 +89,8 @@ class ArtistTVCell: UITableViewCell {
         NSLayoutConstraint.activate([
             artistImage.leadingAnchor.constraint(equalTo: self.layoutMarginsGuide.leadingAnchor),
             artistImage.centerYAnchor.constraint(equalTo: centerYAnchor),
-            artistImage.heightAnchor.constraint(equalToConstant: 80),
-            artistImage.widthAnchor.constraint(equalToConstant: 80),
+            artistImage.heightAnchor.constraint(equalToConstant: 50),
+            artistImage.widthAnchor.constraint(equalToConstant: 50),
             
             checkImage.centerYAnchor.constraint(equalTo: nameLabel.centerYAnchor),
             checkImage.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -5),

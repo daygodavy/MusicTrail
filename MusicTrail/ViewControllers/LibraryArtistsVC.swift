@@ -47,9 +47,11 @@ class LibraryArtistsVC: MTDataLoadingVC {
     }
     
     private func configureTableView() {
+        view.backgroundColor = .secondarySystemBackground
         view.addSubview(tableView)
         tableView.frame = view.bounds
-        tableView.rowHeight = 84
+        tableView.backgroundColor = .systemBackground
+        tableView.rowHeight = 64
         tableView.delegate = self
         tableView.dataSource = self
         
@@ -68,26 +70,11 @@ class LibraryArtistsVC: MTDataLoadingVC {
     
     // MARK: - Methods
     @objc private func backButtonTapped() {
-        dismiss(animated: true)
+        if let navigationController = self.navigationController {
+            navigationController.dismiss(animated: true)
+        }
     }
     
-//    @objc private func importButtonTapped() {
-//        showLoadingView()
-//        Task {
-//            do {
-//                selectedArtists = try await MusicKitManager.shared.mapLibraryToCatalog(selectedArtists)
-//                
-//                delegate?.importSavedArtists(selectedArtists)
-//                
-//                dismissLoadingView()
-//                dismiss(animated: true)
-//            } catch {
-//                dismissLoadingView()
-//                print("ERROR!!!!!!!!!!!")
-//                return
-//            }
-//        }
-//    }
     
     @objc private func importButtonTapped() {
         
@@ -95,7 +82,7 @@ class LibraryArtistsVC: MTDataLoadingVC {
             do {
                 delegate?.importInProgress()
                 
-                dismiss(animated: true)
+                backButtonTapped()
                 
                 selectedArtists = try await MusicKitManager.shared.mapLibraryToCatalog(selectedArtists)
                 
@@ -176,6 +163,7 @@ extension LibraryArtistsVC: UITableViewDelegate, UITableViewDataSource {
             self?.tableView.reloadRows(at: [indexPath], with: .automatic)
         }
     }
+
 }
 
 
