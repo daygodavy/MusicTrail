@@ -12,6 +12,7 @@ protocol LibraryArtistVCDelegate: AnyObject {
     func importInProgress()
 }
 
+
 class LibraryArtistsVC: MTDataLoadingVC {
     
     // MARK: - Variables

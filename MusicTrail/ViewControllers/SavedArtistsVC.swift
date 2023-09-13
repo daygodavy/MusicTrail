@@ -197,21 +197,6 @@ class SavedArtistsVC: MTDataLoadingVC {
     }
     
     
-    func addNewArtist(_ artistName: String) {
-        Task {
-            do {
-                let newArtist = try await MusicKitManager.shared.fetchNewArtist(artistName)
-//                savedArtists.append(newArtist)
-//                DispatchQueue.main.async { [weak self] in
-//                    self?.tableView.reloadData()
-//                }
-            } catch {
-                print("ERROR!")
-            }
-        }
-    }
-    
-    
     private func deleteArtist(_ index: Int) {
         let artistToDelete = savedArtists.remove(at: index)
         updateData(on: savedArtists)
