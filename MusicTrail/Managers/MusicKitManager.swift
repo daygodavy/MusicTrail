@@ -89,27 +89,6 @@ class MusicKitManager {
     }
     
     
-//    func mapLibraryToCatalog(_ artists: [MTArtist]) async throws -> [MTArtist] {
-//        var catalogArtists: [MTArtist] = []
-//        
-//        // TODO: - MAP BY TOP SONG ID TOO?
-//        
-//        for artist in artists {
-//            // TODO: - VERIFY LIBRARY ARTIST IS VALID IN CATALOG, ELSE SKIP IT
-//            // COMBINE BELOW CHECK SINCE ITS AN EXTRA SEARCHREQUEST
-//            if try await checkValidLibraryArtist(artist.name) {
-//                
-//                guard let currArtist = originalLibraryArtists[artist.id] else { fatalError() }
-//                
-//                let topSongID = try await fetchArtistTopSongID(currArtist: currArtist, currSource: .library)
-//                
-//                catalogArtists.append(try await fetchNewArtist(artist.name, librarySongID: topSongID))
-//            }
-//        }
-//        
-//        return catalogArtists
-//    }
-    
     func mapLibraryToCatalog(_ artists: [MTArtist]) async throws -> [MTArtist] {
         var catalogArtists: [MTArtist] = []
         
@@ -217,127 +196,73 @@ class MusicKitManager {
         return nil
     }
     
-    
-    
-//    func checkValidLibraryArtist(_ artistName: String) async throws -> Bool {
-//        var request = MusicCatalogSearchRequest(term: artistName, types: [Artist.self])
-//        request.limit = 1
-////        request.sort(by: \.albumCount, ascending: false)
-//        
-//        let response = try await request.response()
-//        if response.artists.isEmpty { return false }
-//        
-//        return true
-//    }
-    
-    func checkValidLibraryArtist(_ currArtist: MTArtist) async throws -> Bool {
-        var request = MusicCatalogSearchRequest(term: currArtist.name, types: [Artist.self])
-        
-        let response = try await request.response()
-        
-        // MARK: - ARTIST WITH LIBRARY IMAGE BUT NO CATALOG IMAGE HANDLED BELOW
-        if response.artists.isEmpty { print("EMPTY!!!!!!!")}
-        
-        for artist in response.artists {
-            if artist.name.lowercased() == currArtist.name.lowercased() {
-                
-//                guard let artworkUrl = artist.artwork?.url(width: imageWidth, height: imageHeight), let currUrl = currArtist.imageUrl else {
-//                    print("LIBRARY1 \(currArtist.name) \(currArtist.id)")
-//                    print("CATALOG1 \(artist.name) \(artist.id)")
-//                    fatalError()
-//                }
-//                
-//                var catalogStr = artworkUrl.absoluteString
-//                var libraryStr = currUrl.absoluteString
-//                let catalogCheck: () = catalogStr.removeLast(6)
-//                let libraryCheck: () = libraryStr.removeLast(6)
-//                if catalogCheck == libraryCheck {
-//                    print("MATCHING URL")
-//                    return true
-//                } else {
-//                    print("NO MATCH")
-//                    print("LIBRARY2")
-//                    print("\(currArtist.name) \(currArtist.id): \(currUrl)")
-//                    print("CATALOG2")
-//                    print("\(artist.name) \(artist.id): \(artworkUrl)")
-//                }
-                
-                if let artworkUrl = artist.artwork?.url(width: imageWidth, height: imageHeight), let currUrl = currArtist.imageUrl {
-                    var catalogStr = artworkUrl.absoluteString
-                    var libraryStr = currUrl.absoluteString
-                    let catalogCheck: () = catalogStr.removeLast(6)
-                    let libraryCheck: () = libraryStr.removeLast(6)
-                    if catalogCheck == libraryCheck {
-                        print("MATCHING URL")
-                        return true
-                    } else {
-                        print("NO MATCH")
-                        print("LIBRARY2")
-                        print("\(currArtist.name) \(currArtist.id): \(currUrl)")
-                        print("CATALOG2")
-                        print("\(artist.name) \(artist.id): \(artworkUrl)")
-                    }
-                } else {
-                    // IMAGE URL DOESN'T EXIST COMPARE TOP SONGS
-                }
-                
-           
-            }
-        }
-        print("RETURNING FALSE!!!!!!!!!!")
-        return false
-    }
-    
 
+    // Fetch all artists from library
     func fetchLibraryArtists(_ savedArtists: [MTArtist]) async throws -> [MTArtist] {
         var allArtists: [MTArtist] = []
         originalLibraryArtists.removeAll()
         
-        if #available(iOS 16.0, *) {
-            var request = MusicLibraryRequest<Artist>()
-            request.sort(by: \.name, ascending: true)
-            
-            let response = try await request.response()
-            
-            for artist in response.items {
-                
-                // Omit artist objects that comprise of multiple artists
-                if artist.name.contains(",") ||
-                    artist.name.contains("&") ||
-                    artist.name.lowercased().contains("various artists") ||
-                    (!savedArtists.isEmpty && savedArtists.contains(where: {$0.name.lowercased() == artist.name})) {
-                    continue
-                }
-                
-                // Store original artist
-                originalLibraryArtists[artist.id] = artist
-                
-                // Convert artwork URL from library format to catalog format
-                var imageUrl = artist.artwork?.url(width: imageWidth, height: imageHeight)
-                
-                if let libraryUrl = imageUrl?.absoluteString {
-                    imageUrl = libraryUrl.formatToCatalogArtworkURL()
-                } else {
-                    
-                    // Check if non-image artist exists in catalog via top song ID
-                    let checkTopSong = try await fetchArtistTopSongID(currArtist: artist, currSource: .library)
-                    
-                    if checkTopSong == nil {
-                        continue
-                    }
-                }
-                
-                let person = MTArtist(name: artist.name, id: artist.id, imageUrl: imageUrl)
-                allArtists.append(person)
-            }
-            
-        } else {
-            // Fallback on earlier versions
-        }
+        var request = MusicLibraryRequest<Artist>()
+        request.sort(by: \.name, ascending: true)
         
+        let response = try await request.response()
+        
+        for artist in response.items {
+            
+            if !isArtistValid(artist.name, excludedArtists: savedArtists) { continue }
+            
+            if let currArtist = try await convertLibraryArtistToMTArtist(artist) {
+                
+                // Store original library artist object
+                originalLibraryArtists[artist.id] = artist
+                allArtists.append(currArtist)
+            }
+        }
+            
         return allArtists
     }
+    
+    
+    // Converting library artist to MTArtist if valid
+    func convertLibraryArtistToMTArtist(_ artist: Artist) async throws -> MTArtist? {
+        
+        if let imageUrl = formatLibraryArtistArtwork(artist) {
+            return MTArtist(name: artist.name, id: artist.id, imageUrl: imageUrl)
+        } else {
+            
+            // Check if non-image artist exists in catalog via top song ID
+            if try await fetchArtistTopSongID(currArtist: artist, currSource: .library) != nil {
+                return MTArtist(name: artist.name, id: artist.id, imageUrl: nil)
+            }
+        }
+        
+        return nil
+    }
+    
+    
+    // Converts library artist artwork URL to catalog format
+    func formatLibraryArtistArtwork(_ currArtist: Artist) -> URL? {
+        return currArtist
+            .artwork?
+            .url(width: imageWidth, height: imageHeight)?
+            .absoluteString
+            .formatToCatalogArtworkURL()
+    }
 
+    
+    // Conditions to filter out extraneous library artists
+    func isArtistValid(_ artistName: String, excludedArtists: [MTArtist]) -> Bool {
+        
+        if artistName.contains(",") ||
+            artistName.contains("&") ||
+            artistName.lowercased().contains("various artists") ||
+            (!excludedArtists.isEmpty &&
+             excludedArtists.contains(where: { $0.name.lowercased() == artistName.lowercased() })) {
+            return false
+        }
+        
+        return true
+    }
     
     
     
