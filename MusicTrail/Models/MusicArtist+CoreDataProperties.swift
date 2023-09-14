@@ -2,7 +2,7 @@
 //  MusicArtist+CoreDataProperties.swift
 //  MusicTrail
 //
-//  Created by Davy Chuon on 8/18/23.
+//  Created by Davy Chuon on 9/14/23.
 //
 //
 
@@ -19,10 +19,11 @@ extension MusicArtist {
     @NSManaged public var artistUrl: URL?
     @NSManaged public var genreName: String?
     @NSManaged public var imageUrl: URL?
-    @NSManaged public var isLibrary: Bool
     @NSManaged public var isTracked: Bool
     @NSManaged public var name: String?
-    @NSManaged public var artistId: String?
+    @NSManaged public var catalogID: String?
+    @NSManaged public var libraryID: String?
+    @NSManaged public var topSongID: String?
 
 }
 

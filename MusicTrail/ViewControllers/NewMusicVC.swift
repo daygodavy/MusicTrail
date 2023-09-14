@@ -29,14 +29,14 @@ class NewMusicVC: UIViewController {
 //                try await MusicKitManager.shared.
 //                let artistName: String = "BackendRecords"
                 let artistName: String = "LouieTheRapper"
-                let libraryArtist = try await MusicKitManager.shared.getLibraryArtist(artistName)
+//                let libraryArtist = try await MusicKitManager.shared.getLibraryArtist(artistName)
                 
 //                guard let libraryTopSong = libraryArtist?.topSongs?.first else { return }
                 
 //                let catalogArtist = try await MusicKitManager.shared.getCatalogArtist(artistName, topSong: libraryTopSong)
-                let catalogArtist = try await MusicKitManager.shared.getCatalogArtist(artistName)
-            
-                guard let catalogTopSing = catalogArtist.topSongs?.first else { return }
+//                let catalogArtist = try await MusicKitManager.shared.getCatalogArtist(artistName)
+//            
+//                guard let catalogTopSing = catalogArtist.topSongs?.first else { return }
 //                print("Library artist (\(libraryArtist?.name))- \(libraryArtist?.id): \(libraryTopSong)")
 //                print("Catalog artist (\(catalogArtist.name))- \(catalogArtist.id): \(catalogTopSing)")
 //                print("Same artist? -> \(libraryTopSong == catalogTopSing)")
