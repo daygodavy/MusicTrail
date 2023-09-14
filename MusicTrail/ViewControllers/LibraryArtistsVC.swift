@@ -87,6 +87,7 @@ class LibraryArtistsVC: MTDataLoadingVC {
                 
                 selectedArtists = try await MusicKitManager.shared.mapLibraryToCatalog(selectedArtists)
                 
+                print("DONE~~~~~~~~~~~~~~~~!!!!!!!")
                 delegate?.importSavedArtists(selectedArtists)
 
             } catch {

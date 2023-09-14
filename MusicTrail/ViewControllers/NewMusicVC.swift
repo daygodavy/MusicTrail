@@ -27,17 +27,19 @@ class NewMusicVC: UIViewController {
             do {
 //                try await MusicKitManager.shared.fetchNewMusic()
 //                try await MusicKitManager.shared.
-                let artistName: String = "Morgan"
+//                let artistName: String = "BackendRecords"
+                let artistName: String = "LouieTheRapper"
                 let libraryArtist = try await MusicKitManager.shared.getLibraryArtist(artistName)
                 
-                guard let libraryTopSong = libraryArtist?.topSongs?.first else { return }
+//                guard let libraryTopSong = libraryArtist?.topSongs?.first else { return }
                 
-                let catalogArtist = try await MusicKitManager.shared.getCatalogArtist(artistName, topSong: libraryTopSong)
+//                let catalogArtist = try await MusicKitManager.shared.getCatalogArtist(artistName, topSong: libraryTopSong)
+                let catalogArtist = try await MusicKitManager.shared.getCatalogArtist(artistName)
             
                 guard let catalogTopSing = catalogArtist.topSongs?.first else { return }
-                print("Library artist (\(libraryArtist?.name))- \(libraryArtist?.id): \(libraryTopSong)")
-                print("Catalog artist (\(catalogArtist.name))- \(catalogArtist.id): \(catalogTopSing)")
-                print("Same artist? -> \(libraryTopSong == catalogTopSing)")
+//                print("Library artist (\(libraryArtist?.name))- \(libraryArtist?.id): \(libraryTopSong)")
+//                print("Catalog artist (\(catalogArtist.name))- \(catalogArtist.id): \(catalogTopSing)")
+//                print("Same artist? -> \(libraryTopSong == catalogTopSing)")
             } catch {
                 print("ERROR!")
             }
