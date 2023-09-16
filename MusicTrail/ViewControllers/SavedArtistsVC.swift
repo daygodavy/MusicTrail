@@ -278,7 +278,8 @@ extension SavedArtistsVC: AddNewArtistVCDelegate {
     
     func saveNewArtist(_ newArtist: MTArtist) {
         savedArtists.append(newArtist)
-        musicArtistRepo.saveLibraryArtists([newArtist])
+        musicArtistRepo.saveCatalogArtist(newArtist)
+        
         resetTracked()
         updateCVUI(with: savedArtists)
     }

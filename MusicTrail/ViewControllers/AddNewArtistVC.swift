@@ -70,12 +70,6 @@ class AddNewArtistVC: UIViewController {
         }
     }
     
-    private func saveSelectedArtist(_ artist: MTArtist) {
-        searchDelayTimer?.invalidate()
-        delegate?.saveNewArtist(artist)
-        backButtonTapped()
-    }
-    
     private func getSearchedArtists(_ searchTerm: String) {
         searchDelayTimer = Timer.scheduledTimer(withTimeInterval: delayDuration, repeats: false, block: { [weak self] _ in
             Task {
@@ -89,6 +83,12 @@ class AddNewArtistVC: UIViewController {
                 }
             }
         })
+    }
+    
+    private func saveSelectedArtist(_ artist: MTArtist) {
+        searchDelayTimer?.invalidate()
+        delegate?.saveNewArtist(artist)
+        backButtonTapped()
     }
     
     private func updateData() {

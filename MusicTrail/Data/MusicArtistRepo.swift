@@ -29,6 +29,21 @@ class MusicArtistRepo {
         cdRepo.save()
     }
     
+    func saveCatalogArtist(_ artist: MTArtist) {
+        var newArtist = MusicArtist(context: cdRepo.getContext())
+        
+        newArtist.name = artist.name
+        newArtist.libraryID = nil
+        newArtist.catalogID = artist.catalogID?.rawValue
+        newArtist.topSongID = artist.topSongID?.rawValue
+        newArtist.imageUrl = artist.imageUrl
+        newArtist.artistUrl = nil
+        newArtist.genreName = nil
+        newArtist.isTracked = false
+
+        cdRepo.save()
+    }
+    
     // TODO: - CHANGE PREDICATE TO CATALOG ID
     func unsaveArtist(_ artist: MTArtist) {
         let pred = NSPredicate(format: "name == %@", artist.name)
