@@ -216,25 +216,6 @@ class MusicKitManager {
     }
     
     
-//    func isMatchingImageURL(libArtist: MTArtist, catArtist: Artist) -> Bool {
-//        
-//        if let artworkUrl = catArtist.artwork?.url(width: imageWidth, height: imageHeight), let currUrl = libArtist.imageUrl {
-//            
-//            var catalogStr = artworkUrl.absoluteString
-//            var libraryStr = currUrl.absoluteString
-//            
-//            let catalogCheck: () = catalogStr.removeLast(6)
-//            let libraryCheck: () = libraryStr.removeLast(6)
-//            
-//            if catalogCheck == libraryCheck {
-//                print("MATCHING URL")
-//                return true
-//            }
-//        }
-//        
-//        return false
-//    }
-    
     
     // Fetch all artists from library
     func fetchLibraryArtists(_ savedArtists: [MTArtist]) async throws -> [MTArtist] {
@@ -247,17 +228,44 @@ class MusicKitManager {
         
         let response = try await request.response()
         
-        for artist in response.items {
-
-            if try await !isArtistValid(artist, excludedArtists: savedArtists) { continue }
+        try await withThrowingTaskGroup(of: MTArtist?.self) { group in
             
-            if let currArtist = try await convertLibraryArtistToMTArtist(artist) {
+            for artist in response.items {
                 
-                // Store original library artist object
-                originalLibraryArtists[artist.id] = artist
-                allArtists.append(currArtist)
+                group.addTask {
+                    
+                    if try await self.isArtistValid(artist, excludedArtists: savedArtists) {
+                        
+                        if let currArtist = try await self.convertLibraryArtistToMTArtist(artist) {
+                            
+                            // Store original library artist object
+                            self.originalLibraryArtists[artist.id] = artist
+                            return currArtist
+                        }
+                    }
+                    return nil
+                }
             }
+            
+            for try await artist in group {
+                if let artist = artist {
+                    allArtists.append(artist)
+                }
+            }
+            
         }
+        
+//        for artist in response.items {
+//
+//            if try await !isArtistValid(artist, excludedArtists: savedArtists) { continue }
+//            
+//            if let currArtist = try await convertLibraryArtistToMTArtist(artist) {
+//                
+//                // Store original library artist object
+//                originalLibraryArtists[artist.id] = artist
+//                allArtists.append(currArtist)
+//            }
+//        }
         
         return allArtists
     }
