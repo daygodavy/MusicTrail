@@ -75,7 +75,7 @@ class AddNewArtistVC: UIViewController {
             Task {
                 do {
                     self?.searchedArtists.removeAll()
-                    self?.searchedArtists = try await MusicKitManager.shared.fetchSearchedArtists(searchTerm, savedArtists: self?.savedArtists ?? [])
+                    self?.searchedArtists = try await MusicKitManager.shared.fetchSearchedArtists(searchTerm, excludedArtists: self?.savedArtists ?? [])
                     self?.updateData()
                 } catch {
                     print("ERROR!!!!!!!!!!!")

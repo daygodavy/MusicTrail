@@ -19,22 +19,18 @@ class MusicKitManager {
     
     private init() {}
     
-    func fetchSearchedArtists(_ searchTerm: String, savedArtists: [MTArtist]) async throws -> [MTArtist] {
-        if #available(iOS 16.0, *) {
-            var resultArtists: [MTArtist] = []
+    func fetchSearchedArtists(_ searchTerm: String, excludedArtists: [MTArtist]) async throws -> [MTArtist] {
+        var resultArtists: [MTArtist] = []
+        
+        var request = MusicCatalogSearchRequest(term: searchTerm, types: [Artist.self])
+        request.limit = 15
+        
+        let response = try await request.response()
+        
+        let searchedArtists = response.artists
+        for artist in searchedArtists {
             
-            var request = MusicCatalogSearchRequest(term: searchTerm, types: [Artist.self])
-            request.limit = 15
-            
-            let response = try await request.response()
-            
-            let searchedArtists = response.artists
-            for artist in searchedArtists {
-                print("\(artist.name): \(artist.libraryAddedDate)")
-                // TODO: - FIX NAME COMPARISON FILTER HERE ALSO
-                if !savedArtists.isEmpty && savedArtists.contains(where: {$0.name == artist.name}) {
-                    continue
-                }
+            if try await !isExcludedArtist(artist, currSource: .catalog, excludedArtists: excludedArtists) {
                 
                 if let artworkUrl = artist.artwork?.url(
                     width: imageWidth,
@@ -57,60 +53,76 @@ class MusicKitManager {
                 }
                 
             }
+            // TODO: FIX TO FILTER BY CATALOG ID
+//            if !excludedArtists.isEmpty && excludedArtists.contains(where: {$0.name == artist.name}) {
+//                continue
+//            }
+//            
+//            if let artworkUrl = artist.artwork?.url(
+//                width: imageWidth,
+//                height: imageHeight) {
+//                
+//                resultArtists.append(
+//                    MTArtist(name: artist.name,
+//                             catalogID: artist.id,
+//                             libraryID: nil,
+//                             imageUrl: artworkUrl))
+//            } else {
+//                let topSongID = try await fetchArtistTopSongID(currArtist: artist, currSource: .catalog)
+//                
+//                resultArtists.append(
+//                    MTArtist(name: artist.name,
+//                             catalogID: artist.id,
+//                             libraryID: nil,
+//                             topSongID: topSongID,
+//                             imageUrl: nil))
+//            }
             
-            return resultArtists
-            
-        } else {
-            // Fallback on earlier versions
         }
         
-        throw fatalError()
+        return resultArtists
+            
     }
     
     
     func fetchNewArtist(_ libraryArtist: Artist, librarySongID: MusicItemID) async throws -> MTArtist {
-        if #available(iOS 16.0, *) {
-            var allArtists: [MTArtist] = []
+        var allArtists: [MTArtist] = []
+        
+        var request = MusicCatalogSearchRequest(term: libraryArtist.name, types: [Artist.self])
+        
+        let response = try await request.response()
+        
+        if response.artists.isEmpty { print("EMPTY!!!!!!!") }
+        
+        for artist in response.artists {
             
-            var request = MusicCatalogSearchRequest(term: libraryArtist.name, types: [Artist.self])
-            
-            let response = try await request.response()
-            
-            if response.artists.isEmpty { print("EMPTY!!!!!!!")}
-            
-            for artist in response.artists {
+            if artist.name.lowercased() == libraryArtist.name.lowercased() {
                 
-                if artist.name.lowercased() == libraryArtist.name.lowercased() {
+                guard let catalogSongID = try await fetchArtistTopSongID(currArtist: artist, currSource: .catalog) else { fatalError() }
+                
+                if catalogSongID == librarySongID {
+                    print("MATCH FOUND")
                     
-                    guard let catalogSongID = try await fetchArtistTopSongID(currArtist: artist, currSource: .catalog) else { fatalError() }
-                    
-                    if catalogSongID == librarySongID {
-                        print("MATCH FOUND")
+                    if let artworkUrl = artist.artwork?.url(width: imageWidth, height: imageHeight) {
                         
-                        if let artworkUrl = artist.artwork?.url(width: imageWidth, height: imageHeight) {
-                            
-                            return MTArtist(name: artist.name,
-                                            catalogID: artist.id,
-                                            libraryID: libraryArtist.id,
-                                            topSongID: catalogSongID,
-                                            imageUrl: artworkUrl)
-                        } else {
+                        return MTArtist(name: artist.name,
+                                        catalogID: artist.id,
+                                        libraryID: libraryArtist.id,
+                                        topSongID: catalogSongID,
+                                        imageUrl: artworkUrl)
+                    } else {
 
-                            return MTArtist(name: artist.name,
-                                            catalogID: artist.id,
-                                            libraryID: libraryArtist.id,
-                                            topSongID: catalogSongID,
-                                            imageUrl: nil)
-                        }
+                        return MTArtist(name: artist.name,
+                                        catalogID: artist.id,
+                                        libraryID: libraryArtist.id,
+                                        topSongID: catalogSongID,
+                                        imageUrl: nil)
                     }
                 }
             }
-            
-            // TODO: - MATCH NOT FOUND.... HANDLE IT
-            
-        } else {
-            // Fallback on earlier versions
         }
+        
+        // TODO: - MATCH NOT FOUND.... HANDLE IT
         
         throw fatalError()
     }
@@ -129,7 +141,6 @@ class MusicKitManager {
             
             
             // TODO: - VERIFY LIBRARY ARTIST IS VALID IN CATALOG, ELSE SKIP IT
-            // COMBINE BELOW CHECK SINCE ITS AN EXTRA SEARCHREQUEST
 
             // CHECK IF LIBRARY ARTIST HAS IMAGEURL, IF YES THEN COMPARE TO CATALOG COUNTERPART
             if let _ = artist.imageUrl,
@@ -184,23 +195,34 @@ class MusicKitManager {
             
             if artist.name.lowercased() == currArtist.name.lowercased() {
                 
-                if let catArtistImageUrl = artist.artwork?.url(width: imageWidth, height: imageHeight),
-                    let libArtistImageUrl = currArtist.imageUrl,
-                    isMatchingImageURL(catArtistImageUrl, libArtistImageUrl) {
-                    
-                    return MTArtist(name: artist.name,
-                                    catalogID: artist.id,
-                                    libraryID: currArtist.libraryID,
-                                    imageUrl: currArtist.imageUrl)
+                let catArtistImageURL = artist.artwork?.url(width: imageWidth, height: imageHeight)
+                
+                guard isMatchingImageURL(catArtistImageURL, currArtist.imageUrl) else {
+                    return nil
                 }
+                
+                return MTArtist(name: artist.name,
+                                catalogID: artist.id,
+                                libraryID: currArtist.libraryID,
+                                imageUrl: currArtist.imageUrl)
+                
+//                if let catArtistImageUrl = artist.artwork?.url(width: imageWidth, height: imageHeight),
+//                    let libArtistImageUrl = currArtist.imageUrl,
+//                    isMatchingImageURL(catArtistImageUrl, libArtistImageUrl) {
+//                    
+//                    return MTArtist(name: artist.name,
+//                                    catalogID: artist.id,
+//                                    libraryID: currArtist.libraryID,
+//                                    imageUrl: currArtist.imageUrl)
+//                }
             }
         }
         
         return nil
     }
     
-    func isMatchingImageURL(_ imgUrl1: URL, _ imgUrl2: URL) -> Bool {
-        
+    func isMatchingImageURL(_ imgUrl1: URL?, _ imgUrl2: URL?) -> Bool {
+        guard let imgUrl1 = imgUrl1, let imgUrl2 = imgUrl2 else { return false }
         var strUrl1 = imgUrl1.absoluteString
         var strUrl2 = imgUrl2.absoluteString
         
@@ -224,8 +246,6 @@ class MusicKitManager {
         
         var request = MusicLibraryRequest<Artist>()
         request.sort(by: \.name, ascending: true)
-        
-        
         let response = try await request.response()
         
         try await withThrowingTaskGroup(of: MTArtist?.self) { group in
@@ -234,16 +254,13 @@ class MusicKitManager {
                 
                 group.addTask {
                     
-                    if try await self.isArtistValid(artist, excludedArtists: savedArtists) {
-                        
-                        if let currArtist = try await self.convertLibraryArtistToMTArtist(artist) {
-                            
-                            // Store original library artist object
-                            self.originalLibraryArtists[artist.id] = artist
-                            return currArtist
-                        }
-                    }
-                    return nil
+                    guard try await self.isArtistValid(artist, excludedArtists: savedArtists),
+                            let currArtist = try await self.convertLibraryArtistToMTArtist(artist)
+                    else { return nil }
+                    
+                    // Store original library artist object
+                    self.originalLibraryArtists[artist.id] = artist
+                    return currArtist
                 }
             }
             
@@ -254,18 +271,6 @@ class MusicKitManager {
             }
             
         }
-        
-//        for artist in response.items {
-//
-//            if try await !isArtistValid(artist, excludedArtists: savedArtists) { continue }
-//            
-//            if let currArtist = try await convertLibraryArtistToMTArtist(artist) {
-//                
-//                // Store original library artist object
-//                originalLibraryArtists[artist.id] = artist
-//                allArtists.append(currArtist)
-//            }
-//        }
         
         return allArtists
     }
@@ -315,51 +320,112 @@ class MusicKitManager {
             return false
         }
         
-        if excludedArtists.contains(
-            where: { $0.name.lowercased() == artistName.lowercased() }
-        ) {
+        if try await isExcludedArtist(currArtist, currSource: .library, excludedArtists: excludedArtists) {
             
-            for artist in excludedArtists {
-             
-                // Filter out saved library artists
-                if let libraryID = artist.libraryID,
-                    currArtist.id == libraryID {
-                    return false
-                    
-                } else if let catalogID = artist.catalogID {
-                    // Filter out saved catalog artists
-                    // Edge case: artist saved from catalog, then user adds them to library
-                    
-                    // imageURL comparison check
-                    if let catalogImageURL = artist.imageUrl,
-                       let libraryImageURL = formatLibraryArtistArtwork(currArtist), isMatchingImageURL(catalogImageURL, libraryImageURL) {
-                        return false
-                    }
-                    
-                    
-                    // topSongID comparison check
-                    do {
-                        
-                        if let catalogSongId = artist.topSongID,
-                            let librarySongId = try await fetchArtistTopSongID(
-                                currArtist: currArtist,
-                                currSource: .library),
-                            catalogSongId == librarySongId {
-                            
-                            return false
-                        }
-                        
-                    } catch {
-                        print("Error fetching topSongID for library artist")
-                    }
-                }
-            }
+            return false
         }
+//        if !excludedArtists.isEmpty && excludedArtists.contains(
+//            where: { $0.name.lowercased() == artistName.lowercased() }
+//        ) {
+//            
+//            
+//            
+//            for artist in excludedArtists {
+//             
+//                // Filter out saved library artists
+//                if let libraryID = artist.libraryID,
+//                    currArtist.id == libraryID {
+//                    return false
+//                    
+//                } else if let catalogID = artist.catalogID {
+//                    // Filter out saved catalog artists
+//                    // Edge case: artist saved from catalog, then user adds them to library
+//                    
+//                    // imageURL comparison check
+//                    let libraryImageURL = formatLibraryArtistArtwork(currArtist)
+//                    
+//                    guard !isMatchingImageURL(artist.imageUrl, libraryImageURL) else {
+//                        return false
+//                    }
+////                    if let catalogImageURL = artist.imageUrl,
+////                       let libraryImageURL = formatLibraryArtistArtwork(currArtist), isMatchingImageURL(catalogImageURL, libraryImageURL) {
+////                        return false
+////                    }
+//                    
+//                    
+//                    // topSongID comparison check
+//                    if let catalogSongId = artist.topSongID,
+//                        let librarySongId = try await fetchArtistTopSongID(
+//                            currArtist: currArtist,
+//                            currSource: .library),
+//                        catalogSongId == librarySongId {
+//                        
+//                        return false
+//                    }
+//
+//                }
+//            }
+//        }
         
         return true
     }
     
-
+    
+    func isExcludedArtist(_ currArtist: Artist, currSource: MusicPropertySource, excludedArtists: [MTArtist]) async throws -> Bool {
+        
+        guard excludedArtists.contains(where: { $0.name == currArtist.name })
+        else { return false }
+        
+        switch currSource {
+        case .library:
+            // Check comparison if libraryID match in excludedArtists
+            // TODO: - CONFIRM IF I CAN COMPARE OPTIONAL ID AND ID HERE
+            if excludedArtists.contains(
+                where: { $0.libraryID == currArtist.id }) {
+                
+                return true
+            }
+        
+            // Edge case: artist imported from catalog, then user adds artist in their library -> compare imageURL
+            let currArtistImageURL = formatLibraryArtistArtwork(currArtist)
+            
+            if excludedArtists.contains(
+                where: { isMatchingImageURL($0.imageUrl, currArtistImageURL) }) {
+                
+                return true
+            }
+            
+            // Worst case for assurance -> compare topSongID match if imageURL doesn't match
+            // Edge case: artist in library with no image, but user adds artist from catalog with image
+            guard let currArtistTopSongID = try await fetchArtistTopSongID(currArtist: currArtist, currSource: .library)
+            else { return true }
+            
+            if excludedArtists.contains(
+                where: { $0.topSongID == currArtistTopSongID }) {
+                
+                return true
+            }
+            
+        case .catalog:
+            // Check if catalogID match in excludedArtists
+            // TODO: - CONFIRM IF I CAN COMPARE OPTIONAL ID AND ID HERE
+            if excludedArtists.contains(where: { $0.catalogID == currArtist.id }) {
+                return true
+            }
+        @unknown default:
+            fatalError()
+        }
+        
+        return false
+    }
+    
+    
+    func isMatchingTopSongID(_ topSongId1: MusicItemID?, _ topSongId2: MusicItemID?) {
+        
+        
+        
+    }
+    
 }
     
     

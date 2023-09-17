@@ -102,7 +102,9 @@ class LibraryArtistsVC: MTDataLoadingVC {
     private func getLibraryArtists() {
         Task {
             do {
-                libraryArtists = try await MusicKitManager.shared.fetchLibraryArtists(savedArtists)
+                libraryArtists = try await MusicKitManager.shared
+                    .fetchLibraryArtists(savedArtists)
+                
                 filteredArtists = libraryArtists
                 updateData()
                 dismissLoadingView()
