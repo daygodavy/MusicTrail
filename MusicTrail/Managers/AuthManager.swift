@@ -10,15 +10,15 @@ import UIKit
 
 class AuthManager {
     
-    private func checkAuthorizationStatus() async throws -> Bool {
-        guard MusicAuthorization.currentStatus != .authorized else { return true }
+    private func checkAuthorizationStatus() async throws {
+        guard MusicAuthorization.currentStatus != .authorized else { return }
         
         let status = await MusicAuthorization.request()
         
         switch status {
         case .authorized:
             // user accepted permission to use MusicKit
-            return true
+            return
         case .denied:
             // user denied permission to use MusicKit
             throw MTError.permissionDenied
@@ -32,7 +32,21 @@ class AuthManager {
             throw MTError.unknown
         }
     }
+
+    // Check if user has apple music subscription (to access library)
+    private func checkAppleMusicStatus() async throws {
+        guard try await MusicSubscription.current.canPlayCatalogContent else {
+            throw MTError.invalidAppleMusicSub
+        }
+    }
     
+    func ensureAppleMusicSubscription() async throws {
+        do {
+            try await checkAppleMusicStatus()
+        } catch {
+            throw error
+        }
+    }
     
     func ensureAuthorization() async throws {
         do {
@@ -42,34 +56,4 @@ class AuthManager {
         }
     }
 
-
-    func checkAppleMusicStatus() async {
-        // check if canPlayCatalogContent == true --> they're a subscriber
-        
-        
-        // == false --> check if canBecomeSubscriber
-        
-        
-        do {
-            print("PRINTING MUSIC SUB CURRENT STATUS: ")
-            try await print(MusicSubscription.current)
-        } catch {
-            print("ERROR CAUGHT IN CHECKING APPLE MUSIC STATUS")
-        }
-    }
-    
-//    func checkAppleMusicStatus() async throws -> Bool {
-//        guard try await MusicSubscription.current.canPlayCatalogContent else {
-//            throw MTError.
-//        }
-//        
-//        return true
-        
-//        do {
-//            return try await MusicSubscription.current.canPlayCatalogContent
-//        } catch {
-//            print("Something went wrong with checking Apple Music status.")
-//            
-//        }
-//    }
 }

@@ -181,6 +181,7 @@ class MusicKitManager {
     // TODO: - Check if user authorized consent to access library and has apple music..
     func fetchLibraryArtists(_ savedArtists: [MTArtist]) async throws -> [MTArtist] {
         try await accessAuthenticator.ensureAuthorization()
+        try await accessAuthenticator.ensureAppleMusicSubscription()
         
         var allArtists: [MTArtist] = []
         originalLibraryArtists.removeAll()
