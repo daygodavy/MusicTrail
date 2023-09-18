@@ -12,6 +12,8 @@ import UIKit
 class MusicKitManager {
     
     static let shared = MusicKitManager()
+    let accessAuthenticator = AuthManager()
+    
     let imageWidth: Int = 336
     let imageHeight: Int = 336
     
@@ -173,10 +175,13 @@ class MusicKitManager {
         return catalogArtists
     }
     
-    
+//    
     
     // Fetch all artists from library
+    // TODO: - Check if user authorized consent to access library and has apple music..
     func fetchLibraryArtists(_ savedArtists: [MTArtist]) async throws -> [MTArtist] {
+        try await accessAuthenticator.ensureAuthorization()
+        
         var allArtists: [MTArtist] = []
         originalLibraryArtists.removeAll()
         
@@ -194,7 +199,6 @@ class MusicKitManager {
                     
                     // Store original library artist object
                     self.originalLibraryArtists[artist.id] = artist
-//                    return try await self.convertLibraryArtistToMTArtist(artist)
                     return try await self.convertToMTArtist(artist, libID: artist.id, source: .library)
                 }
             }
@@ -232,7 +236,6 @@ class MusicKitManager {
         }
         
         if try await isExcludedArtist(currArtist, currSource: .library, excludedArtists: excludedArtists) {
-            
             return false
         }
         
@@ -248,7 +251,6 @@ class MusicKitManager {
         switch currSource {
         case .library:
             // Check comparison if libraryID match in excludedArtists
-            // TODO: - CONFIRM IF I CAN COMPARE OPTIONAL ID AND ID HERE
             if excludedArtists.contains(
                 where: { $0.libraryID == currArtist.id }) {
                 
@@ -256,10 +258,8 @@ class MusicKitManager {
             }
         
             // Edge case: artist imported from catalog, then user adds artist in their library -> compare imageURL
-            let currArtistImageURL = formatLibraryArtistArtwork(currArtist)
-            
-            if excludedArtists.contains(
-                where: { isMatchingImageURL($0.imageUrl, currArtistImageURL) }) {
+            if let currArtistImageURL = formatLibraryArtistArtwork(currArtist),
+                excludedArtists.contains(where: { isMatchingImageURL($0.imageUrl, currArtistImageURL) }) {
                 
                 return true
             }
@@ -277,12 +277,13 @@ class MusicKitManager {
             
         case .catalog:
             // Check if catalogID match in excludedArtists
-            // TODO: - CONFIRM IF I CAN COMPARE OPTIONAL ID AND ID HERE
             if excludedArtists.contains(where: { $0.catalogID == currArtist.id }) {
                 return true
             }
+
         @unknown default:
-            fatalError()
+            // TODO: - unknown error happened, please try again
+            break
         }
         
         return false

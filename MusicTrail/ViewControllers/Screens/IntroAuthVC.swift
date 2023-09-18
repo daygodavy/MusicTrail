@@ -28,33 +28,35 @@ class IntroAuthVC: UIViewController {
     
     // MARK: - Methods
     @objc func startButtonTapped() {
-        var permissionStatus = false
-        var appleMusicStatus = false
+        presentTabBarVC()
         
-        // request access to user's music data
-        Task {
-            permissionStatus = await AuthManager.shared.checkAuthorizationStatus()
-            print("permissionStatus: \(permissionStatus)")
-            
-            if permissionStatus {
-                // confirm apple music subscription
-                appleMusicStatus = await AuthManager.shared.checkAppleMusicStatus()
-                
-                if appleMusicStatus {
-                    // both confirmed -> continue
-                    print("Success: both confirmed")
-                    presentTabBarVC()
-                } else {
-                    // no apple music subscription
-                    // show VC that they're blocked
-                    print("Sorry you need Apple Music")
-                }
-            } else {
-                // permission not granted
-                // show VC that they're blocked
-                print("Sorry you need to provide permission to access")
-            }
-        }
+//        var permissionStatus = false
+//        var appleMusicStatus = false
+//        
+//        // request access to user's music data
+//        Task {
+//            permissionStatus = await AuthManager.shared.checkAuthorizationStatus()
+//            print("permissionStatus: \(permissionStatus)")
+//            
+//            if permissionStatus {
+//                // confirm apple music subscription
+//                appleMusicStatus = await AuthManager.shared.checkAppleMusicStatus()
+//                
+//                if appleMusicStatus {
+//                    // both confirmed -> continue
+//                    print("Success: both confirmed")
+//                    presentTabBarVC()
+//                } else {
+//                    // no apple music subscription
+//                    // show VC that they're blocked
+//                    print("Sorry you need Apple Music")
+//                }
+//            } else {
+//                // permission not granted
+//                // show VC that they're blocked
+//                print("Sorry you need to provide permission to access")
+//            }
+//        }
     }
     
     private func presentTabBarVC() {

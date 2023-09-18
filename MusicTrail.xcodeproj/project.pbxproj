@@ -42,6 +42,9 @@
 		5BE3E2C32AB3B88F00C825AB /* MusicArtist+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BE3E2C12AB3B88F00C825AB /* MusicArtist+CoreDataClass.swift */; };
 		5BE3E2C42AB3B88F00C825AB /* MusicArtist+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BE3E2C22AB3B88F00C825AB /* MusicArtist+CoreDataProperties.swift */; };
 		5BEED3E92AB8DC250099E533 /* MTError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BEED3E82AB8DC250099E533 /* MTError.swift */; };
+		5BEED3EB2AB902750099E533 /* UIViewController+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BEED3EA2AB902750099E533 /* UIViewController+Ext.swift */; };
+		5BEED3EF2AB9031B0099E533 /* MTAlertVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BEED3EE2AB9031B0099E533 /* MTAlertVC.swift */; };
+		5BEED3F62AB903DF0099E533 /* MTAlertContainerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BEED3F52AB903DF0099E533 /* MTAlertContainerView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -101,6 +104,9 @@
 		5BE3E2C12AB3B88F00C825AB /* MusicArtist+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MusicArtist+CoreDataClass.swift"; sourceTree = "<group>"; };
 		5BE3E2C22AB3B88F00C825AB /* MusicArtist+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MusicArtist+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		5BEED3E82AB8DC250099E533 /* MTError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MTError.swift; sourceTree = "<group>"; };
+		5BEED3EA2AB902750099E533 /* UIViewController+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+Ext.swift"; sourceTree = "<group>"; };
+		5BEED3EE2AB9031B0099E533 /* MTAlertVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MTAlertVC.swift; sourceTree = "<group>"; };
+		5BEED3F52AB903DF0099E533 /* MTAlertContainerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MTAlertContainerView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -151,13 +157,11 @@
 		5B5B68D12A65E30400EA3D9B /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				5B5B68D62A65E6A000EA3D9B /* RecordCell.swift */,
-				5B5B68D82A65ECBC00EA3D9B /* ArtistTVCell.swift */,
-				5B5B68E12A686C5F00EA3D9B /* ArtistImageView.swift */,
-				5B5B68E92A69AEC400EA3D9B /* MTTitleLabel.swift */,
-				5B5B68EB2A69AF8200EA3D9B /* MTBodyLabel.swift */,
-				5B5B68ED2A69B09700EA3D9B /* MTButton.swift */,
-				5BE3E2B92AA7DF1000C825AB /* ArtistCVCell.swift */,
+				5BEED3F42AB903930099E533 /* CustomViews */,
+				5BEED3F32AB903820099E533 /* ImageViews */,
+				5BEED3F22AB9036A0099E533 /* Buttons */,
+				5BEED3F12AB903500099E533 /* Cells */,
+				5BEED3F02AB903460099E533 /* Labels */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -165,13 +169,10 @@
 		5B5B68D32A65E31300EA3D9B /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
-				5B5B68DA2A673A8800EA3D9B /* NewMusicVC.swift */,
-				5B5B68DC2A673AA500EA3D9B /* SavedArtistsVC.swift */,
-				5B5B68DE2A673B3000EA3D9B /* MTTabBarController.swift */,
-				5B5B68E52A687DF300EA3D9B /* LibraryArtistsVC.swift */,
-				5B5B68E72A69AE1900EA3D9B /* IntroAuthVC.swift */,
+				5BEED3ED2AB902DF0099E533 /* TabBars */,
+				5BEED3EC2AB902B30099E533 /* Screens */,
 				5BE3E2BD2AAA6FAE00C825AB /* MTDataLoadingVC.swift */,
-				5BE3E2BF2AAFA44A00C825AB /* AddNewArtistVC.swift */,
+				5BEED3EE2AB9031B0099E533 /* MTAlertVC.swift */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -201,6 +202,7 @@
 			isa = PBXGroup;
 			children = (
 				5B5B695B2A78449700EA3D9B /* String+Ext.swift */,
+				5BEED3EA2AB902750099E533 /* UIViewController+Ext.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -267,6 +269,69 @@
 				5B920A4B2A5E17AE00464A8C /* MusicTrailUITestsLaunchTests.swift */,
 			);
 			path = MusicTrailUITests;
+			sourceTree = "<group>";
+		};
+		5BEED3EC2AB902B30099E533 /* Screens */ = {
+			isa = PBXGroup;
+			children = (
+				5B5B68E72A69AE1900EA3D9B /* IntroAuthVC.swift */,
+				5B5B68DA2A673A8800EA3D9B /* NewMusicVC.swift */,
+				5BE3E2BF2AAFA44A00C825AB /* AddNewArtistVC.swift */,
+				5B5B68E52A687DF300EA3D9B /* LibraryArtistsVC.swift */,
+				5B5B68DC2A673AA500EA3D9B /* SavedArtistsVC.swift */,
+			);
+			path = Screens;
+			sourceTree = "<group>";
+		};
+		5BEED3ED2AB902DF0099E533 /* TabBars */ = {
+			isa = PBXGroup;
+			children = (
+				5B5B68DE2A673B3000EA3D9B /* MTTabBarController.swift */,
+			);
+			path = TabBars;
+			sourceTree = "<group>";
+		};
+		5BEED3F02AB903460099E533 /* Labels */ = {
+			isa = PBXGroup;
+			children = (
+				5B5B68E92A69AEC400EA3D9B /* MTTitleLabel.swift */,
+				5B5B68EB2A69AF8200EA3D9B /* MTBodyLabel.swift */,
+			);
+			path = Labels;
+			sourceTree = "<group>";
+		};
+		5BEED3F12AB903500099E533 /* Cells */ = {
+			isa = PBXGroup;
+			children = (
+				5BE3E2B92AA7DF1000C825AB /* ArtistCVCell.swift */,
+				5B5B68D82A65ECBC00EA3D9B /* ArtistTVCell.swift */,
+				5B5B68D62A65E6A000EA3D9B /* RecordCell.swift */,
+			);
+			path = Cells;
+			sourceTree = "<group>";
+		};
+		5BEED3F22AB9036A0099E533 /* Buttons */ = {
+			isa = PBXGroup;
+			children = (
+				5B5B68ED2A69B09700EA3D9B /* MTButton.swift */,
+			);
+			path = Buttons;
+			sourceTree = "<group>";
+		};
+		5BEED3F32AB903820099E533 /* ImageViews */ = {
+			isa = PBXGroup;
+			children = (
+				5B5B68E12A686C5F00EA3D9B /* ArtistImageView.swift */,
+			);
+			path = ImageViews;
+			sourceTree = "<group>";
+		};
+		5BEED3F42AB903930099E533 /* CustomViews */ = {
+			isa = PBXGroup;
+			children = (
+				5BEED3F52AB903DF0099E533 /* MTAlertContainerView.swift */,
+			);
+			path = CustomViews;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -402,6 +467,7 @@
 				5B28BBB22A93F74900300C8A /* Constants.swift in Sources */,
 				5B5B695C2A78449700EA3D9B /* String+Ext.swift in Sources */,
 				5B5B69622A785ABA00EA3D9B /* PersistanceContainer.swift in Sources */,
+				5BEED3EB2AB902750099E533 /* UIViewController+Ext.swift in Sources */,
 				5BEED3E92AB8DC250099E533 /* MTError.swift in Sources */,
 				5B5B68E42A686C9B00EA3D9B /* NetworkManager.swift in Sources */,
 				5B5B68E62A687DF300EA3D9B /* LibraryArtistsVC.swift in Sources */,
@@ -425,7 +491,9 @@
 				5B5B68D72A65E6A000EA3D9B /* RecordCell.swift in Sources */,
 				5B5B68EE2A69B09700EA3D9B /* MTButton.swift in Sources */,
 				5B920A2B2A5E17AC00464A8C /* SceneDelegate.swift in Sources */,
+				5BEED3F62AB903DF0099E533 /* MTAlertContainerView.swift in Sources */,
 				5B5B68DB2A673A8800EA3D9B /* NewMusicVC.swift in Sources */,
+				5BEED3EF2AB9031B0099E533 /* MTAlertVC.swift in Sources */,
 				5BE3E2C02AAFA44A00C825AB /* AddNewArtistVC.swift in Sources */,
 				5BE3E2BE2AAA6FAE00C825AB /* MTDataLoadingVC.swift in Sources */,
 				5B5B68E22A686C5F00EA3D9B /* ArtistImageView.swift in Sources */,

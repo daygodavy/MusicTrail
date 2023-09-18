@@ -108,8 +108,21 @@ class LibraryArtistsVC: MTDataLoadingVC {
                 updateData()
                 dismissLoadingView()
             } catch {
-                print("ERROR!!!!!!!!!!!")
-                return
+                if let mtError = error as? MTError {
+                    // present MTAlert with error.rawvalue
+                    DispatchQueue.main.async {
+                        self.dismissLoadingView()
+                        self.presentMTAlert(title: "Permission Denied", message: mtError.rawValue, buttonTitle: "Ok")
+                        // TODO: - show text over table view to say access denied
+                    }
+                } else {
+                    // present default error
+                    DispatchQueue.main.async {
+                        self.dismissLoadingView()
+                        self.presentDefaultError()
+                        // TODO: - show text over table view to say access denied
+                    }
+                }
             }
         }
     }

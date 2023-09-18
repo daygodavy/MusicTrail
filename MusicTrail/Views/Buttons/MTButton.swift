@@ -18,7 +18,7 @@ class MTButton: UIButton {
         fatalError("init(coder:) has not been implemented")
     }
     
-    convenience init (bgColor: UIColor, title: String, systemImageName: String) {
+    convenience init (bgColor: UIColor, title: String, systemImageName: String?=nil) {
         self.init(frame: .zero)
         setupUI(bgColor, title, systemImageName)
     }
@@ -29,13 +29,15 @@ class MTButton: UIButton {
         translatesAutoresizingMaskIntoConstraints = false
     }
     
-    private func setupUI(_ color: UIColor, _ title: String, _ imageName: String) {
+    private func setupUI(_ color: UIColor, _ title: String, _ imageName: String?) {
         configuration?.baseBackgroundColor = color
         configuration?.baseForegroundColor = color
         
-        configuration?.image = UIImage(systemName: imageName)
-        configuration?.imagePadding = 10
-        configuration?.imagePlacement = .trailing
+        if let imageName = imageName {
+            configuration?.image = UIImage(systemName: imageName)
+            configuration?.imagePadding = 10
+            configuration?.imagePlacement = .trailing
+        }
         
         configuration?.attributedTitle = AttributedString(title)
         configuration?.attributedTitle?.font = UIFont.systemFont(ofSize: 24)
