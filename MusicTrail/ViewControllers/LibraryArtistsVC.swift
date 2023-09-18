@@ -87,7 +87,6 @@ class LibraryArtistsVC: MTDataLoadingVC {
                 
                 selectedArtists = try await MusicKitManager.shared.mapLibraryToCatalog(selectedArtists)
                 
-                print("DONE~~~~~~~~~~~~~~~~!!!!!!!")
                 delegate?.importSavedArtists(selectedArtists)
 
             } catch {
@@ -104,7 +103,7 @@ class LibraryArtistsVC: MTDataLoadingVC {
             do {
                 libraryArtists = try await MusicKitManager.shared
                     .fetchLibraryArtists(savedArtists)
-                libraryArtists.sort { $0.name < $1.name }
+                libraryArtists.sort { $0.name.lowercased() < $1.name.lowercased() }
                 filteredArtists = libraryArtists
                 updateData()
                 dismissLoadingView()

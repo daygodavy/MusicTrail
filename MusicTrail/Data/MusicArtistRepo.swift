@@ -13,9 +13,8 @@ class MusicArtistRepo {
     let cdRepo = CoreDataRepo()
     
     func saveLibraryArtists(_ artists: [MTArtist]) {
-        // TODO: - VERIFY IF WARNING IS VALID TO 'LET'
         for artist in artists {
-            var newArtist = MusicArtist(context: cdRepo.getContext())
+            let newArtist = MusicArtist(context: cdRepo.getContext())
             newArtist.name = artist.name
             newArtist.libraryID = artist.libraryID?.rawValue
             newArtist.catalogID = artist.catalogID?.rawValue
@@ -30,7 +29,7 @@ class MusicArtistRepo {
     }
     
     func saveCatalogArtist(_ artist: MTArtist) {
-        var newArtist = MusicArtist(context: cdRepo.getContext())
+        let newArtist = MusicArtist(context: cdRepo.getContext())
         newArtist.name = artist.name
         newArtist.libraryID = nil
         newArtist.catalogID = artist.catalogID?.rawValue
@@ -39,7 +38,6 @@ class MusicArtistRepo {
         newArtist.artistUrl = nil
         newArtist.genreName = nil
         newArtist.isTracked = false
-
         cdRepo.save()
     }
     
@@ -52,7 +50,6 @@ class MusicArtistRepo {
             return
         }
         
-        print("PROCEEDING TO DELETE")
         cdRepo.delete(artistToDelete)
     }
     
@@ -82,7 +79,8 @@ class MusicArtistRepo {
             fetchedArtists.append(currentArtist)
         }
         
-        fetchedArtists.sort { $0.name < $1.name }
+        fetchedArtists.sort { $0.name.lowercased() < $1.name.lowercased() }
+        
         return fetchedArtists
     }
     

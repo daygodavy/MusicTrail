@@ -41,6 +41,7 @@
 		5BE3E2C02AAFA44A00C825AB /* AddNewArtistVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BE3E2BF2AAFA44A00C825AB /* AddNewArtistVC.swift */; };
 		5BE3E2C32AB3B88F00C825AB /* MusicArtist+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BE3E2C12AB3B88F00C825AB /* MusicArtist+CoreDataClass.swift */; };
 		5BE3E2C42AB3B88F00C825AB /* MusicArtist+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BE3E2C22AB3B88F00C825AB /* MusicArtist+CoreDataProperties.swift */; };
+		5BEED3E92AB8DC250099E533 /* MTError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BEED3E82AB8DC250099E533 /* MTError.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -99,6 +100,7 @@
 		5BE3E2BF2AAFA44A00C825AB /* AddNewArtistVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddNewArtistVC.swift; sourceTree = "<group>"; };
 		5BE3E2C12AB3B88F00C825AB /* MusicArtist+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MusicArtist+CoreDataClass.swift"; sourceTree = "<group>"; };
 		5BE3E2C22AB3B88F00C825AB /* MusicArtist+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MusicArtist+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		5BEED3E82AB8DC250099E533 /* MTError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MTError.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -131,6 +133,7 @@
 			children = (
 				5B28BBB12A93F74900300C8A /* Constants.swift */,
 				5BE3E2BB2AA9017800C825AB /* UIHelper.swift */,
+				5BEED3E82AB8DC250099E533 /* MTError.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -399,6 +402,7 @@
 				5B28BBB22A93F74900300C8A /* Constants.swift in Sources */,
 				5B5B695C2A78449700EA3D9B /* String+Ext.swift in Sources */,
 				5B5B69622A785ABA00EA3D9B /* PersistanceContainer.swift in Sources */,
+				5BEED3E92AB8DC250099E533 /* MTError.swift in Sources */,
 				5B5B68E42A686C9B00EA3D9B /* NetworkManager.swift in Sources */,
 				5B5B68E62A687DF300EA3D9B /* LibraryArtistsVC.swift in Sources */,
 				5BE3E2BC2AA9017800C825AB /* UIHelper.swift in Sources */,
