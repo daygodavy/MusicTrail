@@ -260,6 +260,7 @@ extension SavedArtistsVC: LibraryArtistVCDelegate {
     
     func importSavedArtists(_ newArtists: [MTArtist]) {
         savedArtists.append(contentsOf: newArtists)
+        savedArtists.sort { $0.name < $1.name }
         musicArtistRepo.saveLibraryArtists(newArtists)
         updateCVUI(with: savedArtists)
         
@@ -278,6 +279,7 @@ extension SavedArtistsVC: AddNewArtistVCDelegate {
     
     func saveNewArtist(_ newArtist: MTArtist) {
         savedArtists.append(newArtist)
+        savedArtists.sort { $0.name < $1.name }
         musicArtistRepo.saveCatalogArtist(newArtist)
         
         resetTracked()

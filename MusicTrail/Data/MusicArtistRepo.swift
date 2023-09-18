@@ -31,7 +31,6 @@ class MusicArtistRepo {
     
     func saveCatalogArtist(_ artist: MTArtist) {
         var newArtist = MusicArtist(context: cdRepo.getContext())
-        
         newArtist.name = artist.name
         newArtist.libraryID = nil
         newArtist.catalogID = artist.catalogID?.rawValue
@@ -62,7 +61,6 @@ class MusicArtistRepo {
         let savedArtists: [MusicArtist] = cdRepo.fetch(MusicArtist.self)
         
         for artist in savedArtists {
-            
             guard let name = artist.name,
                     let catalogID = convertToMusicItemID(artist.catalogID)
             else { continue }
@@ -84,6 +82,7 @@ class MusicArtistRepo {
             fetchedArtists.append(currentArtist)
         }
         
+        fetchedArtists.sort { $0.name < $1.name }
         return fetchedArtists
     }
     

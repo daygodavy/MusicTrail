@@ -104,7 +104,7 @@ class LibraryArtistsVC: MTDataLoadingVC {
             do {
                 libraryArtists = try await MusicKitManager.shared
                     .fetchLibraryArtists(savedArtists)
-                
+                libraryArtists.sort { $0.name < $1.name }
                 filteredArtists = libraryArtists
                 updateData()
                 dismissLoadingView()
