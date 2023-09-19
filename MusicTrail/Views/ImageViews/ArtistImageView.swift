@@ -10,7 +10,7 @@ import UIKit
 
 class ArtistImageView: UIImageView {
     
-    let placeholderImage = UIImage(systemName: "person.fill")
+    let placeholderImage = SFSymbol.artistPlaceholder
     var fetchImageTask: Task<Void, Never>?
     
     

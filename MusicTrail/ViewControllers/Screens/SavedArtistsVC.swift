@@ -53,7 +53,7 @@ class SavedArtistsVC: MTDataLoadingVC {
     private func setupDefaultNavBar() {
         let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addButtonTapped))
         
-        let libraryButton = UIBarButtonItem(image: UIImage(systemName: "music.note.list"), style: .plain, target: self, action: #selector(libraryButtonTapped))
+        let libraryButton = UIBarButtonItem(image: SFSymbol.libraryImport, style: .plain, target: self, action: #selector(libraryButtonTapped))
         
         navigationItem.rightBarButtonItems = [addButton, libraryButton]
         

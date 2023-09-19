@@ -18,7 +18,7 @@ class MTTabBarController: UITabBarController {
     func createNewMusicNC() -> UINavigationController {
         let vc = NewMusicVC()
         vc.title = "Music Trail"
-        vc.tabBarItem = UITabBarItem(title: "", image: UIImage(systemName: "music.note.list"), tag: 1)
+        vc.tabBarItem = UITabBarItem(title: "Releases", image: SFSymbol.releasesTab, tag: 1)
         
         return UINavigationController(rootViewController: vc)
     }
@@ -26,7 +26,7 @@ class MTTabBarController: UITabBarController {
     func createArtistsListNC() -> UINavigationController {
         let vc = SavedArtistsVC()
         vc.title = "Artists"
-        vc.tabBarItem = UITabBarItem(title: "", image: UIImage(systemName: "person.3"), tag: 0)
+        vc.tabBarItem = UITabBarItem(title: "Artists", image: SFSymbol.artistsTab, tag: 0)
         
         return UINavigationController(rootViewController: vc)
     }

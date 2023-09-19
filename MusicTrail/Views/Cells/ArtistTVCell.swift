@@ -26,7 +26,7 @@ class ArtistTVCell: UITableViewCell {
     
     private var checkImage: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = UIImage(systemName: "checkmark")
+        imageView.image = SFSymbol.checkmark
         imageView.tintColor = .systemMint
         imageView.isHidden = true
         return imageView

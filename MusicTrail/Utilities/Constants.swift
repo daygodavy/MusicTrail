@@ -7,3 +7,12 @@
 
 import UIKit
 
+enum SFSymbol {
+    
+    static let artistsTab = UIImage(systemName: "music.note.list")
+    static let releasesTab = UIImage(systemName: "person.3")
+    
+    static let libraryImport = UIImage(systemName: "person.2.crop.square.stack.fill")
+    static let artistPlaceholder = UIImage(systemName: "person.fill")
+    static let checkmark = UIImage(systemName: "checkmark")
+}
