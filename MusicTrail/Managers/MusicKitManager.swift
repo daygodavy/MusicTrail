@@ -48,7 +48,7 @@ class MusicKitManager {
                             imageUrl: nil)
         }
         
-        guard let source = source, let topSongID = try await fetchArtistTopSongID(currArtist: artist, currSource: source) else {
+        guard let source = source, let topSongID = await fetchArtistTopSongID(currArtist: artist, currSource: source) else {
             return nil
         }
         
@@ -59,7 +59,9 @@ class MusicKitManager {
                         imageUrl: nil)
     }
     
+
     func fetchSearchedArtists(_ searchTerm: String, excludedArtists: [MTArtist]) async throws -> [MTArtist] {
+        try await accessAuthenticator.ensureAuthorization()
         
         var resultArtists: [MTArtist] = []
         let searchedArtists = try await searchCatalogArtists(term: searchTerm, limit: 25)
@@ -75,16 +77,13 @@ class MusicKitManager {
     }
     
     
-    func fetchCatalogArtistByTopSongID(_ libraryArtist: Artist, librarySongID: MusicItemID) async throws -> MTArtist {
+    func fetchCatalogArtistByTopSongID(_ libraryArtist: Artist, librarySongID: MusicItemID) async throws -> MTArtist? {
         
         let catalogArtists = try await searchCatalogArtists(term: libraryArtist.name)
         
-        // TODO: - NO NAME MATCH -> HANDLE ERROR
-        if catalogArtists.isEmpty { print("EMPTY!!!!!!!") }
-        
         for artist in catalogArtists {
             if artist.name.lowercased() == libraryArtist.name.lowercased() {
-                guard let catalogSongID = try await fetchArtistTopSongID(currArtist: artist, currSource: .catalog) else { fatalError() }
+                guard let catalogSongID = await fetchArtistTopSongID(currArtist: artist, currSource: .catalog) else { return nil }
                 if catalogSongID == librarySongID,
                     let mtArtist = try await convertToMTArtist(artist, libID: libraryArtist.id, catID: artist.id, songID: catalogSongID, source: .catalog) {
 
@@ -92,19 +91,20 @@ class MusicKitManager {
                 }
             }
         }
-        // TODO: - MATCH NOT FOUND.... HANDLE IT
-        throw fatalError()
+        return nil
     }
     
     
-    func fetchArtistTopSongID(currArtist: Artist, currSource: MusicPropertySource) async throws -> MusicItemID? {
+    func fetchArtistTopSongID(currArtist: Artist, currSource: MusicPropertySource) async -> MusicItemID? {
         
-        let artistWithTopSongs = try await currArtist.with([.topSongs], preferredSource: currSource)
-        
-        // MARK: - IF TOP SONG NIL; ARTIST DOESN'T EXIST
-        guard let topSongID = artistWithTopSongs.topSongs?.first?.id else { return nil }
-        
-        return topSongID
+        do {
+            let artistWithTopSongs = try await currArtist.with([.topSongs], preferredSource: currSource)
+            
+            guard let topSongID = artistWithTopSongs.topSongs?.first?.id else { return nil }
+            
+            return topSongID
+        }
+        catch { return nil }
     }
     
     
@@ -139,22 +139,21 @@ class MusicKitManager {
         var strUrl2 = imgUrl2.absoluteString
         
         guard strUrl1.removeLast(6) == strUrl2.removeLast(6) else { return false }
-        
+
         return true
     }
     
+    // TODO: - ADD MUSICKIT AND APPLE MUSIC SUB VALIDATION HERE?
     func mapLibraryToCatalog(_ artists: [MTArtist]) async throws -> [MTArtist] {
-        var catalogArtists: [MTArtist] = []
+        try await accessAuthenticator.ensureAuthorization()
         
-        // TODO: - MAP BY TOP SONG ID TOO?
+        var catalogArtists: [MTArtist] = []
         
         for artist in artists {
             
             guard let currID = artist.libraryID,
                     let currArtist = originalLibraryArtists[currID]
-            else { fatalError() }
-            
-            // TODO: - VERIFY LIBRARY ARTIST IS VALID IN CATALOG, ELSE SKIP IT
+            else { continue }
 
             // CHECK IF LIBRARY ARTIST HAS IMAGEURL, IF YES THEN COMPARE TO CATALOG COUNTERPART
             if let _ = artist.imageUrl,
@@ -163,22 +162,22 @@ class MusicKitManager {
                 // IMAGE URL MATCH FOUND -> ARTIST MAPPED
                 
                 catalogArtists.append(catArtistMatch)
-            } else if let topSongID = try await fetchArtistTopSongID(currArtist: currArtist, currSource: .library) {
+            } else if let topSongID = await fetchArtistTopSongID(currArtist: currArtist, currSource: .library),
+                        let catArtistMatch = try await fetchCatalogArtistByTopSongID(currArtist, librarySongID: topSongID) {
                 // IF LIBRARY IMAGEURL DOESN'T EXIST, CHECK TOP SONG ID
                 // COMPARE TOP SONG ID IF IT EXISTS
                 
-                // TOP SONG MATCH FOUND -> ARTIST MAPPED
-                catalogArtists.append(try await fetchCatalogArtistByTopSongID(currArtist, librarySongID: topSongID))
+                // TOP SONG MATCH FOUND -> MAP ARTIST
+                catalogArtists.append(catArtistMatch)
             }
         }
         
         return catalogArtists
     }
     
-//    
+
     
     // Fetch all artists from library
-    // TODO: - Check if user authorized consent to access library and has apple music..
     func fetchLibraryArtists(_ savedArtists: [MTArtist]) async throws -> [MTArtist] {
         try await accessAuthenticator.ensureAuthorization()
         try await accessAuthenticator.ensureAppleMusicSubscription()
@@ -267,7 +266,7 @@ class MusicKitManager {
             
             // Worst case for assurance -> compare topSongID match if imageURL doesn't match
             // Edge case: artist in library with no image, but user adds artist from catalog with image
-            guard let currArtistTopSongID = try await fetchArtistTopSongID(currArtist: currArtist, currSource: .library)
+            guard let currArtistTopSongID = await fetchArtistTopSongID(currArtist: currArtist, currSource: .library)
             else { return true }
             
             if excludedArtists.contains(
