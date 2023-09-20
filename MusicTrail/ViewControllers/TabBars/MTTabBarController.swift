@@ -11,7 +11,7 @@ class MTTabBarController: UITabBarController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        UITabBar.appearance().tintColor = .systemBrown
+        UITabBar.appearance().tintColor = .systemOrange
         viewControllers = [createArtistsListNC(), createNewMusicNC()]
     }
     

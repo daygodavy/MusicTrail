@@ -9,8 +9,8 @@ import UIKit
 
 enum SFSymbol {
     
-    static let artistsTab = UIImage(systemName: "music.note.list")
-    static let releasesTab = UIImage(systemName: "person.3")
+    static let artistsTab = UIImage(systemName: "person.3")
+    static let releasesTab = UIImage(systemName: "music.note.list")
     
     static let libraryImport = UIImage(systemName: "person.2.crop.square.stack.fill")
     static let artistPlaceholder = UIImage(systemName: "person.fill")

@@ -14,7 +14,7 @@ class ArtistCVCell: UICollectionViewCell {
     private(set) var artist: MTArtist!
     
     // MARK: - UI Components
-    private let artistImage = ArtistImageView(frame: .zero)
+    private let artistImage = ArtworkImageView(frame: .zero)
     
     private var nameLabel: UILabel = {
         let titleLabel = UILabel()
@@ -37,11 +37,12 @@ class ArtistCVCell: UICollectionViewCell {
     }
     
     func set(artist: MTArtist) {
-        self.artistImage.downloadArtistImage(artist.imageUrl, artist: artist.name)
+        self.artistImage.downloadArtworkImage(artist.imageUrl)
         self.artist = artist
         self.nameLabel.text = artist.name
     }
     
+    // MARK: - UI Setup
     private func configure() {
         self.addSubview(artistImage)
         self.addSubview(nameLabel)
@@ -63,6 +64,4 @@ class ArtistCVCell: UICollectionViewCell {
             nameLabel.bottomAnchor.constraint(equalTo: bottomAnchor)
         ])
     }
-    
-    
 }

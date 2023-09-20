@@ -42,7 +42,7 @@ class SavedArtistsVC: MTDataLoadingVC {
         super.viewWillAppear(animated)
     }
     
-    func getSavedArtists() {
+    private func getSavedArtists() {
         savedArtists = musicArtistRepo.fetchSavedArtists()
         updateCVUI(with: savedArtists)
         dismissLoadingView()
@@ -78,7 +78,7 @@ class SavedArtistsVC: MTDataLoadingVC {
     
     
     private func setupCollectionView() {
-        collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: UIHelper.createThreeColumnFlowLayout(in: view))
+        collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: UIHelper.createColumnFlowLayout(in: view, numCols: 3))
         view.addSubview(collectionView)
         collectionView.delegate = self
         collectionView.backgroundColor = .systemBackground
@@ -88,7 +88,11 @@ class SavedArtistsVC: MTDataLoadingVC {
     }
     
     private func setupDataSource() {
-        dataSource = UICollectionViewDiffableDataSource<Section, MTArtist>(collectionView: collectionView, cellProvider: { (collectionView, indexPath, artist) -> UICollectionViewCell? in
+        
+        dataSource = UICollectionViewDiffableDataSource<Section, MTArtist>(
+            collectionView: collectionView,
+            cellProvider: { (collectionView, indexPath, artist) -> UICollectionViewCell? in
+                
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ArtistCVCell.reuseID, for: indexPath) as! ArtistCVCell
             
             cell.set(artist: artist)
@@ -104,7 +108,7 @@ class SavedArtistsVC: MTDataLoadingVC {
         })
     }
     
-    func updateCVUI(with artists: [MTArtist]) {
+    private func updateCVUI(with artists: [MTArtist]) {
         
         if !savedArtists.isEmpty {
 //            savedArtists.sort { $0.name < $1.name }
@@ -116,7 +120,7 @@ class SavedArtistsVC: MTDataLoadingVC {
         }
     }
     
-    func updateData(on artists: [MTArtist]) {
+    private func updateData(on artists: [MTArtist]) {
 //        var sortedArtists = artists.sorted { $0.name < $1.name }
         
         var snapshot = NSDiffableDataSourceSnapshot<Section, MTArtist>()
@@ -138,7 +142,7 @@ class SavedArtistsVC: MTDataLoadingVC {
     
     
     // MARK: - Methods
-    @objc func libraryButtonTapped() {
+    @objc private func libraryButtonTapped() {
         let vcToPresent = LibraryArtistsVC()
         vcToPresent.delegate = self
         vcToPresent.savedArtists = self.savedArtists
@@ -149,7 +153,7 @@ class SavedArtistsVC: MTDataLoadingVC {
     }
 
     
-    @objc func addButtonTapped() {
+    @objc private func addButtonTapped() {
         let vcToPresent = AddNewArtistVC()
         vcToPresent.delegate = self
         vcToPresent.savedArtists = self.savedArtists

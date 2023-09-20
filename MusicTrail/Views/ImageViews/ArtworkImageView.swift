@@ -7,8 +7,12 @@
 
 import UIKit
 
+enum ArtworkStyle {
+    case square
+    case circle
+}
 
-class ArtistImageView: UIImageView {
+class ArtworkImageView: UIImageView {
     
     let placeholderImage = SFSymbol.artistPlaceholder
     var fetchImageTask: Task<Void, Never>?
@@ -19,6 +23,12 @@ class ArtistImageView: UIImageView {
         fetchImageTask = nil
         configure()
     }
+    
+//    init(frame: CGRect, style: ArtworkStyle) {
+//        super.init(frame: frame)
+//        fetchImageTask = nil
+//        configure()
+//    }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
@@ -37,7 +47,7 @@ class ArtistImageView: UIImageView {
         translatesAutoresizingMaskIntoConstraints = false
     }
   
-    func downloadArtistImage(_ url: URL?, artist: String) {
+    func downloadArtworkImage(_ url: URL?) {
         fetchImageTask?.cancel()
         
         guard let url = url else {

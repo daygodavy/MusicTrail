@@ -26,8 +26,8 @@ class MTTitleLabel: UILabel {
     }
     
     private func configure() {
-        adjustsFontSizeToFitWidth = true
-        minimumScaleFactor = 0.9
+//        adjustsFontSizeToFitWidth = true
+//        minimumScaleFactor = 0.9
         lineBreakMode = .byTruncatingTail
         translatesAutoresizingMaskIntoConstraints = false
     }

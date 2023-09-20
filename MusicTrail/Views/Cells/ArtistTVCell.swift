@@ -22,7 +22,7 @@ class ArtistTVCell: UITableViewCell {
     private(set) var artist: MTArtist!
     
     // MARK: - UI Components
-    private let artistImage = ArtistImageView(frame: .zero)
+    private let artistImage = ArtworkImageView(frame: .zero)
     
     private var checkImage: UIImageView = {
         let imageView = UIImageView()
@@ -53,7 +53,7 @@ class ArtistTVCell: UITableViewCell {
     }
     
     public func configure(with artist: MTArtist, state: ArtistViewState) {
-        self.artistImage.downloadArtistImage(artist.imageUrl, artist: artist.name)
+        self.artistImage.downloadArtworkImage(artist.imageUrl)
         self.artist = artist
         self.nameLabel.text = artist.name
         updateCheck(state)

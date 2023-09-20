@@ -1,8 +1,8 @@
 //
-//  Artist.swift
+//  MTArtist.swift
 //  MusicTrail
 //
-//  Created by Davy Chuon on 7/14/23.
+//  Created by Davy Chuon on 9/19/23.
 //
 
 import Foundation
@@ -19,9 +19,6 @@ import MusicKit
 //    // libraryAddedDate: Date? --> determine if user added new artist
 //    // url: URL? --> url for the artist
 //}
-
-
-
 
 struct MTArtist: Codable, Hashable {
     let name: String

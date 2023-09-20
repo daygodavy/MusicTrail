@@ -289,6 +289,127 @@ class MusicKitManager {
         return false
     }
     
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    func fetchNewMusic() async -> [MTRecord] {
+        // NoCap catalog ID: 1237732480
+        let artistCatalogID = MusicItemID("1237732480")
+        var request = MusicCatalogResourceRequest<Artist>(matching: \.id, equalTo: artistCatalogID)
+
+        request.limit = 1
+        
+        do {
+            let response = try await request.response()
+            
+            guard let artist = response.items.first else { fatalError() }
+            
+            let allMusic = try await artist.with(
+                [.albums, .appearsOnAlbums],
+                preferredSource: .catalog
+            )
+            
+//            var resultRecords: [MTRecord] = []
+            
+
+//            var trackedRecords: Set<Album> = []
+            var trackedRecordsDict: [String : Album] = [:]
+//            var trackedFtRecords: Set<Album> = []
+            
+            var batchRecords = allMusic.albums ?? []
+            var batchFtRecords = allMusic.appearsOnAlbums ?? []
+            var isLastBatch: Bool = false
+
+            repeat {
+                for record in batchRecords {
+                    print("current record - \(record.title): \(record.contentRating)")
+//                    trackedRecords.insert(record)
+                    
+                    if trackedRecordsDict.keys.contains(record.title),
+                       let rating = trackedRecordsDict[record.title]?.contentRating,
+                       rating == .explicit {
+                        
+                        // is current record match clean or explicit
+                        
+                        // is stored record match clean or explicit
+                    } else {
+                        trackedRecordsDict[record.title] = record
+                    }
+                }
+                
+                if let nextBatch = try await batchRecords.nextBatch() {
+                    batchRecords = nextBatch
+                } else {
+                    isLastBatch = true
+                }
+                
+            } while !isLastBatch
+            
+
+            var resultRecords: [MTRecord] = []
+            print("FINAL COUNT: \(trackedRecordsDict.count)")
+
+            for record in trackedRecordsDict.values {
+                guard let artworkURL = record.artwork?.url(width: imageWidth + 168, height: imageHeight + 168) else { continue }
+                
+                guard let releaseDate = record.releaseDate else { continue }
+                
+                let mtRecord = MTRecord(artistName: record.artistName, title: record.title, ID: record.id, artistCatalogID: artistCatalogID, imageUrl: artworkURL, releaseDate: releaseDate)
+                
+                resultRecords.append(mtRecord)
+            }
+            
+            resultRecords.sort { $0.releaseDate > $1.releaseDate }
+            
+            return resultRecords
+            
+            
+//            isLastBatch = false
+//            repeat {
+//                for record in batchFtRecords {
+//                    trackedFtRecords.insert(record)
+//                }
+//                
+//                if let nextBatch = try await batchFtRecords.nextBatch() {
+//                    batchFtRecords = nextBatch
+//                } else {
+//                    isLastBatch = true
+//                }
+//                
+//            } while !isLastBatch
+            
+//            for record in trackedRecords {
+//                print("===========")
+//                print(record)
+//            }
+            
+//            print("trackedRecords: \(trackedRecords.count)")
+//            print("trackedFtRecords: \(trackedFtRecords.count)")
+//            
+//            var matchCount: Int = 0
+//            for trackedFtRecord in trackedFtRecords {
+//                if trackedRecords.contains(trackedFtRecord) {
+//                    matchCount += 1
+//                    print("found match: \(trackedFtRecord.title)")
+//                }
+//            }
+//            print("Final match count: \(matchCount)")
+            
+            
+            
+        } catch {
+            print("ERROR FETCHING NEW MUSIC: ARTIST NOT FOUND")
+        }
+        
+        return []
+    }
+
 }
     
     
