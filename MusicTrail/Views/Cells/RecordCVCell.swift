@@ -51,16 +51,7 @@ class RecordCVCell: UICollectionViewCell {
         self.record = record
         self.titleLabel.text = record.title
         self.artistNameLabel.text = record.artistName
-        self.dateLabel.text = formatReleaseDate(date: record.releaseDate)
-    }
-    
-    private func formatReleaseDate(date: Date?) -> String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateStyle = .short
-        dateFormatter.timeStyle = .none
-        
-        guard let dateString = dateFormatter.string(for: date) else { return "" }
-        return dateString
+        self.dateLabel.text = DateUtil.releaseDateFormatter.string(for: record.releaseDate)
     }
     
     // MARK: - UI Setup

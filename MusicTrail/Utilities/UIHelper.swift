@@ -23,8 +23,9 @@ enum UIHelper {
         if numCols == 3 {
             itemHeight += 30
         } else {
-            print("width - height: \(itemWidth) - \(itemHeight)")
+            botPadding += 20
             flowLayout.minimumLineSpacing = 25.0
+            flowLayout.headerReferenceSize = CGSize(width: width, height: 40)
         }
         
         flowLayout.sectionInset = UIEdgeInsets(top: padding, left: padding, bottom: botPadding, right: padding)

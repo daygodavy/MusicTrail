@@ -298,7 +298,8 @@ class MusicKitManager {
     
     
     
-    func fetchNewMusic() async -> [MTRecord] {
+//    func fetchNewMusic() async -> [MTRecord] {
+    func fetchNewMusic() async -> [MonthSection : [MTRecord]] {
         // NoCap catalog ID: 1237732480
         let artistCatalogID = MusicItemID("1237732480")
         var request = MusicCatalogResourceRequest<Artist>(matching: \.id, equalTo: artistCatalogID)
@@ -328,7 +329,7 @@ class MusicKitManager {
 
             repeat {
                 for record in batchRecords {
-                    print("current record - \(record.title): \(record.contentRating)")
+//                    print("current record - \(record.title): \(record.contentRating)")
 //                    trackedRecords.insert(record)
                     
                     if trackedRecordsDict.keys.contains(record.title),
@@ -352,22 +353,40 @@ class MusicKitManager {
             } while !isLastBatch
             
 
-            var resultRecords: [MTRecord] = []
-            print("FINAL COUNT: \(trackedRecordsDict.count)")
-
+//            var resultRecords: [MTRecord] = []
+//
+//            for record in trackedRecordsDict.values {
+//                guard let artworkURL = record.artwork?.url(width: imageWidth + 168, height: imageHeight + 168) else { continue }
+//                
+//                guard let releaseDate = record.releaseDate else { continue }
+//                
+//                let mtRecord = MTRecord(artistName: record.artistName, title: record.title, ID: record.id, artistCatalogID: artistCatalogID, imageUrl: artworkURL, releaseDate: releaseDate)
+//                
+//                resultRecords.append(mtRecord)
+//            }
+//            
+//            resultRecords.sort { $0.releaseDate > $1.releaseDate }
+            
+//            return resultRecords
+            
+            
+            var recordsByMonth: [MonthSection : [MTRecord]] = [:]
+            
             for record in trackedRecordsDict.values {
-                guard let artworkURL = record.artwork?.url(width: imageWidth + 168, height: imageHeight + 168) else { continue }
                 
-                guard let releaseDate = record.releaseDate else { continue }
+                guard let releaseDate = record.releaseDate,
+                      let artworkURL = record.artwork?.url(width: imageWidth + 168, height: imageHeight + 168)
+                else { continue }
+                
+                let monthYearString = DateUtil.monthYearFormatter.string(from: releaseDate)
+                let monthSection = MonthSection(monthYear: monthYearString)
                 
                 let mtRecord = MTRecord(artistName: record.artistName, title: record.title, ID: record.id, artistCatalogID: artistCatalogID, imageUrl: artworkURL, releaseDate: releaseDate)
                 
-                resultRecords.append(mtRecord)
+                recordsByMonth[monthSection, default: []].append(mtRecord)
             }
-            
-            resultRecords.sort { $0.releaseDate > $1.releaseDate }
-            
-            return resultRecords
+
+            return recordsByMonth
             
             
 //            isLastBatch = false
@@ -407,215 +426,9 @@ class MusicKitManager {
             print("ERROR FETCHING NEW MUSIC: ARTIST NOT FOUND")
         }
         
-        return []
+//        return []
+        return [:]
     }
 
 }
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-//func fetchArtistByTopSongID(_ topSongID: MusicItemID) async throws  {
-//        var request = MusicCatalogResourceRequest<Song>(matching: \.id, equalTo: topSongID)
-//        request.properties = [.artists]
-//        let response = try await request.response()
-//
-//        print("STARTING")
-//        for allItems in response.items {
-//            print(allItems)
-//        }
-//
-//        if let allArtists = response.items.first?.artists {
-//            for artist in allArtists {
-//                print("TESTING!!!!!!!!!")
-//                print(artist)
-//                print(artist.artwork?.url(width: imageWidth, height: imageHeight))
-//                print("TESTING!!!!!!!!!")
-//            }
-//        }
-//
-////        return foundArtist
-//
-//    }
-    
-    
-    
-//    func getLibraryArtist(_ artistName: String) async throws -> Artist? {
-//        if #available(iOS 16.0, *) {
-//            var request = MusicLibraryRequest<Artist>()
-//            request.sort(by: \.name, ascending: true)
-//            
-//            let response = try await request.response()
-//            
-//            for artist in response.items {
-//                if artist.name == "LouieTheRapper" {
-//                    
-//                    var imageUrl = artist.artwork?.url(width: imageWidth, height: imageHeight)
-//                    
-//                    if let libraryUrl = imageUrl?.absoluteString {
-//                        imageUrl = libraryUrl.formatToCatalogArtworkURL()
-//                    }
-//                    print("LIBRARY ARTIST MATCH1: \(artist.name)")
-//                    print(imageUrl)
-//                    guard let finalUrl = imageUrl else { fatalError() }
-//                    print("LIBRARY ARTIST MATCH2: \(artist.name)")
-//                    print(finalUrl)
-//                    
-//                    
-//                }
-//            }
-//            
-//            let foundArtist = response.items.first {
-//                $0.name == artistName
-//            }
-////            print("FOUND LIBRARY ARTIST: \(foundArtist)")
-//            guard let libArtist = foundArtist else { fatalError() }
-//            
-//            let allSongs = try await libArtist.with(
-//                [
-//                    .topSongs
-//                ],
-//                preferredSource: .library
-//            )
-//            
-//            
-//            print("LIBRARY ARTIST:")
-//            print(allSongs.topSongs?.first)
-//            print("LIBRARY ~~~~~~~~~~~~~~~~~~")
-//
-//            return allSongs
-//        } else {
-//            // Fallback on earlier versions
-//        }
-//        
-//        return nil
-//    }
-//    
-//    func getCatalogArtist(_ artistName: String) async throws -> Artist {
-//        if #available(iOS 16.0, *) {
-//            
-//            var request = MusicCatalogSearchRequest(term: artistName, types: [Artist.self])
-//            request.limit = 15
-//            
-//            let response = try await request.response()
-//            print("RESPONSE ARTISTS: \(response.artists)")
-//            
-//            for artist in response.artists {
-//                if artist.name == artistName {
-//                    print("FOUND CATALOG MATCH: \(artist.name)")
-//                    guard let artworkUrl = artist.artwork?.url(width: imageWidth, height: imageHeight) else { fatalError() }
-//                    print(artworkUrl)
-//                }
-//                let allSongs = try await artist.with(
-//                    [
-//                        .topSongs
-//                    ],
-//                    preferredSource: .catalog
-//                )
-//                
-//            }
-//
-//            guard let catalogArtist = response.artists.first else { fatalError() }
-//
-//            let allSongs = try await catalogArtist.with(
-//                [
-//                    .topSongs
-//                ],
-//                preferredSource: .catalog
-//            )
-//            
-//            print("CATALOG ARTIST:")
-//            print(allSongs.topSongs?.first)
-//            print("CATALOG ~~~~~~~~~~~~~~~~~~")
-//
-//
-//            return allSongs
-//            
-//        } else {
-//            // Fallback on earlier versions
-//        }
-//        
-//        throw fatalError()
-//    }
-//
-//    
-//
-//
-//    func fetchNewMusic() async throws {
-//        if #available(iOS 16.0, *) {
-//            var allArtists: [MTArtist] = []
-//            
-//            var request = MusicCatalogSearchRequest(term: "nocap", types: [Artist.self])
-//            request.limit = 1
-//            
-//            let response = try await request.response()
-//            
-//            let artistData = response.artists.first
-//            let artworkUrl = artistData?.artwork?.url(width: imageWidth, height: imageHeight)
-//            guard let name = artistData?.name,
-//                  let id = artistData?.id,
-//                  let url = artworkUrl else { fatalError() }
-//            var artist: MTArtist = MTArtist(name: name, id: id, imageUrl: url)
-//            
-//            guard let finalArtist = artistData else { fatalError() }
-//            let allAlbums = try await finalArtist.with(
-//                [
-//                    .albums, // Y
-//                    .appearsOnAlbums, // Y
-//                    .compilationAlbums, // N
-//                    .featuredAlbums, // N
-//                    .topSongs,
-//                    .latestRelease
-//                ],
-//                preferredSource: .catalog
-//            )
-//            
-//            
-//            
-//            
-//
-//            var checker = allAlbums.albums ?? []
-//            var batchIdx = 0
-//            var totalAlbums: [String] = []
-//            print("batch number \(batchIdx + 1) => \(checker.count) albums, hasNextBatch: \(checker.hasNextBatch)")
-//            repeat {
-//                print("ADDING IN BATCH NUMBER \(batchIdx + 1)")
-//                for record in checker {
-//                    totalAlbums.append("\(record.artistName): \(record.title)")
-//                }
-//                print("BATCH NUMBER \(batchIdx + 1) ALBUM COUNT: \(totalAlbums.count)")
-//                if let nextBatchOfAlbums = try await checker.nextBatch() {
-//                    checker = nextBatchOfAlbums
-//                    batchIdx += 1
-//                    print("batch number \(batchIdx + 1) => \(checker.count) albums, hasNextBatch: \(checker.hasNextBatch)")
-//                } else {
-//                    print("no more batches")
-//                    break
-//                }
-//                
-//            } while checker.hasNextBatch
-//            
-//            for record in checker {
-//                totalAlbums.append("\(record.artistName): \(record.title)")
-//            }
-//        
-//            print(totalAlbums)
-//            print(totalAlbums.count)
-//               
-//            
-//        } else {
-//            // Fallback on earlier versions
-//        }
-//    }
-//}
-//

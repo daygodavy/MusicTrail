@@ -7,16 +7,22 @@
 
 import UIKit
 
+struct MonthSection: Hashable {
+    let monthYear: String
+}
+
 class NewMusicVC: UIViewController {
     
-    enum Section { case main }
+    enum MTRecordSection: Hashable {
+        case month(MonthSection)
+    }
     
     // MARK: - Variables
-    private var trackedRecords: [MTRecord] = []
+    private var trackedRecords: [MonthSection: [MTRecord]] = [:]
     
     // MARK: - UI Components
     private var collectionView: UICollectionView!
-    private var dataSource: UICollectionViewDiffableDataSource<Section, MTRecord>!
+    private var dataSource: UICollectionViewDiffableDataSource<MTRecordSection, MTRecord>!
     private var searchController = UISearchController()
 
     // MARK: - Lifecycle
@@ -47,11 +53,12 @@ class NewMusicVC: UIViewController {
         collectionView.alwaysBounceVertical = true
         collectionView.showsVerticalScrollIndicator = false
         collectionView.register(RecordCVCell.self, forCellWithReuseIdentifier: RecordCVCell.reuseID)
+        collectionView.register(MonthSectionHeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: MonthSectionHeaderView.reuseID)
     }
     
     private func setupDataSource() {
         
-        dataSource = UICollectionViewDiffableDataSource<Section, MTRecord>(
+        dataSource = UICollectionViewDiffableDataSource<MTRecordSection, MTRecord>(
             collectionView: collectionView,
             cellProvider: { (collectionView, indexPath, record) -> UICollectionViewCell? in
                 
@@ -61,12 +68,27 @@ class NewMusicVC: UIViewController {
             
             return cell
         })
+        
+        dataSource.supplementaryViewProvider = { collectionView, kind, indexPath in
+            if kind == UICollectionView.elementKindSectionHeader {
+                let header = collectionView.dequeueReusableSupplementaryView(ofKind: kind, withReuseIdentifier: MonthSectionHeaderView.reuseID, for: indexPath) as! MonthSectionHeaderView
+                let section = self.dataSource.snapshot().sectionIdentifiers[indexPath.section]
+                
+                switch section {
+                case .month(let monthSection):
+                    header.set(with: monthSection, firstSection: indexPath.section != 0)
+                }
+                
+                return header
+            }
+            return nil
+        }
     }
     
     // MARK: - Methods
     
     
-    private func updateCVUI(with records: [MTRecord]) {
+    private func updateCVUI(with records: [MonthSection : [MTRecord]]) {
         
         if !trackedRecords.isEmpty {
             updateData(on: trackedRecords)
@@ -77,14 +99,28 @@ class NewMusicVC: UIViewController {
         }
     }
     
-    private func updateData(on records: [MTRecord]) {
+    private func updateData(on records: [MonthSection : [MTRecord]]) {
         
-        var snapshot = NSDiffableDataSourceSnapshot<Section, MTRecord>()
-        snapshot.appendSections([.main])
-        snapshot.appendItems(records)
+        var snapshot = NSDiffableDataSourceSnapshot<MTRecordSection, MTRecord>()
+        
+        // Convert monthYear strings to Date objects and compare to sort
+        let sortedSections = records.keys.sorted {
+            DateUtil.compareMonthYear(
+            s1: $0.monthYear,
+            s2: $1.monthYear) == .orderedDescending }
+        
+        for monthSection in sortedSections {
+            if let recordsForMonth = records[monthSection] {
+                var sortedRecords = recordsForMonth
+                sortedRecords.sort { $0.releaseDate > $1.releaseDate }
+                snapshot.appendSections([.month(monthSection)])
+                snapshot.appendItems(sortedRecords, toSection: .month(monthSection))
+            }
+        }
         
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
+
             self.dataSource.apply(snapshot, animatingDifferences: true)
         }
     }
