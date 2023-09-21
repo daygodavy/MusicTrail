@@ -19,7 +19,7 @@ class AddNewArtistVC: UIViewController {
     var isSearching: Bool = false
     
     var searchDelayTimer: Timer?
-    let delayDuration: TimeInterval = 1.0
+    let delayDuration: TimeInterval = 0.25
     
     weak var delegate: AddNewArtistVCDelegate?
     
@@ -74,9 +74,12 @@ class AddNewArtistVC: UIViewController {
         searchDelayTimer = Timer.scheduledTimer(withTimeInterval: delayDuration, repeats: false, block: { [weak self] _ in
             Task {
                 do {
-                    self?.searchedArtists.removeAll()
-                    self?.searchedArtists = try await MusicKitManager.shared.fetchSearchedArtists(searchTerm, excludedArtists: self?.savedArtists ?? [])
-                    self?.updateData()
+                    let newResults = try await MusicKitManager.shared.fetchSearchedArtists(searchTerm, excludedArtists: self?.savedArtists ?? [])
+                    
+                    if searchTerm == self?.navigationItem.searchController?.searchBar.text {
+                        self?.searchedArtists = newResults
+                        self?.updateData()
+                    }
                 } catch {
                     print("ERROR!!!!!!!!!!!")
                     return
@@ -84,6 +87,22 @@ class AddNewArtistVC: UIViewController {
             }
         })
     }
+    
+//    private func getSearchedArtists(_ searchTerm: String) {
+//        searchDelayTimer = Timer.scheduledTimer(withTimeInterval: delayDuration, repeats: false, block: { [weak self] _ in
+//            Task {
+//                do {
+//                    self?.searchedArtists.removeAll()
+//                    self?.updateData()
+//                    self?.searchedArtists = try await MusicKitManager.shared.fetchSearchedArtists(searchTerm, excludedArtists: self?.savedArtists ?? [])
+//                    self?.updateData()
+//                } catch {
+//                    print("ERROR!!!!!!!!!!!")
+//                    return
+//                }
+//            }
+//        })
+//    }
     
     private func saveSelectedArtist(_ artist: MTArtist) {
         searchDelayTimer?.invalidate()

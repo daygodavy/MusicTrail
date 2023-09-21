@@ -33,7 +33,6 @@ class NewMusicVC: MTDataLoadingVC {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
         NotificationCenter.default.addObserver(self, selector: #selector(onArtistsUpdated), name: .artistsUpdated, object: nil)
         fetchAndDisplayMusicRecords()
-        print("Notification observer set up in NewMusicVC")
         
     }
     
@@ -46,7 +45,6 @@ class NewMusicVC: MTDataLoadingVC {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
         
-//        getSavedMusicReleases()
 //        setupSearchController()
         setupCollectionView()
         setupDataSource()
@@ -66,7 +64,6 @@ class NewMusicVC: MTDataLoadingVC {
     
     
     private func fetchAndDisplayMusicRecords() {
-        print("fetchAndDisplayMusicRecords starting in NewMusicVC")
         let fetchedRecords = musicRecordRepo.fetchSavedMusicRecords()
         
         var groupedRecords: [MonthSection : [MTRecord]] = [:]
@@ -78,8 +75,7 @@ class NewMusicVC: MTDataLoadingVC {
         }
 
         trackedRecords = groupedRecords
-        print("fetchAndDisplayMusicRecords ending in NewMusicVC")
-        print("new trackedRecords count: \(trackedRecords.count)")
+
         updateCVUI(with: trackedRecords)
     }
     
@@ -170,22 +166,3 @@ extension NewMusicVC: UICollectionViewDelegate {
         // TODO: - Implement cell selection
     }
 }
-
-
-//    @objc func onArtistsSaved(_ notification: Notification) {
-//        if let artists = notification.userInfo?["artists"] as? [MTArtist] {
-//            MusicDataManager.shared.getNewMusic(for: artists) {
-//                self.fetchAndDisplayMusicRecords()
-//            }
-//        }
-//    }
-//
-//    func fetchAndDisplayMusicRecords() {
-//        trackedRecords = MusicDataManager.shared.getMusicRecords()
-//        for record in trackedRecords {
-//            for val in record.value {
-//                print("\(val.artistName): \(val.title)")
-//            }
-//        }
-//        updateCVUI(with: trackedRecords)
-//    }
