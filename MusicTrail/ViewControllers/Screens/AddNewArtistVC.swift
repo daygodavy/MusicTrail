@@ -11,15 +11,16 @@ protocol AddNewArtistVCDelegate: AnyObject {
     func saveNewArtist(_ newArtist: MTArtist)
 }
 
-class AddNewArtistVC: UIViewController {
+class AddNewArtistVC: MTDataLoadingVC {
     
     // MARK: - Variables
     var searchedArtists: [MTArtist] = []
     var savedArtists: [MTArtist] = []
     var isSearching: Bool = false
+    var isLoading: Bool = false
     
     var searchDelayTimer: Timer?
-    let delayDuration: TimeInterval = 0.25
+    let delayDuration: TimeInterval = 0.2
     
     weak var delegate: AddNewArtistVCDelegate?
     
@@ -33,6 +34,11 @@ class AddNewArtistVC: UIViewController {
         configureNavBar()
         configureTableView()
         configureSearchBar()
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        stopLoader()
     }
 
     
@@ -74,10 +80,13 @@ class AddNewArtistVC: UIViewController {
         searchDelayTimer = Timer.scheduledTimer(withTimeInterval: delayDuration, repeats: false, block: { [weak self] _ in
             Task {
                 do {
+                    self?.isLoading = true
+                    self?.showLoadingView()
                     let newResults = try await MusicKitManager.shared.fetchSearchedArtists(searchTerm, excludedArtists: self?.savedArtists ?? [])
                     
                     if searchTerm == self?.navigationItem.searchController?.searchBar.text {
                         self?.searchedArtists = newResults
+                        self?.stopLoader()
                         self?.updateData()
                     }
                 } catch {
@@ -88,21 +97,6 @@ class AddNewArtistVC: UIViewController {
         })
     }
     
-//    private func getSearchedArtists(_ searchTerm: String) {
-//        searchDelayTimer = Timer.scheduledTimer(withTimeInterval: delayDuration, repeats: false, block: { [weak self] _ in
-//            Task {
-//                do {
-//                    self?.searchedArtists.removeAll()
-//                    self?.updateData()
-//                    self?.searchedArtists = try await MusicKitManager.shared.fetchSearchedArtists(searchTerm, excludedArtists: self?.savedArtists ?? [])
-//                    self?.updateData()
-//                } catch {
-//                    print("ERROR!!!!!!!!!!!")
-//                    return
-//                }
-//            }
-//        })
-//    }
     
     private func saveSelectedArtist(_ artist: MTArtist) {
         searchDelayTimer?.invalidate()
@@ -113,6 +107,20 @@ class AddNewArtistVC: UIViewController {
     private func updateData() {
         DispatchQueue.main.async { [weak self] in
             self?.tableView.reloadData()
+        }
+    }
+    
+    private func searchTermUpdating() {
+        searchDelayTimer?.invalidate()
+        searchedArtists.removeAll()
+        stopLoader()
+        updateData()
+    }
+    
+    private func stopLoader() {
+        if isLoading {
+            isLoading = false
+            dismissLoadingView()
         }
     }
     
@@ -145,7 +153,7 @@ extension AddNewArtistVC: UITableViewDelegate, UITableViewDataSource {
 extension AddNewArtistVC: UISearchResultsUpdating {
     
     func updateSearchResults(for searchController: UISearchController) {
-        searchDelayTimer?.invalidate()
+        searchTermUpdating()
         guard let searchTerm = searchController.searchBar.text, !searchTerm.isEmpty else { return }
         getSearchedArtists(searchTerm)
     }

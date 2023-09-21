@@ -299,6 +299,7 @@ class MusicKitManager {
             for artist in artists {
                 group.addTask {
                     guard let catalogID = artist.catalogID else { return [:] }
+                    print("STARTING TASK TO FETCH MUSIC FOR: \(artist.name) \(catalogID)")
                     return await self.fetchRecordsForArtist(catalogID)
                 }
             }
@@ -313,14 +314,16 @@ class MusicKitManager {
         return recordsByMonth
     }
     
-    
     func fetchRecordsForArtist(_ artistCatalogID: MusicItemID) async -> [MonthSection : [MTRecord]] {
-        var request = MusicCatalogResourceRequest<Artist>(matching: \.id, equalTo: artistCatalogID)
-        request.limit = 1
         
         do {
-            let response = try await request.response()
-            guard let artist = response.items.first else { fatalError() }
+            let response = try await NetworkManager.shared.retry(3) { () async throws -> MusicCatalogResourceResponse<Artist> in
+                var request = MusicCatalogResourceRequest<Artist>(matching: \.id, equalTo: artistCatalogID)
+                request.limit = 1
+                return try await request.response()
+            }
+
+            guard let artist = response.items.first else { return [:] }
             
             let allMusic = try await artist.with([.albums], preferredSource: .catalog)
             
@@ -364,13 +367,23 @@ class MusicKitManager {
             }
             return recordsByMonth
             
+        } catch let error as NSError {
+            if error.code == 429 {
+                // Handle rate limiting error
+                print("Rate limit exceeded. Retrying...")
+            } else {
+                print("Error fetching data for catalog ID: \(artistCatalogID), Error: \(error)")
+            }
         } catch {
+            print("Error fetching data for catalog ID: \(artistCatalogID), Error: \(error)")
             fatalError()
         }
         
         return [:]
     }
     
+
+
 
 
 }

@@ -51,4 +51,10 @@ class MTDataLoadingVC: UIViewController {
             self.containerView = nil
         }
     }
+    
+    func showEmptyStateView(for state: CurrentView, in view: UIView) {
+        let emptyStateView = MTEmptyStateView(in: state)
+        emptyStateView.frame = view.bounds
+        view.addSubview(emptyStateView)
+    }
 }

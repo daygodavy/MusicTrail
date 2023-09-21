@@ -53,6 +53,7 @@
 		5BEED4062ABBE2570099E533 /* MusicRecord+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BEED4042ABBE2570099E533 /* MusicRecord+CoreDataClass.swift */; };
 		5BEED4072ABBE2570099E533 /* MusicRecord+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BEED4052ABBE2570099E533 /* MusicRecord+CoreDataProperties.swift */; };
 		5BEED4092ABBE29D0099E533 /* MusicRecordRepo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BEED4082ABBE29D0099E533 /* MusicRecordRepo.swift */; };
+		5BEED40B2ABCD3B50099E533 /* MTEmptyStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BEED40A2ABCD3B50099E533 /* MTEmptyStateView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -123,6 +124,7 @@
 		5BEED4042ABBE2570099E533 /* MusicRecord+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MusicRecord+CoreDataClass.swift"; sourceTree = "<group>"; };
 		5BEED4052ABBE2570099E533 /* MusicRecord+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MusicRecord+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		5BEED4082ABBE29D0099E533 /* MusicRecordRepo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicRecordRepo.swift; sourceTree = "<group>"; };
+		5BEED40A2ABCD3B50099E533 /* MTEmptyStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MTEmptyStateView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -353,6 +355,7 @@
 			children = (
 				5BEED3F52AB903DF0099E533 /* MTAlertContainerView.swift */,
 				5BEED3FC2ABB70B40099E533 /* MonthSectionHeaderView.swift */,
+				5BEED40A2ABCD3B50099E533 /* MTEmptyStateView.swift */,
 			);
 			path = CustomViews;
 			sourceTree = "<group>";
@@ -517,6 +520,7 @@
 				5BE3E2BA2AA7DF1000C825AB /* ArtistCVCell.swift in Sources */,
 				5B5B68D92A65ECBC00EA3D9B /* ArtistTVCell.swift in Sources */,
 				5B5B695F2A785A3A00EA3D9B /* MusicTrail.xcdatamodeld in Sources */,
+				5BEED40B2ABCD3B50099E533 /* MTEmptyStateView.swift in Sources */,
 				5B5B68DF2A673B3000EA3D9B /* MTTabBarController.swift in Sources */,
 				5BEED4032ABBABED0099E533 /* MusicDataManager.swift in Sources */,
 				5B920A292A5E17AC00464A8C /* AppDelegate.swift in Sources */,

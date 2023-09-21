@@ -32,7 +32,11 @@ class MusicRecordRepo {
         }
 
         if cdRepo.getContext().hasChanges {
-            cdRepo.save()
+            do {
+                try cdRepo.getContext().save()
+            } catch {
+                print("Error saving context: \(error)")
+            }
         }
     }
     
