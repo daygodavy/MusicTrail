@@ -10,6 +10,7 @@ import UIKit
 class MTDataLoadingVC: UIViewController {
     
     var containerView: UIView!
+    var emptyStateView: MTEmptyStateView!
     
     func showLoadingNavBarButton() {
         let spinner = UIActivityIndicatorView(style: .medium)
@@ -53,8 +54,15 @@ class MTDataLoadingVC: UIViewController {
     }
     
     func showEmptyStateView(for state: CurrentView, in view: UIView) {
-        let emptyStateView = MTEmptyStateView(in: state)
+        emptyStateView = MTEmptyStateView(in: state)
         emptyStateView.frame = view.bounds
         view.addSubview(emptyStateView)
+    }
+    
+    func hideEmptyStateView() {
+        DispatchQueue.main.async {
+            self.emptyStateView.removeFromSuperview()
+            self.emptyStateView = nil
+        }
     }
 }

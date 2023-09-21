@@ -149,6 +149,7 @@ class NewMusicVC: MTDataLoadingVC {
             if let recordsForMonth = records[monthSection] {
                 var sortedRecords = recordsForMonth
                 sortedRecords.sort { $0.releaseDate > $1.releaseDate }
+                
                 snapshot.appendSections([.month(monthSection)])
                 snapshot.appendItems(sortedRecords, toSection: .month(monthSection))
             }

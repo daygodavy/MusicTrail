@@ -33,10 +33,10 @@ class SavedArtistsVC: MTDataLoadingVC {
         
         showLoadingView()
         getSavedArtists()
+        setupDefaultNavBar()
         setupSearchController()
         setupCollectionView()
         setupDataSource()
-        setupDefaultNavBar()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -116,20 +116,12 @@ class SavedArtistsVC: MTDataLoadingVC {
         if savedArtists.isEmpty {
             DispatchQueue.main.async {
                 self.showEmptyStateView(for: .noSavedArtists, in: self.view)
+                print("SHOWING EMPTY STATE")
             }
+        } else {
+            hideEmptyStateView()
         }
         
-//        if !savedArtists.isEmpty {
-////            savedArtists.sort { $0.name < $1.name }
-//            updateData(on: savedArtists)
-//        } else {
-//            // TODO: - empty state
-//            // Hide search bar
-//            // Disable vertical scroll bounce for collection view
-////            DispatchQueue.main.async {
-////                self.showEmptyStateView(for: .noSavedArtists, in: self.view)
-////            }
-//        }
     }
     
     private func updateData(on artists: [MTArtist]) {
@@ -142,7 +134,6 @@ class SavedArtistsVC: MTDataLoadingVC {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
             self.dataSource.apply(snapshot, animatingDifferences: true)
-            self.view.bringSubviewToFront(self.collectionView)
             if self.isImporting {
                 self.isImporting = false
                 dismissLoadingNavBarButton()
@@ -215,7 +206,6 @@ class SavedArtistsVC: MTDataLoadingVC {
     
     private func deleteArtist(_ index: Int) {
         let artistToDelete = savedArtists.remove(at: index)
-//        updateData(on: savedArtists)
         updateCVUI(with: savedArtists)
         musicArtistRepo.unsaveArtist(artistToDelete)
         

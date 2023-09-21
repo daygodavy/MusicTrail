@@ -299,7 +299,7 @@ class MusicKitManager {
             for artist in artists {
                 group.addTask {
                     guard let catalogID = artist.catalogID else { return [:] }
-                    print("STARTING TASK TO FETCH MUSIC FOR: \(artist.name) \(catalogID)")
+                    
                     return await self.fetchRecordsForArtist(catalogID)
                 }
             }
@@ -365,6 +365,7 @@ class MusicKitManager {
                 
                 recordsByMonth[monthSection, default: []].append(mtRecord)
             }
+            
             return recordsByMonth
             
         } catch let error as NSError {
