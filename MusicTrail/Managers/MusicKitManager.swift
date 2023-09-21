@@ -292,143 +292,266 @@ class MusicKitManager {
     
     
     
+    func fetchNewMusic(for artists: [MTArtist]) async -> [MonthSection : [MTRecord]] {
+        var recordsByMonth: [MonthSection : [MTRecord]] = [:]
+        
+        await withTaskGroup(of: [MonthSection : [MTRecord]].self) { group in
+            for artist in artists {
+                group.addTask {
+                    guard let catalogID = artist.catalogID else { return [:] }
+                    return await self.fetchRecordsForArtist(catalogID)
+                }
+            }
+            
+            for await result in group {
+                for (monthYear, records) in result {
+                    recordsByMonth[monthYear, default: []].append(contentsOf: records)
+                }
+            }
+        }
+        
+        return recordsByMonth
+    }
     
     
-    
-    
-    
-    
-//    func fetchNewMusic() async -> [MTRecord] {
-    func fetchNewMusic() async -> [MonthSection : [MTRecord]] {
-        // NoCap catalog ID: 1237732480
-        let artistCatalogID = MusicItemID("1237732480")
+    func fetchRecordsForArtist(_ artistCatalogID: MusicItemID) async -> [MonthSection : [MTRecord]] {
         var request = MusicCatalogResourceRequest<Artist>(matching: \.id, equalTo: artistCatalogID)
-
         request.limit = 1
         
         do {
             let response = try await request.response()
-            
             guard let artist = response.items.first else { fatalError() }
             
-            let allMusic = try await artist.with(
-                [.albums, .appearsOnAlbums],
-                preferredSource: .catalog
-            )
+            let allMusic = try await artist.with([.albums], preferredSource: .catalog)
             
-//            var resultRecords: [MTRecord] = []
-            
-
-//            var trackedRecords: Set<Album> = []
             var trackedRecordsDict: [String : Album] = [:]
-//            var trackedFtRecords: Set<Album> = []
-            
             var batchRecords = allMusic.albums ?? []
-            var batchFtRecords = allMusic.appearsOnAlbums ?? []
             var isLastBatch: Bool = false
-
+            
             repeat {
+                
                 for record in batchRecords {
-//                    print("current record - \(record.title): \(record.contentRating)")
-//                    trackedRecords.insert(record)
-                    
                     if trackedRecordsDict.keys.contains(record.title),
                        let rating = trackedRecordsDict[record.title]?.contentRating,
                        rating == .explicit {
-                        
-                        // is current record match clean or explicit
-                        
-                        // is stored record match clean or explicit
+                        continue
                     } else {
                         trackedRecordsDict[record.title] = record
                     }
                 }
                 
-                if let nextBatch = try await batchRecords.nextBatch() {
-                    batchRecords = nextBatch
-                } else {
+                guard let nextBatch = try await batchRecords.nextBatch() else {
                     isLastBatch = true
+                    continue
                 }
+                batchRecords = nextBatch
                 
             } while !isLastBatch
             
-
-//            var resultRecords: [MTRecord] = []
-//
-//            for record in trackedRecordsDict.values {
-//                guard let artworkURL = record.artwork?.url(width: imageWidth + 168, height: imageHeight + 168) else { continue }
-//                
-//                guard let releaseDate = record.releaseDate else { continue }
-//                
-//                let mtRecord = MTRecord(artistName: record.artistName, title: record.title, ID: record.id, artistCatalogID: artistCatalogID, imageUrl: artworkURL, releaseDate: releaseDate)
-//                
-//                resultRecords.append(mtRecord)
-//            }
-//            
-//            resultRecords.sort { $0.releaseDate > $1.releaseDate }
-            
-//            return resultRecords
-            
-            
             var recordsByMonth: [MonthSection : [MTRecord]] = [:]
-            
             for record in trackedRecordsDict.values {
-                
                 guard let releaseDate = record.releaseDate,
-                      let artworkURL = record.artwork?.url(width: imageWidth + 168, height: imageHeight + 168)
-                else { continue }
+                      let artworkURL = record.artwork?.url(width: imageWidth + 168, height: imageHeight + 168) else {
+                          continue
+                      }
                 
                 let monthYearString = DateUtil.monthYearFormatter.string(from: releaseDate)
                 let monthSection = MonthSection(monthYear: monthYearString)
                 
-                let mtRecord = MTRecord(artistName: record.artistName, title: record.title, ID: record.id, artistCatalogID: artistCatalogID, imageUrl: artworkURL, releaseDate: releaseDate)
+                let mtRecord = MTRecord(title: record.title, artistName: record.artistName, recordID: record.id, artistCatalogID: artistCatalogID, imageUrl: artworkURL, releaseDate: releaseDate)
                 
                 recordsByMonth[monthSection, default: []].append(mtRecord)
             }
-
             return recordsByMonth
             
-            
-//            isLastBatch = false
-//            repeat {
-//                for record in batchFtRecords {
-//                    trackedFtRecords.insert(record)
-//                }
-//                
-//                if let nextBatch = try await batchFtRecords.nextBatch() {
-//                    batchFtRecords = nextBatch
-//                } else {
-//                    isLastBatch = true
-//                }
-//                
-//            } while !isLastBatch
-            
-//            for record in trackedRecords {
-//                print("===========")
-//                print(record)
-//            }
-            
-//            print("trackedRecords: \(trackedRecords.count)")
-//            print("trackedFtRecords: \(trackedFtRecords.count)")
-//            
-//            var matchCount: Int = 0
-//            for trackedFtRecord in trackedFtRecords {
-//                if trackedRecords.contains(trackedFtRecord) {
-//                    matchCount += 1
-//                    print("found match: \(trackedFtRecord.title)")
-//                }
-//            }
-//            print("Final match count: \(matchCount)")
-            
-            
-            
         } catch {
-            print("ERROR FETCHING NEW MUSIC: ARTIST NOT FOUND")
+            fatalError()
         }
         
-//        return []
         return [:]
     }
+    
+    
+    //    func fetchNewMusic() async -> [MTRecord] {
+//    func fetchNewMusic() async -> [MonthSection : [MTRecord]] {
+//        // NoCap catalog ID: 1237732480
+//        let artistCatalogID = MusicItemID("1237732480")
+//        var request = MusicCatalogResourceRequest<Artist>(matching: \.id, equalTo: artistCatalogID)
+//
+//        request.limit = 1
+//
+//        do {
+//            let response = try await request.response()
+//            
+//            guard let artist = response.items.first else { fatalError() }
+//            
+//            let allMusic = try await artist.with(
+//                [.albums],
+//                preferredSource: .catalog
+//            )
+//
+//            var trackedRecordsDict: [String : Album] = [:]
+//            
+//            var batchRecords = allMusic.albums ?? []
+//            var isLastBatch: Bool = false
+//
+//            repeat {
+//                for record in batchRecords {
+//                    
+//                    if trackedRecordsDict.keys.contains(record.title),
+//                       let rating = trackedRecordsDict[record.title]?.contentRating,
+//                       rating == .explicit {
+//                        continue
+//                    } else {
+//                        trackedRecordsDict[record.title] = record
+//                    }
+//                }
+//                
+//                guard let nextBatch = try await batchRecords.nextBatch() else {
+//                    isLastBatch = true
+//                    continue
+//                }
+//                batchRecords = nextBatch
+//                
+//            } while !isLastBatch
+//            
+//
+//            var recordsByMonth: [MonthSection : [MTRecord]] = [:]
+//            
+//            for record in trackedRecordsDict.values {
+//                
+//                guard let releaseDate = record.releaseDate,
+//                      let artworkURL = record.artwork?.url(width: imageWidth + 168, height: imageHeight + 168)
+//                else { continue }
+//                
+//                let monthYearString = DateUtil.monthYearFormatter.string(from: releaseDate)
+//                let monthSection = MonthSection(monthYear: monthYearString)
+//                
+//                let mtRecord = MTRecord(artistName: record.artistName, title: record.title, ID: record.id, artistCatalogID: artistCatalogID, imageUrl: artworkURL, releaseDate: releaseDate)
+//                
+//                recordsByMonth[monthSection, default: []].append(mtRecord)
+//            }
+//
+//            return recordsByMonth
+//            
+//            
+//            
+//            
+//        } catch {
+//            print("ERROR FETCHING NEW MUSIC: ARTIST NOT FOUND")
+//        }
+//
+//        return [:]
+//    }
+    
+
 
 }
     
+
+
+
+////    func fetchNewMusic() async -> [MTRecord] {
+//    func fetchNewMusic() async -> [MonthSection : [MTRecord]] {
+//        // NoCap catalog ID: 1237732480
+//        let artistCatalogID = MusicItemID("1237732480")
+//        var request = MusicCatalogResourceRequest<Artist>(matching: \.id, equalTo: artistCatalogID)
+//
+//        request.limit = 1
+//
+//        do {
+//            let response = try await request.response()
+//
+//            guard let artist = response.items.first else { fatalError() }
+//
+//            let allMusic = try await artist.with(
+//                [.albums, .appearsOnAlbums],
+//                preferredSource: .catalog
+//            )
+//
+//            var trackedRecordsDict: [String : Album] = [:]
+//
+//            var batchRecords = allMusic.albums ?? []
+////            var batchFtRecords = allMusic.appearsOnAlbums ?? []
+//            var isLastBatch: Bool = false
+//
+//            repeat {
+//                for record in batchRecords {
+//
+//                    if trackedRecordsDict.keys.contains(record.title),
+//                       let rating = trackedRecordsDict[record.title]?.contentRating,
+//                       rating == .explicit {
+//                        continue
+//                    } else {
+//                        trackedRecordsDict[record.title] = record
+//                    }
+//                }
+//
+//                guard let nextBatch = try await batchRecords.nextBatch() else {
+//                    isLastBatch = true
+//                    continue
+//                }
+//                batchRecords = nextBatch
+//
+//            } while !isLastBatch
+//
+//
+//            var recordsByMonth: [MonthSection : [MTRecord]] = [:]
+//
+//            for record in trackedRecordsDict.values {
+//
+//                guard let releaseDate = record.releaseDate,
+//                      let artworkURL = record.artwork?.url(width: imageWidth + 168, height: imageHeight + 168)
+//                else { continue }
+//
+//                let monthYearString = DateUtil.monthYearFormatter.string(from: releaseDate)
+//                let monthSection = MonthSection(monthYear: monthYearString)
+//
+//                let mtRecord = MTRecord(artistName: record.artistName, title: record.title, ID: record.id, artistCatalogID: artistCatalogID, imageUrl: artworkURL, releaseDate: releaseDate)
+//
+//                recordsByMonth[monthSection, default: []].append(mtRecord)
+//            }
+//
+//            return recordsByMonth
+//
+//
+////            isLastBatch = false
+////            repeat {
+////                for record in batchFtRecords {
+////                    trackedFtRecords.insert(record)
+////                }
+////
+////                if let nextBatch = try await batchFtRecords.nextBatch() {
+////                    batchFtRecords = nextBatch
+////                } else {
+////                    isLastBatch = true
+////                }
+////
+////            } while !isLastBatch
+//
+////            for record in trackedRecords {
+////                print("===========")
+////                print(record)
+////            }
+//
+////            print("trackedRecords: \(trackedRecords.count)")
+////            print("trackedFtRecords: \(trackedFtRecords.count)")
+////
+////            var matchCount: Int = 0
+////            for trackedFtRecord in trackedFtRecords {
+////                if trackedRecords.contains(trackedFtRecord) {
+////                    matchCount += 1
+////                    print("found match: \(trackedFtRecord.title)")
+////                }
+////            }
+////            print("Final match count: \(matchCount)")
+//
+//
+//
+//        } catch {
+//            print("ERROR FETCHING NEW MUSIC: ARTIST NOT FOUND")
+//        }
+//
+////        return []
+//        return [:]
+//    }

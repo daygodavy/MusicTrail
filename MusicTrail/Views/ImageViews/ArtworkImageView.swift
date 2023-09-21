@@ -24,24 +24,23 @@ class ArtworkImageView: UIImageView {
         configure()
     }
     
-//    init(frame: CGRect, style: ArtworkStyle) {
-//        super.init(frame: frame)
-//        fetchImageTask = nil
-//        configure()
-//    }
+    init(frame: CGRect, style: ArtworkStyle) {
+        super.init(frame: frame)
+        fetchImageTask = nil
+        configure(style: style)
+    }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    private func configure() {
-        layer.cornerRadius = 5
+    private func configure(style: ArtworkStyle = .square) {
+        if style == .circle { layer.cornerRadius = 25 }
+        else { layer.cornerRadius = 5 }
+        
         clipsToBounds = true
         image = placeholderImage
         tintColor = .systemGray
-        
-        layer.borderWidth = 1
-        layer.borderColor = UIColor.systemGray5.cgColor
         
         contentMode = .scaleAspectFit
         translatesAutoresizingMaskIntoConstraints = false

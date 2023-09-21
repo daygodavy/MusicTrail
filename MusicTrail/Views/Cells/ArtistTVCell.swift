@@ -22,13 +22,14 @@ class ArtistTVCell: UITableViewCell {
     private(set) var artist: MTArtist!
     
     // MARK: - UI Components
-    private let artistImage = ArtworkImageView(frame: .zero)
+    private let artistImage = ArtworkImageView(frame: .zero, style: .circle)
     
     private var checkImage: UIImageView = {
         let imageView = UIImageView()
         imageView.image = SFSymbol.checkmark
         imageView.tintColor = .systemMint
         imageView.isHidden = true
+        imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
     }()
     
@@ -39,6 +40,7 @@ class ArtistTVCell: UITableViewCell {
         titleLabel.font = .systemFont(ofSize: 20, weight: .semibold)
         titleLabel.text = "Error"
         titleLabel.numberOfLines = 0
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
         return titleLabel
     }()
     
@@ -81,10 +83,6 @@ class ArtistTVCell: UITableViewCell {
         self.addSubview(artistImage)
         self.addSubview(nameLabel)
         self.addSubview(checkImage)
-        
-        artistImage.translatesAutoresizingMaskIntoConstraints = false
-        nameLabel.translatesAutoresizingMaskIntoConstraints = false
-        checkImage.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
             artistImage.leadingAnchor.constraint(equalTo: self.layoutMarginsGuide.leadingAnchor),

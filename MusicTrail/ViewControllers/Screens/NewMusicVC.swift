@@ -11,7 +11,7 @@ struct MonthSection: Hashable {
     let monthYear: String
 }
 
-class NewMusicVC: UIViewController {
+class NewMusicVC: MTDataLoadingVC {
     
     enum MTRecordSection: Hashable {
         case month(MonthSection)
@@ -20,28 +20,67 @@ class NewMusicVC: UIViewController {
     // MARK: - Variables
     private var trackedRecords: [MonthSection: [MTRecord]] = [:]
     
+    private let musicRecordRepo: MusicRecordRepo = MusicRecordRepo()
+    
     // MARK: - UI Components
     private var collectionView: UICollectionView!
     private var dataSource: UICollectionViewDiffableDataSource<MTRecordSection, MTRecord>!
     private var searchController = UISearchController()
 
+    
+    // MARK: - Initializers
+    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
+        super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
+        NotificationCenter.default.addObserver(self, selector: #selector(onArtistsUpdated), name: .artistsUpdated, object: nil)
+        fetchAndDisplayMusicRecords()
+        print("Notification observer set up in NewMusicVC")
+        
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
         
-        getNewMusicReleases()
+//        getSavedMusicReleases()
 //        setupSearchController()
         setupCollectionView()
         setupDataSource()
 //        setupDefaultNavBar()
+//        fetchAndDisplayMusicRecords()
+        updateCVUI(with: trackedRecords)
     }
     
-    private func getNewMusicReleases() {
-        Task {
-            trackedRecords = await MusicKitManager.shared.fetchNewMusic()
-            updateCVUI(with: trackedRecords)
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+//        updateCVUI(with: trackedRecords)
+    }
+    
+    @objc private func onArtistsUpdated(_ notification: Notification) {
+        fetchAndDisplayMusicRecords()
+    }
+    
+    
+    private func fetchAndDisplayMusicRecords() {
+        print("fetchAndDisplayMusicRecords starting in NewMusicVC")
+        let fetchedRecords = musicRecordRepo.fetchSavedMusicRecords()
+        
+        var groupedRecords: [MonthSection : [MTRecord]] = [:]
+        for record in fetchedRecords {
+            
+            let monthYearString = DateUtil.monthYearFormatter.string(from: record.releaseDate)
+            let monthSection = MonthSection(monthYear: monthYearString)
+            groupedRecords[monthSection, default: []].append(record)
         }
+
+        trackedRecords = groupedRecords
+        print("fetchAndDisplayMusicRecords ending in NewMusicVC")
+        print("new trackedRecords count: \(trackedRecords.count)")
+        updateCVUI(with: trackedRecords)
     }
     
     // MARK: - UI Setup
@@ -96,6 +135,7 @@ class NewMusicVC: UIViewController {
             // TODO: - empty state
             // Hide search bar
             // Disable vertical scroll bounce for collection view
+            updateData(on: trackedRecords)
         }
     }
     
@@ -118,10 +158,8 @@ class NewMusicVC: UIViewController {
             }
         }
         
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
-
-            self.dataSource.apply(snapshot, animatingDifferences: true)
+        DispatchQueue.main.async { [weak dataSource = self.dataSource] in
+            dataSource?.apply(snapshot, animatingDifferences: true)
         }
     }
 }
@@ -132,3 +170,22 @@ extension NewMusicVC: UICollectionViewDelegate {
         // TODO: - Implement cell selection
     }
 }
+
+
+//    @objc func onArtistsSaved(_ notification: Notification) {
+//        if let artists = notification.userInfo?["artists"] as? [MTArtist] {
+//            MusicDataManager.shared.getNewMusic(for: artists) {
+//                self.fetchAndDisplayMusicRecords()
+//            }
+//        }
+//    }
+//
+//    func fetchAndDisplayMusicRecords() {
+//        trackedRecords = MusicDataManager.shared.getMusicRecords()
+//        for record in trackedRecords {
+//            for val in record.value {
+//                print("\(val.artistName): \(val.title)")
+//            }
+//        }
+//        updateCVUI(with: trackedRecords)
+//    }

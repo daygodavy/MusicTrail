@@ -14,7 +14,7 @@ class ArtistCVCell: UICollectionViewCell {
     private(set) var artist: MTArtist!
     
     // MARK: - UI Components
-    private let artistImage = ArtworkImageView(frame: .zero)
+    private let artistImage = ArtworkImageView(frame: .zero, style: .square)
     
     private var nameLabel: UILabel = {
         let titleLabel = UILabel()
@@ -23,6 +23,7 @@ class ArtistCVCell: UICollectionViewCell {
         titleLabel.font = .systemFont(ofSize: 14, weight: .bold)
         titleLabel.text = "Error"
         titleLabel.numberOfLines = 0
+        titleLabel.translatesAutoresizingMaskIntoConstraints = false
         return titleLabel
     }()
     
@@ -44,11 +45,12 @@ class ArtistCVCell: UICollectionViewCell {
     
     // MARK: - UI Setup
     private func configure() {
+        artistImage.layer.borderWidth = 1
+        artistImage.layer.borderColor = UIColor.systemGray5.cgColor
+        artistImage.layer.cornerRadius = 5
+        
         self.addSubview(artistImage)
         self.addSubview(nameLabel)
-        
-        artistImage.translatesAutoresizingMaskIntoConstraints = false
-        nameLabel.translatesAutoresizingMaskIntoConstraints = false
         
         let padding: CGFloat = 6
         

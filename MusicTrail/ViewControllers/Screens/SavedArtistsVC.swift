@@ -7,6 +7,7 @@
 
 import UIKit
 
+
 class SavedArtistsVC: MTDataLoadingVC {
     
     enum Section { case main }
@@ -19,7 +20,7 @@ class SavedArtistsVC: MTDataLoadingVC {
     private var isEditMode: Bool = false
     private var isSearching: Bool = false
     private var isImporting: Bool = false
-
+    
     // MARK: - UI Components
     private var collectionView: UICollectionView!
     private var dataSource: UICollectionViewDiffableDataSource<Section, MTArtist>!
@@ -205,6 +206,9 @@ class SavedArtistsVC: MTDataLoadingVC {
         let artistToDelete = savedArtists.remove(at: index)
         updateData(on: savedArtists)
         musicArtistRepo.unsaveArtist(artistToDelete)
+        
+        // Delete records corresponding to artist
+        MusicDataManager.shared.deleteRecordsFromArtist(artistToDelete)
     }
     
     
@@ -213,6 +217,7 @@ class SavedArtistsVC: MTDataLoadingVC {
             savedArtists[i].isTracked = false
         }
     }
+    
 
 }
 
@@ -267,7 +272,8 @@ extension SavedArtistsVC: LibraryArtistVCDelegate {
         savedArtists.sort { $0.name.lowercased() < $1.name.lowercased() }
         musicArtistRepo.saveLibraryArtists(newArtists)
         updateCVUI(with: savedArtists)
-        
+
+        MusicDataManager.shared.saveArtists(newArtists)
     }
     
     
@@ -285,8 +291,9 @@ extension SavedArtistsVC: AddNewArtistVCDelegate {
         savedArtists.append(newArtist)
         savedArtists.sort { $0.name.lowercased() < $1.name.lowercased() }
         musicArtistRepo.saveCatalogArtist(newArtist)
-        
         resetTracked()
         updateCVUI(with: savedArtists)
+        
+        MusicDataManager.shared.saveArtists([newArtist])
     }
 }

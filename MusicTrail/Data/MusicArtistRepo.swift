@@ -43,7 +43,9 @@ class MusicArtistRepo {
     
     // TODO: - CHANGE PREDICATE TO CATALOG ID
     func unsaveArtist(_ artist: MTArtist) {
-        let pred = NSPredicate(format: "name == %@", artist.name)
+        guard let catalogID = artist.catalogID else { return }
+        let pred = NSPredicate(format: "catalogID == %@", catalogID.rawValue as CVarArg)
+//        let pred = NSPredicate(format: "name == %@", artist.name as! CVarArg)
         
         guard let artistToDelete = cdRepo.fetch(MusicArtist.self, predicate: pred).first else {
             print("FAILING TO FETCH ARTIST")

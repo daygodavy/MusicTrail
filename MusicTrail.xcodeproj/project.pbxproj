@@ -49,6 +49,10 @@
 		5BEED3FD2ABB70B40099E533 /* MonthSectionHeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BEED3FC2ABB70B40099E533 /* MonthSectionHeaderView.swift */; };
 		5BEED3FF2ABB8B670099E533 /* Date+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BEED3FE2ABB8B670099E533 /* Date+Ext.swift */; };
 		5BEED4012ABB8C630099E533 /* DateUtil.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BEED4002ABB8C630099E533 /* DateUtil.swift */; };
+		5BEED4032ABBABED0099E533 /* MusicDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BEED4022ABBABED0099E533 /* MusicDataManager.swift */; };
+		5BEED4062ABBE2570099E533 /* MusicRecord+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BEED4042ABBE2570099E533 /* MusicRecord+CoreDataClass.swift */; };
+		5BEED4072ABBE2570099E533 /* MusicRecord+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BEED4052ABBE2570099E533 /* MusicRecord+CoreDataProperties.swift */; };
+		5BEED4092ABBE29D0099E533 /* MusicRecordRepo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5BEED4082ABBE29D0099E533 /* MusicRecordRepo.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -115,6 +119,10 @@
 		5BEED3FC2ABB70B40099E533 /* MonthSectionHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MonthSectionHeaderView.swift; sourceTree = "<group>"; };
 		5BEED3FE2ABB8B670099E533 /* Date+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Ext.swift"; sourceTree = "<group>"; };
 		5BEED4002ABB8C630099E533 /* DateUtil.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateUtil.swift; sourceTree = "<group>"; };
+		5BEED4022ABBABED0099E533 /* MusicDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicDataManager.swift; sourceTree = "<group>"; };
+		5BEED4042ABBE2570099E533 /* MusicRecord+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MusicRecord+CoreDataClass.swift"; sourceTree = "<group>"; };
+		5BEED4052ABBE2570099E533 /* MusicRecord+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MusicRecord+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		5BEED4082ABBE29D0099E533 /* MusicRecordRepo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicRecordRepo.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -159,6 +167,8 @@
 				5BE3E2C12AB3B88F00C825AB /* MusicArtist+CoreDataClass.swift */,
 				5BE3E2C22AB3B88F00C825AB /* MusicArtist+CoreDataProperties.swift */,
 				5BEED3F82ABA4D190099E533 /* MTArtist.swift */,
+				5BEED4042ABBE2570099E533 /* MusicRecord+CoreDataClass.swift */,
+				5BEED4052ABBE2570099E533 /* MusicRecord+CoreDataProperties.swift */,
 				5BEED3FA2ABA4D580099E533 /* MTRecord.swift */,
 			);
 			path = Models;
@@ -192,6 +202,7 @@
 				5B5B68CE2A6231AE00EA3D9B /* MusicKitManager.swift */,
 				5B5B68E32A686C9B00EA3D9B /* NetworkManager.swift */,
 				5B5B68EF2A69D3EE00EA3D9B /* AuthManager.swift */,
+				5BEED4022ABBABED0099E533 /* MusicDataManager.swift */,
 			);
 			path = Managers;
 			sourceTree = "<group>";
@@ -223,6 +234,7 @@
 				5B5B69612A785ABA00EA3D9B /* PersistanceContainer.swift */,
 				5B5B69632A785CB400EA3D9B /* CoreDataRepo.swift */,
 				5B28BBAA2A90002700300C8A /* MusicArtistRepo.swift */,
+				5BEED4082ABBE29D0099E533 /* MusicRecordRepo.swift */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -488,6 +500,7 @@
 				5B5B695C2A78449700EA3D9B /* String+Ext.swift in Sources */,
 				5B5B69622A785ABA00EA3D9B /* PersistanceContainer.swift in Sources */,
 				5BEED3EB2AB902750099E533 /* UIViewController+Ext.swift in Sources */,
+				5BEED4062ABBE2570099E533 /* MusicRecord+CoreDataClass.swift in Sources */,
 				5BEED3E92AB8DC250099E533 /* MTError.swift in Sources */,
 				5B5B68E42A686C9B00EA3D9B /* NetworkManager.swift in Sources */,
 				5B5B68E62A687DF300EA3D9B /* LibraryArtistsVC.swift in Sources */,
@@ -505,9 +518,12 @@
 				5B5B68D92A65ECBC00EA3D9B /* ArtistTVCell.swift in Sources */,
 				5B5B695F2A785A3A00EA3D9B /* MusicTrail.xcdatamodeld in Sources */,
 				5B5B68DF2A673B3000EA3D9B /* MTTabBarController.swift in Sources */,
+				5BEED4032ABBABED0099E533 /* MusicDataManager.swift in Sources */,
 				5B920A292A5E17AC00464A8C /* AppDelegate.swift in Sources */,
 				5B5B69642A785CB400EA3D9B /* CoreDataRepo.swift in Sources */,
 				5BEED4012ABB8C630099E533 /* DateUtil.swift in Sources */,
+				5BEED4072ABBE2570099E533 /* MusicRecord+CoreDataProperties.swift in Sources */,
+				5BEED4092ABBE29D0099E533 /* MusicRecordRepo.swift in Sources */,
 				5B5B68EC2A69AF8200EA3D9B /* MTBodyLabel.swift in Sources */,
 				5B5B68D72A65E6A000EA3D9B /* RecordCVCell.swift in Sources */,
 				5B5B68EE2A69B09700EA3D9B /* MTButton.swift in Sources */,

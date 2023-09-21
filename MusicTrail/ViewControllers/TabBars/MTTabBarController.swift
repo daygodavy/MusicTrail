@@ -12,10 +12,19 @@ class MTTabBarController: UITabBarController {
     override func viewDidLoad() {
         super.viewDidLoad()
         UITabBar.appearance().tintColor = .systemOrange
-        viewControllers = [createArtistsListNC(), createNewMusicNC()]
+        
+        viewControllers = configureNCs()
     }
     
-    func createNewMusicNC() -> UINavigationController {
+    private func createSavedArtistsNC() -> UINavigationController {
+        let vc = SavedArtistsVC()
+        vc.title = "Artists"
+        vc.tabBarItem = UITabBarItem(title: "Artists", image: SFSymbol.artistsTab, tag: 0)
+        
+        return UINavigationController(rootViewController: vc)
+    }
+    
+    private func createNewMusicNC() -> UINavigationController {
         let vc = NewMusicVC()
         vc.title = "Music Trail"
         vc.tabBarItem = UITabBarItem(title: "Releases", image: SFSymbol.releasesTab, tag: 1)
@@ -23,11 +32,9 @@ class MTTabBarController: UITabBarController {
         return UINavigationController(rootViewController: vc)
     }
     
-    func createArtistsListNC() -> UINavigationController {
-        let vc = SavedArtistsVC()
-        vc.title = "Artists"
-        vc.tabBarItem = UITabBarItem(title: "Artists", image: SFSymbol.artistsTab, tag: 0)
-        
-        return UINavigationController(rootViewController: vc)
+    private func configureNCs() -> [UINavigationController] {
+        let firstNC = createSavedArtistsNC()
+        let secondNC = createNewMusicNC()
+        return [firstNC, secondNC]
     }
 }

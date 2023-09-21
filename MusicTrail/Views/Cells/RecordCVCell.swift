@@ -16,7 +16,7 @@ class RecordCVCell: UICollectionViewCell {
     
     // MARK: - UI Components
     // Record Image
-    private let artworkImage = ArtworkImageView(frame: .zero)
+    private let artworkImage = ArtworkImageView(frame: .zero, style: .square)
     
     // Record name
     private let titleLabel = MTTitleLabel(textAlignment: .left, fontSize: 12, textColor: .systemOrange)
@@ -56,6 +56,10 @@ class RecordCVCell: UICollectionViewCell {
     
     // MARK: - UI Setup
     private func setupUI() {
+        self.layer.borderWidth = 1
+        self.layer.borderColor = UIColor.systemGray5.cgColor
+        self.layer.cornerRadius = 5
+        
         self.addSubview(artworkImage)
         self.addSubview(detailsView)
         detailsView.addSubview(titleLabel)
