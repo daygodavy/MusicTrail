@@ -16,18 +16,22 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
         guard let windowScene = (scene as? UIWindowScene) else { return }
         
+        window = UIWindow(frame: windowScene.coordinateSpace.bounds)
+        window?.windowScene = windowScene
+        window?.rootViewController = configureNC()
+        window?.makeKeyAndVisible()
+        
+        configureNavBar()
+    }
+    
+    func configureNC() -> UINavigationController {
         var navController = UINavigationController(rootViewController: IntroAuthVC())
         
         if UserDefaults.standard.bool(forKey: "hasSeenIntro") {
             navController = UINavigationController(rootViewController: MTTabBarController())
         }
         
-        window = UIWindow(frame: windowScene.coordinateSpace.bounds)
-        window?.windowScene = windowScene
-        window?.rootViewController = navController
-        window?.makeKeyAndVisible()
-        
-        configureNavBar()
+        return navController
     }
     
     func configureNavBar() {

@@ -20,7 +20,9 @@ class AddNewArtistVC: MTDataLoadingVC {
     var isLoading: Bool = false
     
     var searchDelayTimer: Timer?
-    let delayDuration: TimeInterval = 0.2
+    let delayDuration: TimeInterval = 0.1
+    
+    var fetchArtistsTask: Task<Void, Never>?
     
     weak var delegate: AddNewArtistVCDelegate?
     
@@ -78,7 +80,7 @@ class AddNewArtistVC: MTDataLoadingVC {
     
     private func getSearchedArtists(_ searchTerm: String) {
         searchDelayTimer = Timer.scheduledTimer(withTimeInterval: delayDuration, repeats: false, block: { [weak self] _ in
-            Task {
+            self?.fetchArtistsTask = Task {
                 do {
                     self?.isLoading = true
                     self?.showLoadingView()
@@ -98,6 +100,27 @@ class AddNewArtistVC: MTDataLoadingVC {
     }
     
     
+//    private func getSearchedArtists(_ searchTerm: String) {
+//        
+//        fetchArtistsTask = Task {
+//            do {
+//                isLoading = true
+//                showLoadingView()
+//                let newResults = try await MusicKitManager.shared.fetchSearchedArtists(searchTerm, excludedArtists: savedArtists)
+//                
+//                if searchTerm == navigationItem.searchController?.searchBar.text {
+//                    searchedArtists = newResults
+//                    stopLoader()
+//                    updateData()
+//                }
+//            } catch {
+//                print("ERROR!!!!!!!!!!!")
+//                return
+//            }
+//        }
+//    }
+    
+    
     private func saveSelectedArtist(_ artist: MTArtist) {
         searchDelayTimer?.invalidate()
         delegate?.saveNewArtist(artist)
@@ -111,6 +134,7 @@ class AddNewArtistVC: MTDataLoadingVC {
     }
     
     private func searchTermUpdating() {
+        fetchArtistsTask?.cancel()
         searchDelayTimer?.invalidate()
         searchedArtists.removeAll()
         stopLoader()

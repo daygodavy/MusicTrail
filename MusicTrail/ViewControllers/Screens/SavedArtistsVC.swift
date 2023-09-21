@@ -20,6 +20,7 @@ class SavedArtistsVC: MTDataLoadingVC {
     private var isEditMode: Bool = false
     private var isSearching: Bool = false
     private var isImporting: Bool = false
+    private var isEmptyState: Bool = false
     
     // MARK: - UI Components
     private var collectionView: UICollectionView!
@@ -110,18 +111,8 @@ class SavedArtistsVC: MTDataLoadingVC {
     }
     
     private func updateCVUI(with artists: [MTArtist]) {
-        
         updateData(on: savedArtists)
-        
-        if savedArtists.isEmpty {
-            DispatchQueue.main.async {
-                self.showEmptyStateView(for: .noSavedArtists, in: self.view)
-                print("SHOWING EMPTY STATE")
-            }
-        } else {
-            hideEmptyStateView()
-        }
-        
+        updateEmptyState()
     }
     
     private func updateData(on artists: [MTArtist]) {
@@ -142,7 +133,17 @@ class SavedArtistsVC: MTDataLoadingVC {
         }
     }
     
-    
+    private func updateEmptyState() {
+        if savedArtists.isEmpty {
+            isEmptyState = true
+            DispatchQueue.main.async {
+                self.showEmptyStateView(for: .noSavedArtists, in: self.view)
+            }
+        } else if isEmptyState {
+            hideEmptyStateView()
+            isEmptyState = false
+        }
+    }
     
     // MARK: - Methods
     @objc private func libraryButtonTapped() {

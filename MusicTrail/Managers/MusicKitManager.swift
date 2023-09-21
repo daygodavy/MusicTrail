@@ -64,7 +64,7 @@ class MusicKitManager {
         try await accessAuthenticator.ensureAuthorization()
         
         var resultArtists: [MTArtist] = []
-        let searchedArtists = try await searchCatalogArtists(term: searchTerm, limit: 25)
+        let searchedArtists = try await searchCatalogArtists(term: searchTerm, limit: 20)
         
         for artist in searchedArtists {
             if try await !isExcludedArtist(artist, currSource: .catalog, excludedArtists: excludedArtists),
