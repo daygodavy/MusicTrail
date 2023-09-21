@@ -32,6 +32,10 @@ class IntroAuthVC: UIViewController {
     }
     
     private func presentTabBarVC() {
+        if !UserDefaults.standard.bool(forKey: "hasSeenIntro") {
+            UserDefaults.standard.set(true, forKey: "hasSeenIntro")
+        }
+        
         let tabBarVC = MTTabBarController()
         let navController = UINavigationController(rootViewController: tabBarVC)
         navController.modalPresentationStyle = .fullScreen
