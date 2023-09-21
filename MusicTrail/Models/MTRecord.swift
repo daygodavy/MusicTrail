@@ -8,7 +8,7 @@
 import Foundation
 import MusicKit
 
-struct MTRecord: Codable, Hashable {
+struct MTRecord: Codable, Hashable, Equatable {
     let title: String
     let artistName: String
     let recordID: MusicItemID
@@ -20,4 +20,12 @@ struct MTRecord: Codable, Hashable {
     var contentRating: ContentRating?
     var isSingle: Bool?
 //    var tracks: MusicItemCollection<Track>?
+    
+    static func == (lhs: MTRecord, rhs: MTRecord) -> Bool {
+        return lhs.title == rhs.title &&
+            lhs.artistName == rhs.artistName &&
+            lhs.recordID == rhs.recordID &&
+            lhs.artistCatalogID == rhs.artistCatalogID &&
+            lhs.releaseDate == rhs.releaseDate
+    }
 }

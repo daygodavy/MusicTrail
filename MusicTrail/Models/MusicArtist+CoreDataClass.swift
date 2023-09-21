@@ -2,7 +2,7 @@
 //  MusicArtist+CoreDataClass.swift
 //  MusicTrail
 //
-//  Created by Davy Chuon on 9/14/23.
+//  Created by Davy Chuon on 9/21/23.
 //
 //
 

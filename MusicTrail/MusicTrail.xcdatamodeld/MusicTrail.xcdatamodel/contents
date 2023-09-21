@@ -9,6 +9,7 @@
         <attribute name="libraryID" optional="YES" attributeType="String"/>
         <attribute name="name" optional="YES" attributeType="String"/>
         <attribute name="topSongID" optional="YES" attributeType="String"/>
+        <relationship name="records" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="MusicRecord" inverseName="artist" inverseEntity="MusicRecord"/>
     </entity>
     <entity name="MusicRecord" representedClassName="MusicRecord" syncable="YES">
         <attribute name="artistID" optional="YES" attributeType="String"/>
@@ -21,5 +22,6 @@
         <attribute name="recordUrl" optional="YES" attributeType="URI"/>
         <attribute name="releaseDate" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
         <attribute name="title" optional="YES" attributeType="String"/>
+        <relationship name="artist" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MusicArtist" inverseName="records" inverseEntity="MusicArtist"/>
     </entity>
 </model>

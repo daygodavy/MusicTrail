@@ -92,7 +92,7 @@ class AddNewArtistVC: MTDataLoadingVC {
                         self?.updateData()
                     }
                 } catch {
-                    print("ERROR!!!!!!!!!!!")
+                    print("ERROR!!!!!!!!!!! - \(error.localizedDescription)")
                     return
                 }
             }
