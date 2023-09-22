@@ -16,7 +16,6 @@ class SavedArtistsVC: MTDataLoadingVC {
     private var savedArtists: [MTArtist] = []
     private var filteredArtists: [MTArtist] = []
     private var selectedArtists: [MTArtist] = []
-    private let musicArtistRepo: MusicArtistRepo = MusicArtistRepo()
     private var isEditMode: Bool = false
     private var isSearching: Bool = false
     private var isImporting: Bool = false
@@ -45,7 +44,7 @@ class SavedArtistsVC: MTDataLoadingVC {
     }
     
     private func getSavedArtists() {
-        savedArtists = musicArtistRepo.fetchSavedArtists()
+        savedArtists = MusicDataManager.shared.getSavedArtists()
         updateCVUI(with: savedArtists)
         dismissLoadingView()
     }
@@ -208,10 +207,8 @@ class SavedArtistsVC: MTDataLoadingVC {
     private func deleteArtist(_ index: Int) {
         let artistToDelete = savedArtists.remove(at: index)
         updateCVUI(with: savedArtists)
-        musicArtistRepo.unsaveArtist(artistToDelete)
-        
-        // Delete records corresponding to artist
-        MusicDataManager.shared.deleteRecordsFromArtist(artistToDelete)
+      
+        MusicDataManager.shared.deleteArtistWithRecords(artistToDelete)
     }
     
     
@@ -242,7 +239,7 @@ extension SavedArtistsVC: UICollectionViewDelegate {
         } else {
             //        let currentArtists = isSearching ? filteredArtists : savedArtists
             //        let selectedArtist = currentArtists[indexPath.item]
-            //        print(selectedArtist.name)
+            //        Logger.shared.debug(selectedArtist.name)
         }
     
     }
@@ -273,10 +270,9 @@ extension SavedArtistsVC: LibraryArtistVCDelegate {
     func importSavedArtists(_ newArtists: [MTArtist]) {
         savedArtists.append(contentsOf: newArtists)
         savedArtists.sort { $0.name.lowercased() < $1.name.lowercased() }
-        musicArtistRepo.saveLibraryArtists(newArtists)
         updateCVUI(with: savedArtists)
 
-        MusicDataManager.shared.saveArtists(newArtists)
+        MusicDataManager.shared.saveNewArtists(newArtists)
     }
     
     
@@ -293,10 +289,9 @@ extension SavedArtistsVC: AddNewArtistVCDelegate {
     func saveNewArtist(_ newArtist: MTArtist) {
         savedArtists.append(newArtist)
         savedArtists.sort { $0.name.lowercased() < $1.name.lowercased() }
-        musicArtistRepo.saveCatalogArtist(newArtist)
         resetTracked()
         updateCVUI(with: savedArtists)
         
-        MusicDataManager.shared.saveArtists([newArtist])
+        MusicDataManager.shared.saveNewArtists([newArtist])
     }
 }

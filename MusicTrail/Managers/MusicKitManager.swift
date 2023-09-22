@@ -292,38 +292,91 @@ class MusicKitManager {
     
     
     
+//    func fetchNewMusic(for artists: [MTArtist]) async -> [MonthSection : [MTRecord]] {
+//        var recordsByMonth: [MonthSection : [MTRecord]] = [:]
+//        
+//        await withTaskGroup(of: [MonthSection : [MTRecord]].self) { group in
+//            for artist in artists {
+//                group.addTask {
+//                    guard let catalogID = artist.catalogID else { return [:] }
+//                    
+//                    return await self.fetchRecordsForArtist(catalogID)
+//                }
+//            }
+//            
+//            for await result in group {
+//                for (monthYear, records) in result {
+//                    recordsByMonth[monthYear, default: []].append(contentsOf: records)
+//                }
+//            }
+//        }
+//        
+//        return recordsByMonth
+//    }
+    
+    actor ArtistIndexHandler {
+        private var nextIndex: Int = 0
+        
+        func getNext() -> Int {
+            let current = nextIndex
+            nextIndex += 1
+            return current
+        }
+    }
+
     func fetchNewMusic(for artists: [MTArtist]) async -> [MonthSection : [MTRecord]] {
         var recordsByMonth: [MonthSection : [MTRecord]] = [:]
-        
+        let indexHandler = ArtistIndexHandler()
+
         await withTaskGroup(of: [MonthSection : [MTRecord]].self) { group in
-            for artist in artists {
+            // TODO: - TEST INCREASING THIS NUMBER
+            let maxFetchTasks = min(30, artists.count)
+            for _ in 0..<maxFetchTasks {
                 group.addTask {
-                    guard let catalogID = artist.catalogID else { return [:] }
-                    
+                    let index = await indexHandler.getNext()
+                    guard index < artists.count, let catalogID = artists[index].catalogID else { return [:] }
                     return await self.fetchRecordsForArtist(catalogID)
                 }
             }
-            
+
             for await result in group {
                 for (monthYear, records) in result {
                     recordsByMonth[monthYear, default: []].append(contentsOf: records)
                 }
+                
+                let nextIndex = await indexHandler.getNext()
+                if nextIndex < artists.count {
+                    group.addTask {
+                        guard let catalogID = artists[nextIndex].catalogID else { return [:] }
+                        return await self.fetchRecordsForArtist(catalogID)
+                    }
+                }
             }
         }
-        
         return recordsByMonth
     }
+
+
+
+
     
     func fetchRecordsForArtist(_ artistCatalogID: MusicItemID) async -> [MonthSection : [MTRecord]] {
         
         do {
-            let response = try await NetworkManager.shared.retry(3) { () async throws -> MusicCatalogResourceResponse<Artist> in
+            let response = try await NetworkManager.shared.retry(5) { () async throws -> MusicCatalogResourceResponse<Artist> in
                 var request = MusicCatalogResourceRequest<Artist>(matching: \.id, equalTo: artistCatalogID)
                 request.limit = 1
-                return try await request.response()
+                let response = try await request.response()
+                if response.items.isEmpty {
+                    Logger.shared.debug("EMPTY RESPONSE ITEMS FOR \(artistCatalogID)")
+                }
+                return response
             }
 
-            guard let artist = response.items.first else { return [:] }
+            guard let artist = response.items.first else {
+                Logger.shared.debug("FETCHRECORDSFORARTIST REPONSE IS EMPTY!!!!!!!!!!!")
+                return [:]
+            }
             
             let allMusic = try await artist.with([.albums], preferredSource: .catalog)
             
@@ -371,21 +424,17 @@ class MusicKitManager {
         } catch let error as NSError {
             if error.code == 429 {
                 // Handle rate limiting error
-                print("Rate limit exceeded. Retrying...")
+                Logger.shared.debug("Rate limit exceeded. Retrying...")
             } else {
-                print("Error fetching data for catalog ID: \(artistCatalogID), Error: \(error)")
+                Logger.shared.debug("Error fetching data for catalog ID: \(artistCatalogID), Error \(error.code): \(error)")
             }
         } catch {
-            print("Error fetching data for catalog ID: \(artistCatalogID), Error: \(error)")
+            Logger.shared.debug("Error fetching data for catalog ID: \(artistCatalogID), Error: \(error)")
             fatalError()
         }
         
         return [:]
     }
     
-
-
-
-
 }
     

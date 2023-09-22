@@ -12,43 +12,60 @@ import MusicKit
 class MusicArtistRepo {
     let cdRepo = CoreDataRepo()
     
-    func saveLibraryArtists(_ artists: [MTArtist]) {
-        for artist in artists {
-            let newArtist = MusicArtist(context: cdRepo.getContext())
-            newArtist.name = artist.name
-            newArtist.libraryID = artist.libraryID?.rawValue
-            newArtist.catalogID = artist.catalogID?.rawValue
-            newArtist.topSongID = artist.topSongID?.rawValue
-            newArtist.imageUrl = artist.imageUrl
-            newArtist.artistUrl = nil
-            newArtist.genreName = nil
-            newArtist.isTracked = false
-        }
+    private func fetchAssociatedRecords(for artistID: MusicItemID?) -> [MusicRecord] {
+        guard let artistID = artistID else { return [] }
         
-        cdRepo.save()
+        let pred = NSPredicate(format: "artistID == %@", artistID.rawValue as CVarArg)
+        
+        let associatedRecords = cdRepo.fetch(MusicRecord.self, predicate: pred)
+        Logger.shared.debug("associatedRecords for \(artistID)")
+        Logger.shared.debug("associatedRecords count: \(associatedRecords.count)")
+        Logger.shared.debug("~~~~~~~~~~~~~~~~~~~~~~~~~~")
+        if associatedRecords.isEmpty {
+            Logger.shared.debug("ASSOCIATED RECORDS IS EMPTY FOR \(artistID)")
+        }
+        return associatedRecords
     }
     
-    func saveCatalogArtist(_ artist: MTArtist) {
-        let newArtist = MusicArtist(context: cdRepo.getContext())
-        newArtist.name = artist.name
-        newArtist.libraryID = nil
-        newArtist.catalogID = artist.catalogID?.rawValue
-        newArtist.topSongID = artist.topSongID?.rawValue
-        newArtist.imageUrl = artist.imageUrl
-        newArtist.artistUrl = nil
-        newArtist.genreName = nil
-        newArtist.isTracked = false
-        cdRepo.save()
+    func saveArtists(_ artists: [MTArtist]) {
+        cdRepo.getContext().performAndWait {
+            for artist in artists {
+                guard let catalogID = artist.catalogID else {
+                    Logger.shared.debug("WARNING: Artist catalogID is nil for artist: \(artist.name)")
+                    continue
+                }
+                
+                let newArtist = MusicArtist(context: cdRepo.getContext())
+                newArtist.name = artist.name
+                newArtist.libraryID = artist.libraryID?.rawValue
+                newArtist.catalogID = artist.catalogID?.rawValue
+                newArtist.topSongID = artist.topSongID?.rawValue
+                newArtist.imageUrl = artist.imageUrl
+                newArtist.artistUrl = nil
+                newArtist.genreName = nil
+                newArtist.isTracked = false
+                
+                Logger.shared.debug("========CURRENT ARTIST BEING SAVED \(newArtist.name) - \(newArtist.catalogID):")
+                newArtist.addToRecords(NSSet(array: fetchAssociatedRecords(for: catalogID)))
+            }
+            
+            if cdRepo.getContext().hasChanges {
+                do {
+                    try cdRepo.getContext().save()
+                } catch {
+                    Logger.shared.debug("Error saving context: \(error)")
+                }
+            }
+        }
     }
     
     // TODO: - CHANGE PREDICATE TO CATALOG ID
     func unsaveArtist(_ artist: MTArtist) {
         guard let catalogID = artist.catalogID else { return }
         let pred = NSPredicate(format: "catalogID == %@", catalogID.rawValue as CVarArg)
-//        let pred = NSPredicate(format: "name == %@", artist.name as! CVarArg)
         
         guard let artistToDelete = cdRepo.fetch(MusicArtist.self, predicate: pred).first else {
-            print("FAILING TO FETCH ARTIST")
+            Logger.shared.debug("FAILING TO FETCH ARTIST")
             return
         }
         
@@ -79,6 +96,8 @@ class MusicArtistRepo {
                                          genres: genreName)
         
             fetchedArtists.append(currentArtist)
+            
+            
         }
         
         fetchedArtists.sort { $0.name.lowercased() < $1.name.lowercased() }

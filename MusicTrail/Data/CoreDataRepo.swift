@@ -24,7 +24,7 @@ class CoreDataRepo {
             fetched = try container.viewContext.fetch(request)
             return fetched
         } catch {
-            print("Error during fetch: \(error)")
+            Logger.shared.debug("Error during fetch: \(error)")
         }
         
         return []

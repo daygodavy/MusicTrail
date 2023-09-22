@@ -13,46 +13,54 @@ class MusicDataManager {
     static let shared = MusicDataManager()
     
     private let musicRecordRepo: MusicRecordRepo = MusicRecordRepo()
+    private let musicArtistRepo: MusicArtistRepo = MusicArtistRepo()
     
     private var savedArtists: [MTArtist] = []
-    private var musicRecords: [MonthSection : [MTRecord]] = [:]
+    private var allMusicRecords: [MonthSection : [MTRecord]] = [:]
     
-    func saveArtists(_ artists: [MTArtist]) {
-
+    private var newMusicRecords: [MonthSection : [MTRecord]] = [:]
+    
+    
+    func saveNewArtists(_ artists: [MTArtist]) {
+        
         savedArtists.append(contentsOf: artists)
         
         getNewMusic(for: artists) {
+            // Convert fetched music records into [MTRecord] and save them into Core Data
+            let mtRecords = self.newMusicRecords.flatMap { $0.value }
+            self.musicRecordRepo.saveMusicRecords(mtRecords)
+            Logger.shared.debug("MUSICDATAMANAGER: SAVEMUSICRECORDS DONE")
+            self.musicArtistRepo.saveArtists(artists)
+            Logger.shared.debug("MUSICDATAMANAGER: SAVEARTISTS DONE")
             NotificationCenter.default.post(name: .artistsUpdated, object: nil, userInfo: ["artist" : artists])
         }
     }
+    
+    
     
     func getNewMusic(for artists: [MTArtist], completion: @escaping () -> Void) {
         Task {
             
             let getNewRecords = await MusicKitManager.shared.fetchNewMusic(for: artists)
-            musicRecords.merge(getNewRecords) { (current, new) in current + new }
             
-            // Convert fetched music records into [MTRecord] and save them into Core Data
-            let mtRecords = getNewRecords.flatMap { $0.value }
-            musicRecordRepo.saveMusicRecords(mtRecords)
+            newMusicRecords = getNewRecords
+            
+            allMusicRecords.merge(getNewRecords) { (current, new) in current + new }
             
             completion()
         }
     }
 
     
-    func getMusicRecords() -> [MonthSection : [MTRecord]] {
-        return musicRecords
+    func deleteArtistWithRecords(_ artist: MTArtist) {
+        savedArtists.removeAll { $0.catalogID == artist.catalogID }
+        musicArtistRepo.unsaveArtist(artist)
+        NotificationCenter.default.post(name: .artistsUpdated, object: nil)
     }
     
-    func deleteRecordsFromArtist(_ artist: MTArtist) {
-        savedArtists.removeAll { $0.catalogID == artist.catalogID }
-        // Remove from Core Data
-        musicRecordRepo.deleteMusicRecords(for: artist)
-        // Signal NewMusicVC to update UI to reflect changes
-        NotificationCenter.default.post(name: .artistsUpdated, object: nil)
-        
-        
+    
+    func getSavedArtists() -> [MTArtist] {
+        return musicArtistRepo.fetchSavedArtists()
     }
 }
 

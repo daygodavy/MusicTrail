@@ -92,33 +92,12 @@ class AddNewArtistVC: MTDataLoadingVC {
                         self?.updateData()
                     }
                 } catch {
-                    print("ERROR!!!!!!!!!!! - \(error.localizedDescription)")
+                    Logger.shared.debug("ERROR!!!!!!!!!!! - \(error.localizedDescription)")
                     return
                 }
             }
         })
     }
-    
-    
-//    private func getSearchedArtists(_ searchTerm: String) {
-//        
-//        fetchArtistsTask = Task {
-//            do {
-//                isLoading = true
-//                showLoadingView()
-//                let newResults = try await MusicKitManager.shared.fetchSearchedArtists(searchTerm, excludedArtists: savedArtists)
-//                
-//                if searchTerm == navigationItem.searchController?.searchBar.text {
-//                    searchedArtists = newResults
-//                    stopLoader()
-//                    updateData()
-//                }
-//            } catch {
-//                print("ERROR!!!!!!!!!!!")
-//                return
-//            }
-//        }
-//    }
     
     
     private func saveSelectedArtist(_ artist: MTArtist) {

@@ -90,7 +90,7 @@ class LibraryArtistsVC: MTDataLoadingVC {
                 delegate?.importSavedArtists(selectedArtists)
 
             } catch {
-                print("ERROR!!!!!!!!!!!")
+                Logger.shared.debug("ERROR!!!!!!!!!!!")
                 return
             }
             
@@ -148,8 +148,10 @@ class LibraryArtistsVC: MTDataLoadingVC {
     
     private func updateImportStatus() {
         if !selectedArtists.isEmpty {
+            navigationItem.title = "Selected: \(selectedArtists.count)"
             navigationItem.rightBarButtonItem?.isEnabled = true
         } else {
+            navigationItem.title = ""
             navigationItem.rightBarButtonItem?.isEnabled = false
         }
     }

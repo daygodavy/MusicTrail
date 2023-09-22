@@ -31,37 +31,34 @@ class NetworkManager {
         }
     }
     
+    
     public func retry<T>(_ maxRetries: Int, operation: @escaping () async throws -> T) async throws -> T {
         var retryCount = 0
-        
-        repeat {
+        while true {
             do {
                 return try await operation()
             } catch {
                 if retryCount < maxRetries {
                     retryCount += 1
-                    
-                    // Implement exponential backoff:
-                    // Exponential backoff
                     let delaySeconds = pow(2.0, Double(retryCount))
-                    
-                    // Maximum delay (e.g., 1 minute)
-                    let maxDelaySeconds = 60.0
+                    let maxDelaySeconds = 120.0  // Increased max delay to 2 minutes
                     let retryDelay = min(delaySeconds, maxDelaySeconds)
                     
-                    print("Retrying in \(retryDelay) seconds (Retry \(retryCount) of \(maxRetries))")
+                    // Adding jitter
+                    let jitter = Double.random(in: 0.5..<1.5)
+                    let totalDelay = retryDelay * jitter
                     
-                    // Convert seconds to nanoseconds
-                    let nanoseconds = UInt64(retryDelay * 1_000_000_000)
+                    Logger.shared.debug("Retrying in \(totalDelay) seconds (Retry \(retryCount) of \(maxRetries))")
                     
-                    // Use Task.sleep(nanoseconds:) to delay the retry
+                    let nanoseconds = UInt64(totalDelay * 1_000_000_000)
                     try await Task.sleep(nanoseconds: nanoseconds)
                 } else {
                     throw error
                 }
             }
-        } while true
+        }
     }
+
     
     enum NetworkError: Error {
         
