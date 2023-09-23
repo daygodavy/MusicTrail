@@ -97,7 +97,6 @@ class LibraryArtistsVC: MTDataLoadingVC {
         }
     }
     
-    
     private func getLibraryArtists() {
         Task {
             do {
@@ -107,6 +106,7 @@ class LibraryArtistsVC: MTDataLoadingVC {
                 filteredArtists = libraryArtists
                 updateData()
                 dismissLoadingView()
+//                testSelectArtists(100)
             } catch {
                 if let mtError = error as? MTError {
                     // present MTAlert with error.rawvalue
@@ -123,6 +123,20 @@ class LibraryArtistsVC: MTDataLoadingVC {
                         // TODO: - show text over table view to say access denied
                     }
                 }
+            }
+        }
+    }
+    
+    
+    private func testSelectArtists(_ numArtists: Int) {
+        for i in 0..<numArtists {
+            let indexPath: IndexPath = IndexPath(row: i, section: 0)
+            
+            updateTrackedArtist(indexPath.row)
+            updateImportStatus()
+
+            DispatchQueue.main.async { [weak self] in
+                self?.tableView.reloadRows(at: [indexPath], with: .automatic)
             }
         }
     }

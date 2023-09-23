@@ -17,7 +17,7 @@ class MusicKitManager {
     let imageWidth: Int = 336
     let imageHeight: Int = 336
     
-    var originalLibraryArtists: [MusicItemID : Artist] = [:]
+//    var originalLibraryArtists: [MusicItemID : Artist] = [:]
     
     private init() {}
     
@@ -143,39 +143,121 @@ class MusicKitManager {
         return true
     }
     
-    // TODO: - ADD MUSICKIT AND APPLE MUSIC SUB VALIDATION HERE?
+    
     func mapLibraryToCatalog(_ artists: [MTArtist]) async throws -> [MTArtist] {
         try await accessAuthenticator.ensureAuthorization()
         
         var catalogArtists: [MTArtist] = []
+        let indexHandler = ArtistIndexHandler()
         
-        for artist in artists {
+        await withTaskGroup(of: MTArtist?.self) { group in
+            let maxFetchTask = min(20, artists.count)
             
-            guard let currID = artist.libraryID,
-                    let currArtist = originalLibraryArtists[currID]
-            else { continue }
-
+            for _ in 0..<maxFetchTask {
+                group.addTask {
+                    let index = await indexHandler.getNext()
+                    guard index < artists.count else { return nil }
+                    return await self.getCatalogArtistMatch(artists[index])
+                }
+            }
+            
+            for await result in group {
+                if let artist = result {
+                    catalogArtists.append(artist)
+                }
+                
+                let nextIndex = await indexHandler.getNext()
+                if nextIndex < artists.count {
+                    group.addTask {
+                        return await self.getCatalogArtistMatch(artists[nextIndex])
+                    }
+                }
+            }
+        }
+        Logger.shared.debug("MAPLIBRARYTOCATALOG DONE, RETURNING \(catalogArtists.count) MTARTISTS")
+        return catalogArtists
+    }
+    
+    
+    private func getCatalogArtistMatch(_ artist: MTArtist) async -> MTArtist? {
+            
+        guard let currID = artist.libraryID,
+//                let currArtist = originalLibraryArtists[currID]
+              let currArtist = await libraryArtistsHandler.getArtist(for: currID)
+        else { return nil }
+        
+        do {
             // CHECK IF LIBRARY ARTIST HAS IMAGEURL, IF YES THEN COMPARE TO CATALOG COUNTERPART
             if let _ = artist.imageUrl,
                 let catArtistMatch = try await
                 fetchCatalogArtistByImageURL(currArtist: artist) {
                 // IMAGE URL MATCH FOUND -> ARTIST MAPPED
                 
-                catalogArtists.append(catArtistMatch)
+    //                catalogArtists.append(catArtistMatch)
+                return catArtistMatch
             } else if let topSongID = await fetchArtistTopSongID(currArtist: currArtist, currSource: .library),
                         let catArtistMatch = try await fetchCatalogArtistByTopSongID(currArtist, librarySongID: topSongID) {
                 // IF LIBRARY IMAGEURL DOESN'T EXIST, CHECK TOP SONG ID
                 // COMPARE TOP SONG ID IF IT EXISTS
                 
                 // TOP SONG MATCH FOUND -> MAP ARTIST
-                catalogArtists.append(catArtistMatch)
+    //                catalogArtists.append(catArtistMatch)
+                return catArtistMatch
             }
+        } catch {
+            Logger.shared.debug("1GETCATALOGARTISTSMATCH: CAUGHT ERROR RETURNING NIL")
+            return nil
         }
-        
-        return catalogArtists
+        Logger.shared.debug("2GETCATALOGARTISTSMATCH: RETURNING NIL")
+        return nil
     }
     
+    
+    // TODO: - ADD MUSICKIT AND APPLE MUSIC SUB VALIDATION HERE?
+//    func mapLibraryToCatalog(_ artists: [MTArtist]) async throws -> [MTArtist] {
+//        try await accessAuthenticator.ensureAuthorization()
+//        
+//        var catalogArtists: [MTArtist] = []
+//        
+//        for artist in artists {
+//            
+//            guard let currID = artist.libraryID,
+//                    let currArtist = originalLibraryArtists[currID]
+//            else { continue }
+//
+//            // CHECK IF LIBRARY ARTIST HAS IMAGEURL, IF YES THEN COMPARE TO CATALOG COUNTERPART
+//            if let _ = artist.imageUrl,
+//                let catArtistMatch = try await
+//                fetchCatalogArtistByImageURL(currArtist: artist) {
+//                // IMAGE URL MATCH FOUND -> ARTIST MAPPED
+//                
+//                catalogArtists.append(catArtistMatch)
+//            } else if let topSongID = await fetchArtistTopSongID(currArtist: currArtist, currSource: .library),
+//                        let catArtistMatch = try await fetchCatalogArtistByTopSongID(currArtist, librarySongID: topSongID) {
+//                // IF LIBRARY IMAGEURL DOESN'T EXIST, CHECK TOP SONG ID
+//                // COMPARE TOP SONG ID IF IT EXISTS
+//                
+//                // TOP SONG MATCH FOUND -> MAP ARTIST
+//                catalogArtists.append(catArtistMatch)
+//            }
+//        }
+//        
+//        return catalogArtists
+//    }
+    
+    actor LibraryArtistsHandler {
+        private var originalLibraryArtists: [MusicItemID : Artist] = [:]
+        
+        func setArtist(_ artist: Artist, for id: MusicItemID) {
+            originalLibraryArtists[id] = artist
+        }
+        
+        func getArtist(for id: MusicItemID) -> Artist? {
+            return originalLibraryArtists[id]
+        }
+    }
 
+    let libraryArtistsHandler = LibraryArtistsHandler()
     
     // Fetch all artists from library
     func fetchLibraryArtists(_ savedArtists: [MTArtist]) async throws -> [MTArtist] {
@@ -183,7 +265,7 @@ class MusicKitManager {
         try await accessAuthenticator.ensureAppleMusicSubscription()
         
         var allArtists: [MTArtist] = []
-        originalLibraryArtists.removeAll()
+//        originalLibraryArtists.removeAll()
         
         var request = MusicLibraryRequest<Artist>()
         request.sort(by: \.name, ascending: true)
@@ -198,7 +280,8 @@ class MusicKitManager {
                     else { return nil }
                     
                     // Store original library artist object
-                    self.originalLibraryArtists[artist.id] = artist
+                    await self.libraryArtistsHandler.setArtist(artist, for: artist.id)
+//                    self.originalLibraryArtists[artist.id] = artist
                     return try await self.convertToMTArtist(artist, libID: artist.id, source: .library)
                 }
             }
@@ -357,28 +440,31 @@ class MusicKitManager {
     }
 
 
-
-
-    
     func fetchRecordsForArtist(_ artistCatalogID: MusicItemID) async -> [MonthSection : [MTRecord]] {
         
         do {
-            let response = try await NetworkManager.shared.retry(5) { () async throws -> MusicCatalogResourceResponse<Artist> in
+            let response = try await NetworkManager.shared.retry(4) { () async throws -> MusicCatalogResourceResponse<Artist> in
                 var request = MusicCatalogResourceRequest<Artist>(matching: \.id, equalTo: artistCatalogID)
                 request.limit = 1
                 let response = try await request.response()
                 if response.items.isEmpty {
                     Logger.shared.debug("EMPTY RESPONSE ITEMS FOR \(artistCatalogID)")
                 }
+                Logger.shared.debug("1FIRST: RETRY ATTEMPT HERE")
                 return response
             }
 
             guard let artist = response.items.first else {
-                Logger.shared.debug("FETCHRECORDSFORARTIST REPONSE IS EMPTY!!!!!!!!!!!")
+                Logger.shared.debug("FETCHRECORDSFORARTIST RESPONSE IS EMPTY!!!!!!!!!!!")
                 return [:]
             }
             
-            let allMusic = try await artist.with([.albums], preferredSource: .catalog)
+//            let allMusic = try await artist.with([.albums], preferredSource: .catalog)
+            let allMusic = try await NetworkManager.shared.retry(4) { () async throws -> MusicItemCollection<Artist>.Element in
+                
+                Logger.shared.debug("2SECOND: RETRY ATTEMPT HERE")
+                return try await artist.with([.albums], preferredSource: .catalog)
+            }
             
             var trackedRecordsDict: [String : Album] = [:]
             var batchRecords = allMusic.albums ?? []
@@ -396,11 +482,24 @@ class MusicKitManager {
                     }
                 }
                 
-                guard let nextBatch = try await batchRecords.nextBatch() else {
+                let nextBatch = try await NetworkManager.shared.retry(3) { () async throws -> MusicItemCollection<Album>? in
+                    Logger.shared.debug("3THIRD: RETRY ATTEMPT HERE")
+                    guard let nextBatch = try await batchRecords.nextBatch() else {
+                        return nil
+                    }
+                    return nextBatch
+                }
+                
+                guard let nextBatch = nextBatch else {
                     isLastBatch = true
                     continue
                 }
                 batchRecords = nextBatch
+//                guard let nextBatch = try await batchRecords.nextBatch() else {
+//                    isLastBatch = true
+//                    continue
+//                }
+//                batchRecords = nextBatch
                 
             } while !isLastBatch
             
@@ -435,6 +534,83 @@ class MusicKitManager {
         
         return [:]
     }
+
+    
+//    func fetchRecordsForArtist(_ artistCatalogID: MusicItemID) async -> [MonthSection : [MTRecord]] {
+//        
+//        do {
+//            let response = try await NetworkManager.shared.retry(3) { () async throws -> MusicCatalogResourceResponse<Artist> in
+//                var request = MusicCatalogResourceRequest<Artist>(matching: \.id, equalTo: artistCatalogID)
+//                request.limit = 1
+//                let response = try await request.response()
+//                if response.items.isEmpty {
+//                    Logger.shared.debug("EMPTY RESPONSE ITEMS FOR \(artistCatalogID)")
+//                }
+//                return response
+//            }
+//
+//            guard let artist = response.items.first else {
+//                Logger.shared.debug("FETCHRECORDSFORARTIST REPONSE IS EMPTY!!!!!!!!!!!")
+//                return [:]
+//            }
+//            
+//            let allMusic = try await artist.with([.albums], preferredSource: .catalog)
+//            
+//            var trackedRecordsDict: [String : Album] = [:]
+//            var batchRecords = allMusic.albums ?? []
+//            var isLastBatch: Bool = false
+//            
+//            repeat {
+//                
+//                for record in batchRecords {
+//                    if trackedRecordsDict.keys.contains(record.title),
+//                       let rating = trackedRecordsDict[record.title]?.contentRating,
+//                       rating == .explicit {
+//                        continue
+//                    } else {
+//                        trackedRecordsDict[record.title] = record
+//                    }
+//                }
+//                
+//                guard let nextBatch = try await batchRecords.nextBatch() else {
+//                    isLastBatch = true
+//                    continue
+//                }
+//                batchRecords = nextBatch
+//                
+//            } while !isLastBatch
+//            
+//            var recordsByMonth: [MonthSection : [MTRecord]] = [:]
+//            for record in trackedRecordsDict.values {
+//                guard let releaseDate = record.releaseDate,
+//                      let artworkURL = record.artwork?.url(width: imageWidth + 168, height: imageHeight + 168) else {
+//                          continue
+//                      }
+//                
+//                let monthYearString = DateUtil.monthYearFormatter.string(from: releaseDate)
+//                let monthSection = MonthSection(monthYear: monthYearString)
+//                
+//                let mtRecord = MTRecord(title: record.title, artistName: record.artistName, recordID: record.id, artistCatalogID: artistCatalogID, imageUrl: artworkURL, releaseDate: releaseDate)
+//                
+//                recordsByMonth[monthSection, default: []].append(mtRecord)
+//            }
+//            
+//            return recordsByMonth
+//            
+//        } catch let error as NSError {
+//            if error.code == 429 {
+//                // Handle rate limiting error
+//                Logger.shared.debug("Rate limit exceeded. Retrying...")
+//            } else {
+//                Logger.shared.debug("Error fetching data for catalog ID: \(artistCatalogID), Error \(error.code): \(error)")
+//            }
+//        } catch {
+//            Logger.shared.debug("Error fetching data for catalog ID: \(artistCatalogID), Error: \(error)")
+//            fatalError()
+//        }
+//        
+//        return [:]
+//    }
     
 }
     
