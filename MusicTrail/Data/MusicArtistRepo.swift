@@ -18,12 +18,12 @@ class MusicArtistRepo {
         let pred = NSPredicate(format: "artistID == %@", artistID.rawValue as CVarArg)
         
         let associatedRecords = cdRepo.fetch(MusicRecord.self, predicate: pred)
-        Logger.shared.debug("associatedRecords for \(artistID)")
-        Logger.shared.debug("associatedRecords count: \(associatedRecords.count)")
-        Logger.shared.debug("~~~~~~~~~~~~~~~~~~~~~~~~~~")
+        Logger.shared.debug("associatedRecords for \(artistID)", toggle: true)
+        Logger.shared.debug("associatedRecords count: \(associatedRecords.count)", toggle: true)
         if associatedRecords.isEmpty {
-            Logger.shared.debug("ASSOCIATED RECORDS IS EMPTY FOR \(artistID)")
+            Logger.shared.debug("ASSOCIATED RECORDS IS EMPTY FOR \(artistID)", toggle: true)
         }
+        Logger.shared.debug("~~~~~~~~~~~~~~~~~~~~~~~~~~", toggle: true)
         return associatedRecords
     }
     
@@ -45,7 +45,7 @@ class MusicArtistRepo {
                 newArtist.genreName = nil
                 newArtist.isTracked = false
                 
-                Logger.shared.debug("========CURRENT ARTIST BEING SAVED \(newArtist.name) - \(newArtist.catalogID):")
+                Logger.shared.debug("========CURRENT ARTIST BEING SAVED \(newArtist.name) - \(newArtist.catalogID):", toggle: true)
                 newArtist.addToRecords(NSSet(array: fetchAssociatedRecords(for: catalogID)))
             }
             

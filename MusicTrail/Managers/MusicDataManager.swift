@@ -25,13 +25,14 @@ class MusicDataManager {
         
         savedArtists.append(contentsOf: artists)
         
+        Logger.shared.debug("MUSICDATAMANAGER: STARTING SAVENEWARTISTS", toggle: true)
         getNewMusic(for: artists) {
             // Convert fetched music records into [MTRecord] and save them into Core Data
             let mtRecords = self.newMusicRecords.flatMap { $0.value }
             self.musicRecordRepo.saveMusicRecords(mtRecords)
-            Logger.shared.debug("MUSICDATAMANAGER: SAVEMUSICRECORDS DONE")
+            Logger.shared.debug("MUSICDATAMANAGER: SAVEMUSICRECORDS DONE", toggle: true)
             self.musicArtistRepo.saveArtists(artists)
-            Logger.shared.debug("MUSICDATAMANAGER: SAVEARTISTS DONE")
+            Logger.shared.debug("MUSICDATAMANAGER: SAVEARTISTS DONE", toggle: true)
             NotificationCenter.default.post(name: .artistsUpdated, object: nil, userInfo: ["artist" : artists])
         }
     }

@@ -104,9 +104,10 @@ class LibraryArtistsVC: MTDataLoadingVC {
                     .fetchLibraryArtists(savedArtists)
                 libraryArtists.sort { $0.name.lowercased() < $1.name.lowercased() }
                 filteredArtists = libraryArtists
+                Logger.shared.debug("NUM ARTIST: \(filteredArtists.count)", toggle: true)
                 updateData()
                 dismissLoadingView()
-//                testSelectArtists(100)
+                testSelectArtists(900)
             } catch {
                 if let mtError = error as? MTError {
                     // present MTAlert with error.rawvalue

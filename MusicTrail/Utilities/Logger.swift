@@ -27,8 +27,12 @@ class Logger {
         }
     }
 
-    func debug(_ message: String) {
-        log(message, logLevel: .debug)
+    func debug(_ message: String, toggle: Bool?=true) {
+        guard let toggle = toggle else { return }
+        
+        if toggle {
+            log(message, logLevel: .debug)
+        }
     }
 
     func info(_ message: String) {

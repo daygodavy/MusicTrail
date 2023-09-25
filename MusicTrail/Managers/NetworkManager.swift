@@ -48,11 +48,14 @@ class NetworkManager {
                     let jitter = Double.random(in: 0.5..<1.5)
                     let totalDelay = retryDelay * jitter
                     
-                    Logger.shared.debug("Retrying in \(totalDelay) seconds (Retry \(retryCount) of \(maxRetries))")
+                    if retryCount > 2 {
+                        Logger.shared.debug("Retrying in \(totalDelay) seconds (Retry \(retryCount) of \(maxRetries))")
+                    }
                     
                     let nanoseconds = UInt64(totalDelay * 1_000_000_000)
                     try await Task.sleep(nanoseconds: nanoseconds)
                 } else {
+                    Logger.shared.debug("REACHED MAX RETRY!!! \(retryCount)")
                     throw error
                 }
             }
