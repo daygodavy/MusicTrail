@@ -25,38 +25,63 @@ class LibraryArtistsVC: MTDataLoadingVC {
     weak var delegate: LibraryArtistVCDelegate?
     
     // MARK: - UI Components
-    let tableView = UITableView()
+    let mtTableView = MTArtistImportTableView()
 
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         
         getLibraryArtists()
-        configureNavBar()
+        configurePreNavBar()
         configureTableView()
+        configureImportButton()
         configureSearchBar()
         showLoadingView()
     }
     
     
     // MARK: - UI Setup
-    private func configureNavBar() {
+    private func configurePreNavBar() {
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Back", style: .plain, target: self, action: #selector(backButtonTapped))
-        
-        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Import", style: .plain, target: self, action: #selector(importButtonTapped))
-        navigationItem.rightBarButtonItem?.isEnabled = false
     }
+    
+    private func configurePostNavBar() {
+        let selectImage = UIImage(systemName: "checklist.checked")
+        let deselectImage = UIImage(systemName: "checklist.unchecked")
+        let selectButton = UIBarButtonItem(image: selectImage, style: .plain, target: self, action: #selector(selectButtonTapped))
+        let deselectButton = UIBarButtonItem(image: deselectImage, style: .plain, target: self, action: #selector(deselectButtonTapped))
+        navigationItem.setRightBarButtonItems([selectButton, deselectButton], animated: true)
+    }
+
     
     private func configureTableView() {
         view.backgroundColor = .secondarySystemBackground
-        view.addSubview(tableView)
-        tableView.frame = view.bounds
-        tableView.backgroundColor = .systemBackground
-        tableView.rowHeight = 64
-        tableView.delegate = self
-        tableView.dataSource = self
+        view.addSubview(mtTableView)
+        mtTableView.translatesAutoresizingMaskIntoConstraints = false
         
-        tableView.register(ArtistTVCell.self, forCellReuseIdentifier: ArtistTVCell.identifier)
+        NSLayoutConstraint.activate([
+            mtTableView.topAnchor.constraint(equalTo: view.topAnchor),
+            mtTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            mtTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            mtTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
+        
+        mtTableView.tableView.backgroundColor = .systemBackground
+        mtTableView.tableView.rowHeight = 64
+        mtTableView.tableView.delegate = self
+        mtTableView.tableView.dataSource = self
+        mtTableView.tableView.register(ArtistTVCell.self, forCellReuseIdentifier: ArtistTVCell.identifier)
+    }
+    
+    private func configureImportButton() {
+        mtTableView.importButton.setTitle("Import", for: .normal)
+        mtTableView.importButton.isHidden = true
+        
+        mtTableView.importButton.backgroundColor = .systemBlue
+        mtTableView.importButton.layer.cornerRadius = 25
+        mtTableView.importButton.layer.masksToBounds = true
+        mtTableView.importButton.setTitleColor(.white, for: .normal)
+        mtTableView.importButton.addTarget(self, action: #selector(importButtonTapped), for: .touchUpInside)
     }
     
     private func configureSearchBar() {
@@ -74,6 +99,26 @@ class LibraryArtistsVC: MTDataLoadingVC {
         if let navigationController = self.navigationController {
             navigationController.dismiss(animated: true)
         }
+    }
+    
+    @objc private func selectButtonTapped() {
+        for i in 0..<libraryArtists.count {
+            libraryArtists[i].isTracked = true
+        }
+        filteredArtists = libraryArtists
+        selectedArtists = libraryArtists
+        updateImportStatus()
+        updateData()
+    }
+    
+    @objc private func deselectButtonTapped() {
+        for i in 0..<libraryArtists.count {
+            libraryArtists[i].isTracked = false
+        }
+        filteredArtists = libraryArtists
+        selectedArtists.removeAll()
+        updateImportStatus()
+        updateData()
     }
     
     
@@ -104,10 +149,10 @@ class LibraryArtistsVC: MTDataLoadingVC {
                     .fetchLibraryArtists(savedArtists)
                 libraryArtists.sort { $0.name.lowercased() < $1.name.lowercased() }
                 filteredArtists = libraryArtists
-                Logger.shared.debug("NUM ARTIST: \(filteredArtists.count)", toggle: true)
                 updateData()
                 dismissLoadingView()
-                testSelectArtists(900)
+                configurePostNavBar()
+//                testSelectArtists(900)
             } catch {
                 if let mtError = error as? MTError {
                     // present MTAlert with error.rawvalue
@@ -129,22 +174,9 @@ class LibraryArtistsVC: MTDataLoadingVC {
     }
     
     
-    private func testSelectArtists(_ numArtists: Int) {
-        for i in 0..<numArtists {
-            let indexPath: IndexPath = IndexPath(row: i, section: 0)
-            
-            updateTrackedArtist(indexPath.row)
-            updateImportStatus()
-
-            DispatchQueue.main.async { [weak self] in
-                self?.tableView.reloadRows(at: [indexPath], with: .automatic)
-            }
-        }
-    }
-    
     private func updateData() {
         DispatchQueue.main.async { [weak self] in
-            self?.tableView.reloadData()
+            self?.mtTableView.tableView.reloadData()
         }
     }
     
@@ -163,11 +195,12 @@ class LibraryArtistsVC: MTDataLoadingVC {
     
     private func updateImportStatus() {
         if !selectedArtists.isEmpty {
-            navigationItem.title = "Selected: \(selectedArtists.count)"
-            navigationItem.rightBarButtonItem?.isEnabled = true
+            mtTableView.importButton.setTitle("Import (\(selectedArtists.count))", for: .normal)
+            mtTableView.importButton.isHidden = false
+            mtTableView.importButton.isEnabled = true
         } else {
-            navigationItem.title = ""
-            navigationItem.rightBarButtonItem?.isEnabled = false
+            mtTableView.importButton.isHidden = true
+            mtTableView.importButton.isEnabled = false
         }
     }
 }
@@ -193,8 +226,20 @@ extension LibraryArtistsVC: UITableViewDelegate, UITableViewDataSource {
         updateImportStatus()
 
         DispatchQueue.main.async { [weak self] in
-            self?.tableView.reloadRows(at: [indexPath], with: .automatic)
+            self?.mtTableView.tableView.reloadRows(at: [indexPath], with: .automatic)
         }
+    }
+    
+    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        
+        let footerView = UIView(frame: CGRect(x: 0, y: 0, width: tableView.bounds.width, height: 140))
+        footerView.backgroundColor = .clear
+        
+        return footerView
+    }
+    
+    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        return 140
     }
 
 }

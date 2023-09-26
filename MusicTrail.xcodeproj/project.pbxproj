@@ -12,6 +12,7 @@
 		5B021C2C2ABD0E8400928251 /* MusicRecord+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B021C282ABD0E8400928251 /* MusicRecord+CoreDataClass.swift */; };
 		5B021C2D2ABD0E8400928251 /* MusicRecord+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B021C292ABD0E8400928251 /* MusicRecord+CoreDataProperties.swift */; };
 		5B021C2F2ABE478B00928251 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B021C2E2ABE478B00928251 /* Logger.swift */; };
+		5B021C312AC246FD00928251 /* MTArtistImportTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B021C302AC246FD00928251 /* MTArtistImportTableView.swift */; };
 		5B28BBAB2A90002700300C8A /* MusicArtistRepo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B28BBAA2A90002700300C8A /* MusicArtistRepo.swift */; };
 		5B28BBB22A93F74900300C8A /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B28BBB12A93F74900300C8A /* Constants.swift */; };
 		5B5B68CF2A6231AE00EA3D9B /* MusicKitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B5B68CE2A6231AE00EA3D9B /* MusicKitManager.swift */; };
@@ -80,6 +81,7 @@
 		5B021C282ABD0E8400928251 /* MusicRecord+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MusicRecord+CoreDataClass.swift"; sourceTree = "<group>"; };
 		5B021C292ABD0E8400928251 /* MusicRecord+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "MusicRecord+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		5B021C2E2ABE478B00928251 /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
+		5B021C302AC246FD00928251 /* MTArtistImportTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MTArtistImportTableView.swift; sourceTree = "<group>"; };
 		5B28BBAA2A90002700300C8A /* MusicArtistRepo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicArtistRepo.swift; sourceTree = "<group>"; };
 		5B28BBB12A93F74900300C8A /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		5B5B68CE2A6231AE00EA3D9B /* MusicKitManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MusicKitManager.swift; sourceTree = "<group>"; };
@@ -187,6 +189,7 @@
 				5BEED3F22AB9036A0099E533 /* Buttons */,
 				5BEED3F12AB903500099E533 /* Cells */,
 				5BEED3F02AB903460099E533 /* Labels */,
+				5B021C302AC246FD00928251 /* MTArtistImportTableView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -531,6 +534,7 @@
 				5BEED4012ABB8C630099E533 /* DateUtil.swift in Sources */,
 				5BEED4092ABBE29D0099E533 /* MusicRecordRepo.swift in Sources */,
 				5B5B68EC2A69AF8200EA3D9B /* MTBodyLabel.swift in Sources */,
+				5B021C312AC246FD00928251 /* MTArtistImportTableView.swift in Sources */,
 				5B5B68D72A65E6A000EA3D9B /* RecordCVCell.swift in Sources */,
 				5B5B68EE2A69B09700EA3D9B /* MTButton.swift in Sources */,
 				5B021C2C2ABD0E8400928251 /* MusicRecord+CoreDataClass.swift in Sources */,

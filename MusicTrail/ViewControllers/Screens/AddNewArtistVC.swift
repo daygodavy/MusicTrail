@@ -20,7 +20,7 @@ class AddNewArtistVC: MTDataLoadingVC {
     var isLoading: Bool = false
     
     var searchDelayTimer: Timer?
-    let delayDuration: TimeInterval = 0.1
+    let delayDuration: TimeInterval = 0.2
     
     var fetchArtistsTask: Task<Void, Never>?
     

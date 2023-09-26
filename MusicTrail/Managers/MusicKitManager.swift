@@ -121,27 +121,6 @@ class MusicKitManager {
     
     
     // MARK: - MAPPING LIBRARY ARTIST IMAGE TO CATALOG ARTIST IMAGE
-//    func fetchCatalogArtistByImageURL(currArtist: MTArtist) async throws -> MTArtist? {
-//        
-//        let catalogArtists = try await searchCatalogArtists(term: currArtist.name)
-//        
-//        for artist in catalogArtists {
-//            
-//            if artist.name.lowercased() == currArtist.name.lowercased() {
-//
-//                let catArtistImageURL = artist.artwork?.url(width: imageWidth, height: imageHeight)
-//                
-//                guard isMatchingImageURL(catArtistImageURL, currArtist.imageUrl) else { return nil }
-//                
-//                return MTArtist(name: artist.name,
-//                                catalogID: artist.id,
-//                                libraryID: currArtist.libraryID,
-//                                imageUrl: currArtist.imageUrl)
-//            }
-//        }
-//        
-//        return nil
-//    }
     
     func fetchCatalogArtistByImageURL(currArtist: MTArtist) async throws -> MTArtist? {
         let catalogArtists = try await searchCatalogArtists(term: currArtist.name)
@@ -548,82 +527,5 @@ class MusicKitManager {
         return [:]
     }
 
-    
-//    func fetchRecordsForArtist(_ artistCatalogID: MusicItemID) async -> [MonthSection : [MTRecord]] {
-//        
-//        do {
-//            let response = try await NetworkManager.shared.retry(3) { () async throws -> MusicCatalogResourceResponse<Artist> in
-//                var request = MusicCatalogResourceRequest<Artist>(matching: \.id, equalTo: artistCatalogID)
-//                request.limit = 1
-//                let response = try await request.response()
-//                if response.items.isEmpty {
-//                    Logger.shared.debug("EMPTY RESPONSE ITEMS FOR \(artistCatalogID)")
-//                }
-//                return response
-//            }
-//
-//            guard let artist = response.items.first else {
-//                Logger.shared.debug("FETCHRECORDSFORARTIST REPONSE IS EMPTY!!!!!!!!!!!")
-//                return [:]
-//            }
-//            
-//            let allMusic = try await artist.with([.albums], preferredSource: .catalog)
-//            
-//            var trackedRecordsDict: [String : Album] = [:]
-//            var batchRecords = allMusic.albums ?? []
-//            var isLastBatch: Bool = false
-//            
-//            repeat {
-//                
-//                for record in batchRecords {
-//                    if trackedRecordsDict.keys.contains(record.title),
-//                       let rating = trackedRecordsDict[record.title]?.contentRating,
-//                       rating == .explicit {
-//                        continue
-//                    } else {
-//                        trackedRecordsDict[record.title] = record
-//                    }
-//                }
-//                
-//                guard let nextBatch = try await batchRecords.nextBatch() else {
-//                    isLastBatch = true
-//                    continue
-//                }
-//                batchRecords = nextBatch
-//                
-//            } while !isLastBatch
-//            
-//            var recordsByMonth: [MonthSection : [MTRecord]] = [:]
-//            for record in trackedRecordsDict.values {
-//                guard let releaseDate = record.releaseDate,
-//                      let artworkURL = record.artwork?.url(width: imageWidth + 168, height: imageHeight + 168) else {
-//                          continue
-//                      }
-//                
-//                let monthYearString = DateUtil.monthYearFormatter.string(from: releaseDate)
-//                let monthSection = MonthSection(monthYear: monthYearString)
-//                
-//                let mtRecord = MTRecord(title: record.title, artistName: record.artistName, recordID: record.id, artistCatalogID: artistCatalogID, imageUrl: artworkURL, releaseDate: releaseDate)
-//                
-//                recordsByMonth[monthSection, default: []].append(mtRecord)
-//            }
-//            
-//            return recordsByMonth
-//            
-//        } catch let error as NSError {
-//            if error.code == 429 {
-//                // Handle rate limiting error
-//                Logger.shared.debug("Rate limit exceeded. Retrying...")
-//            } else {
-//                Logger.shared.debug("Error fetching data for catalog ID: \(artistCatalogID), Error \(error.code): \(error)")
-//            }
-//        } catch {
-//            Logger.shared.debug("Error fetching data for catalog ID: \(artistCatalogID), Error: \(error)")
-//            fatalError()
-//        }
-//        
-//        return [:]
-//    }
-    
 }
     
