@@ -158,7 +158,7 @@ class SavedArtistsVC: MTDataLoadingVC {
     
     @objc private func addButtonTapped() {
         let vcToPresent = AddNewArtistVC()
-        vcToPresent.delegate = self
+//        vcToPresent.delegate = self
         vcToPresent.savedArtists = self.savedArtists
         
         let navController = UINavigationController(rootViewController: vcToPresent)
@@ -284,14 +284,14 @@ extension SavedArtistsVC: LibraryArtistVCDelegate {
 
 
 // MARK: - AddNewArtistVC Protocols
-extension SavedArtistsVC: AddNewArtistVCDelegate {
-    
-    func saveNewArtist(_ newArtist: MTArtist) {
-        savedArtists.append(newArtist)
-        savedArtists.sort { $0.name.lowercased() < $1.name.lowercased() }
-        resetTracked()
-        updateCVUI(with: savedArtists)
-        
-        MusicDataManager.shared.saveNewArtists([newArtist])
-    }
-}
+//extension SavedArtistsVC: ConfirmNewArtistVCDelegate {
+//
+//    func saveNewArtist(_ newArtist: MTArtist) {
+//        savedArtists.append(newArtist)
+//        savedArtists.sort { $0.name.lowercased() < $1.name.lowercased() }
+//        resetTracked()
+//        updateCVUI(with: savedArtists)
+//        
+//        MusicDataManager.shared.saveNewArtists([newArtist])
+//    }
+//}
