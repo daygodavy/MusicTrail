@@ -15,12 +15,17 @@ protocol LibraryArtistVCDelegate: AnyObject {
 
 class LibraryArtistsVC: MTDataLoadingVC {
     
+    enum Section { case main }
+    
     // MARK: - Variables
     var libraryArtists: [MTArtist] = []
     var filteredArtists: [MTArtist] = []
     var selectedArtists: [MTArtist] = []
     var savedArtists: [MTArtist] = []
     var isSearching: Bool = false
+    
+    private var dataSource: UITableViewDiffableDataSource<Section, MTArtist>!
+
     
     weak var delegate: LibraryArtistVCDelegate?
     
@@ -69,8 +74,14 @@ class LibraryArtistsVC: MTDataLoadingVC {
         mtTableView.tableView.backgroundColor = .systemBackground
         mtTableView.tableView.rowHeight = 64
         mtTableView.tableView.delegate = self
-        mtTableView.tableView.dataSource = self
+
         mtTableView.tableView.register(ArtistTVCell.self, forCellReuseIdentifier: ArtistTVCell.identifier)
+        
+        dataSource = UITableViewDiffableDataSource<Section, MTArtist>(tableView: mtTableView.tableView) { (tableView, indexPath, artist) -> UITableViewCell? in
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: ArtistTVCell.identifier, for: indexPath) as? ArtistTVCell else { fatalError("Unable to dequeue ArtistCell in ViewController") }
+            cell.configure(with: artist, state: .library)
+            return cell
+        }
     }
     
     private func configureImportButton() {
@@ -179,11 +190,13 @@ class LibraryArtistsVC: MTDataLoadingVC {
     }
     
     
-    private func updateData() {
-        DispatchQueue.main.async { [weak self] in
-            self?.mtTableView.tableView.reloadData()
-        }
+    func updateData() {
+        var snapshot = NSDiffableDataSourceSnapshot<Section, MTArtist>()
+        snapshot.appendSections([.main])
+        snapshot.appendItems(filteredArtists)
+        dataSource.apply(snapshot, animatingDifferences: false)
     }
+
     
     
     private func updateTrackedArtist(_ indexPath: IndexPath) {
@@ -217,27 +230,11 @@ class LibraryArtistsVC: MTDataLoadingVC {
 
 
 // MARK: - UITableView Protocols
-extension LibraryArtistsVC: UITableViewDelegate, UITableViewDataSource {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return filteredArtists.count
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: ArtistTVCell.identifier, for: indexPath) as? ArtistTVCell else { fatalError("Unable to dequeue ArtistCell in ViewController") }
-        
-        let artist = filteredArtists[indexPath.row]
-        cell.configure(with: artist, state: .library)
-        
-        return cell
-    }
+extension LibraryArtistsVC: UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         updateTrackedArtist(indexPath)
         updateImportStatus()
-
-//        DispatchQueue.main.async { [weak self] in
-//            self?.mtTableView.tableView.reloadRows(at: [indexPath], with: .automatic)
-//        }
 
         tableView.deselectRow(at: indexPath, animated: true)
     }
@@ -272,6 +269,8 @@ extension LibraryArtistsVC: UISearchResultsUpdating {
         filteredArtists = libraryArtists.filter {
             $0.name.lowercased().contains(filter.lowercased())
         }
+        
+        
         updateData()
     }
     
