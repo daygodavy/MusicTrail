@@ -15,46 +15,47 @@ class ConfirmNewArtistVC: UIViewController {
     
     var mtArtist: MTArtist? = nil
     weak var delegate: ConfirmNewArtistVCDelegate?
+    var onDismiss: (() -> Void)?
     
     let avatarImage = ArtworkImageView(frame: .zero)
     let promptLabel = MTTitleLabel(textAlignment: .center, fontSize: 20, textColor: .white)
     let artistLabel = MTBodyLabel(textAlignment: .center, fontSize: 18, textColor: .systemOrange)
-    
+
     let containerView: UIView = {
-       let containerView = UIView()
-        containerView.translatesAutoresizingMaskIntoConstraints = false
-        containerView.backgroundColor = UIColor.systemBackground.withAlphaComponent(0.99)
-        containerView.layer.borderWidth = 1.0
-        containerView.layer.borderColor = UIColor.tertiarySystemBackground.cgColor
-        containerView.layer.cornerRadius = 20
-        return containerView
+       let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = UIColor.systemBackground
+        view.layer.borderWidth = 1.0
+        view.layer.borderColor = UIColor.tertiarySystemBackground.cgColor
+        view.layer.cornerRadius = 20
+        return view
     }()
     
     
     let followButton: UIButton = {
-        let followButton = UIButton()
-        followButton.translatesAutoresizingMaskIntoConstraints = false
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
         let image = UIImage(systemName: "person.crop.circle.badge.plus")?.withTintColor(.green, renderingMode: .alwaysOriginal)
-        followButton.setImage(image, for: .normal)
-        followButton.backgroundColor = .tertiarySystemBackground
-        followButton.layer.cornerRadius = 25
-        followButton.layer.borderWidth = 2
-        followButton.layer.borderColor = UIColor.systemGreen.cgColor
-        followButton.addTarget(self, action: #selector(followButtonTapped), for: .touchUpInside)
-        return followButton
+        button.setImage(image, for: .normal)
+        button.backgroundColor = .tertiarySystemBackground
+        button.layer.cornerRadius = 25
+        button.layer.borderWidth = 2
+        button.layer.borderColor = UIColor.systemGreen.cgColor
+        button.addTarget(self, action: #selector(followButtonTapped), for: .touchUpInside)
+        return button
     }()
     
     let cancelButton: UIButton = {
-        let cancelButton = UIButton()
-        cancelButton.translatesAutoresizingMaskIntoConstraints = false
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
         let image = UIImage(systemName: "xmark.octagon")?.withTintColor(.red, renderingMode: .alwaysOriginal)
-        cancelButton.setImage(image, for: .normal)
-        cancelButton.backgroundColor = .tertiarySystemBackground
-        cancelButton.layer.cornerRadius = 25
-        cancelButton.layer.borderWidth = 2
-        cancelButton.layer.borderColor = UIColor.systemRed.cgColor
-        cancelButton.addTarget(self, action: #selector(cancelButtonTapped), for: .touchUpInside)
-        return cancelButton
+        button.setImage(image, for: .normal)
+        button.backgroundColor = .tertiarySystemBackground
+        button.layer.cornerRadius = 25
+        button.layer.borderWidth = 2
+        button.layer.borderColor = UIColor.systemRed.cgColor
+        button.addTarget(self, action: #selector(cancelButtonTapped), for: .touchUpInside)
+        return button
     }()
     
     
@@ -67,11 +68,6 @@ class ConfirmNewArtistVC: UIViewController {
         configureArtist()
     }
     
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        self.navigationController!.setViewControllers([self], animated: false)
-    }
-    
     @objc func followButtonTapped() {
 //        if let mtArtist = mtArtist {
 //            delegate?.saveNewArtist(mtArtist)
@@ -79,15 +75,20 @@ class ConfirmNewArtistVC: UIViewController {
         
         // TODO: -
         // Dismiss the ConfirmNewArtistVC
+        confirmSaveNewArtist()
         
     }
     
     @objc func cancelButtonTapped() {
-        if let navigationController = self.navigationController {
-            navigationController.dismiss(animated: true)
-        }
+        dismiss(animated: true)
     }
     
+    private func confirmSaveNewArtist() {
+        dismiss(animated: true) {
+            self.onDismiss?()
+        }
+        // save artist from delegate closure in previous class
+    }
     
     private func configureArtist() {
         avatarImage.downloadArtworkImage(mtArtist?.imageUrl)
@@ -97,6 +98,7 @@ class ConfirmNewArtistVC: UIViewController {
     }
     
     private func setupUI(){
+        view.backgroundColor = UIColor.black.withAlphaComponent(0.75)
         view.addSubview(containerView)
         containerView.addSubview(promptLabel)
         containerView.addSubview(avatarImage)
@@ -105,10 +107,7 @@ class ConfirmNewArtistVC: UIViewController {
         containerView.addSubview(followButton)
         
         NSLayoutConstraint.activate([
-//            containerView.topAnchor.constraint(equalTo: view.topAnchor),
-//            containerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-//            containerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-//            containerView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            
             containerView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             containerView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
             containerView.heightAnchor.constraint(equalToConstant: view.bounds.height / 3),

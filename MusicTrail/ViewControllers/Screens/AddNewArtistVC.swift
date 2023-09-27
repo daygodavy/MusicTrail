@@ -7,9 +7,9 @@
 
 import UIKit
 
-//protocol AddNewArtistVCDelegate: AnyObject {
-//    func saveNewArtist(_ newArtist: MTArtist)
-//}
+protocol AddNewArtistVCDelegate: AnyObject {
+    func saveNewArtist(_ newArtist: MTArtist)
+}
 
 class AddNewArtistVC: MTDataLoadingVC {
     
@@ -24,7 +24,7 @@ class AddNewArtistVC: MTDataLoadingVC {
     
     var fetchArtistsTask: Task<Void, Never>?
     
-//    weak var delegate: AddNewArtistVCDelegate?
+    weak var delegate: AddNewArtistVCDelegate?
     
     // MARK: - UI Components
     let tableView = UITableView()
@@ -100,11 +100,11 @@ class AddNewArtistVC: MTDataLoadingVC {
     }
     
     
-//    private func saveSelectedArtist(_ artist: MTArtist) {
-//        searchDelayTimer?.invalidate()
-//        delegate?.saveNewArtist(artist)
-//        backButtonTapped()
-//    }
+    private func saveSelectedArtist(_ artist: MTArtist) {
+        searchDelayTimer?.invalidate()
+        delegate?.saveNewArtist(artist)
+        backButtonTapped()
+    }
     
     private func updateData() {
         DispatchQueue.main.async { [weak self] in
@@ -132,9 +132,12 @@ class AddNewArtistVC: MTDataLoadingVC {
         let vcToPresent = ConfirmNewArtistVC()
         vcToPresent.mtArtist = artist
         
-        let navController = UINavigationController(rootViewController: vcToPresent)
-        navController.modalPresentationStyle = .pageSheet
-        present(navController, animated: true)
+        vcToPresent.onDismiss = { [weak self] in
+            self?.saveSelectedArtist(artist)
+        }
+        
+        vcToPresent.modalPresentationStyle = .overFullScreen
+        present(vcToPresent, animated: true)
     }
     
 }
@@ -159,6 +162,7 @@ extension AddNewArtistVC: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 //        saveSelectedArtist(searchedArtists[indexPath.row])
         presentConfirmNewArtist(with: searchedArtists[indexPath.row])
+        tableView.deselectRow(at: indexPath, animated: true)
     }
 
 }
