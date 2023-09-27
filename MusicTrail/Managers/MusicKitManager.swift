@@ -281,7 +281,6 @@ class MusicKitManager {
         try await accessAuthenticator.ensureAppleMusicSubscription()
         
         var allArtists: [MTArtist] = []
-//        originalLibraryArtists.removeAll()
         
         var request = MusicLibraryRequest<Artist>()
         request.sort(by: \.name, ascending: true)
@@ -297,7 +296,7 @@ class MusicKitManager {
                     
                     // Store original library artist object
                     await self.libraryArtistsHandler.setArtist(artist, for: artist.id)
-//                    self.originalLibraryArtists[artist.id] = artist
+
                     return try await self.convertToMTArtist(artist, libID: artist.id, source: .library)
                 }
             }

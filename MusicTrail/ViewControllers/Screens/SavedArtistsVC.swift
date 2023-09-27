@@ -271,7 +271,6 @@ extension SavedArtistsVC: LibraryArtistVCDelegate {
         savedArtists.append(contentsOf: newArtists)
         savedArtists.sort { $0.name.lowercased() < $1.name.lowercased() }
         updateCVUI(with: savedArtists)
-//        resetTracked()
         MusicDataManager.shared.saveNewArtists(newArtists)
     }
     
@@ -289,7 +288,6 @@ extension SavedArtistsVC: AddNewArtistVCDelegate {
     func saveNewArtist(_ newArtist: MTArtist) {
         savedArtists.append(newArtist)
         savedArtists.sort { $0.name.lowercased() < $1.name.lowercased() }
-//        resetTracked()
         updateCVUI(with: savedArtists)
         
         MusicDataManager.shared.saveNewArtists([newArtist])

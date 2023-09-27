@@ -102,23 +102,28 @@ class LibraryArtistsVC: MTDataLoadingVC {
     }
     
     @objc private func selectButtonTapped() {
-        for i in 0..<libraryArtists.count {
-            libraryArtists[i].isTracked = true
-        }
-        filteredArtists = libraryArtists
+        toggleSelectAll(true)
         selectedArtists = libraryArtists
         updateImportStatus()
-        updateData()
+//        updateData()
     }
     
     @objc private func deselectButtonTapped() {
-        for i in 0..<libraryArtists.count {
-            libraryArtists[i].isTracked = false
-        }
-        filteredArtists = libraryArtists
+        toggleSelectAll(false)
         selectedArtists.removeAll()
         updateImportStatus()
-        updateData()
+//        updateData()
+    }
+    
+    private func toggleSelectAll(_ isSelected: Bool) {
+        for i in 0..<libraryArtists.count {
+            libraryArtists[i].isTracked = isSelected
+            let indexPath = IndexPath(row: i, section: 0)
+            if let cell = mtTableView.tableView.cellForRow(at: indexPath) as? ArtistTVCell {
+                cell.updateCheckmark(libraryArtists[indexPath.row].isTracked)
+            }
+        }
+        filteredArtists = libraryArtists
     }
     
     
@@ -180,16 +185,21 @@ class LibraryArtistsVC: MTDataLoadingVC {
         }
     }
     
-    private func updateTrackedArtist(_ index: Int) {
-        filteredArtists[index].isTracked.toggle()
-        if let idxMatch = libraryArtists.firstIndex(where: {$0.name.contains(filteredArtists[index].name)}) {
-            libraryArtists[idxMatch].isTracked = filteredArtists[index].isTracked
+    
+    private func updateTrackedArtist(_ indexPath: IndexPath) {
+        filteredArtists[indexPath.row].isTracked.toggle()
+        if let idxMatch = libraryArtists.firstIndex(where: {$0.name.contains(filteredArtists[indexPath.row].name)}) {
+            libraryArtists[idxMatch].isTracked = filteredArtists[indexPath.row].isTracked
         }
         
-        if filteredArtists[index].isTracked {
-            selectedArtists.append(filteredArtists[index])
+        if filteredArtists[indexPath.row].isTracked {
+            selectedArtists.append(filteredArtists[indexPath.row])
         } else {
-            selectedArtists.removeAll(where: {$0.name == filteredArtists[index].name})
+            selectedArtists.removeAll(where: {$0.name == filteredArtists[indexPath.row].name})
+        }
+        
+        if let cell = mtTableView.tableView.cellForRow(at: indexPath) as? ArtistTVCell {
+            cell.updateCheckmark(filteredArtists[indexPath.row].isTracked)
         }
     }
     
@@ -222,12 +232,14 @@ extension LibraryArtistsVC: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        updateTrackedArtist(indexPath.row)
+        updateTrackedArtist(indexPath)
         updateImportStatus()
 
-        DispatchQueue.main.async { [weak self] in
-            self?.mtTableView.tableView.reloadRows(at: [indexPath], with: .automatic)
-        }
+//        DispatchQueue.main.async { [weak self] in
+//            self?.mtTableView.tableView.reloadRows(at: [indexPath], with: .automatic)
+//        }
+
+        tableView.deselectRow(at: indexPath, animated: true)
     }
     
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
@@ -250,7 +262,6 @@ extension LibraryArtistsVC: UISearchResultsUpdating {
     
     func updateSearchResults(for searchController: UISearchController) {
         guard let filter = searchController.searchBar.text, !filter.isEmpty else {
-            filteredArtists.removeAll()
             filteredArtists = libraryArtists
             updateData()
             isSearching = false
@@ -263,4 +274,6 @@ extension LibraryArtistsVC: UISearchResultsUpdating {
         }
         updateData()
     }
+    
 }
+

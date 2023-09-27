@@ -54,21 +54,6 @@ class ArtistTVCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
-    public func configure(with artist: MTArtist, state: ArtistViewState) {
-        self.artistImage.downloadArtworkImage(artist.imageUrl)
-        self.artist = artist
-        self.nameLabel.text = artist.name
-        updateCheck(state)
-    }
-    
-    private func updateCheck(_ state: ArtistViewState) {
-        if artist.isTracked && state == .library {
-            checkImage.isHidden = false
-        } else {
-            checkImage.isHidden = true
-        }
-    }
-    
     
     // TODO: - Prepare for reuse
     override func prepareForReuse() {
@@ -77,6 +62,26 @@ class ArtistTVCell: UITableViewCell {
         artistImage.image = nil
     }
     
+    func configure(with artist: MTArtist, state: ArtistViewState) {
+        
+        self.artistImage.downloadArtworkImage(artist.imageUrl)
+        self.artist = artist
+        self.nameLabel.text = artist.name
+        setCheckmark(state)
+    }
+    
+    private func setCheckmark(_ state: ArtistViewState) {
+        if artist.isTracked && state == .library {
+            checkImage.isHidden = false
+        } else {
+            checkImage.isHidden = true
+        }
+    }
+    
+    func updateCheckmark(_ isTracked: Bool) {
+        if isTracked { checkImage.isHidden = false }
+        else { checkImage.isHidden = true }
+    }
     
     // MARK: - UI Setup
     private func setupUI() {
