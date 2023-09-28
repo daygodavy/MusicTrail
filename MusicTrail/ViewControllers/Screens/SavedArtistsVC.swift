@@ -15,11 +15,14 @@ class SavedArtistsVC: MTDataLoadingVC {
     // MARK: - Variables
     private var savedArtists: [MTArtist] = []
     private var filteredArtists: [MTArtist] = []
-    private var selectedArtists: [MTArtist] = []
+//    private var selectedArtists: [MTArtist] = []
     private var isEditMode: Bool = false
     private var isSearching: Bool = false
     private var isImporting: Bool = false
     private var isEmptyState: Bool = false
+    
+    private var selectedArtistIDs: Set<String> = []
+
     
     // MARK: - UI Components
     private var collectionView: UICollectionView!
@@ -65,7 +68,8 @@ class SavedArtistsVC: MTDataLoadingVC {
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(cancelButtonTapped))
         
         navigationItem.rightBarButtonItems = [UIBarButtonItem(title: "Unfollow", style: .plain, target: self, action: #selector(unfollowButtonTapped))]
-        navigationItem.rightBarButtonItem?.isEnabled = !selectedArtists.isEmpty
+//        navigationItem.rightBarButtonItem?.isEnabled = !selectedArtists.isEmpty
+        navigationItem.rightBarButtonItem?.isEnabled = !selectedArtistIDs.isEmpty
     }
     
     
@@ -87,26 +91,27 @@ class SavedArtistsVC: MTDataLoadingVC {
         collectionView.showsVerticalScrollIndicator = false
         collectionView.register(ArtistCVCell.self, forCellWithReuseIdentifier: ArtistCVCell.reuseID)
     }
+
     
     private func setupDataSource() {
-        
         dataSource = UICollectionViewDiffableDataSource<Section, MTArtist>(
             collectionView: collectionView,
-            cellProvider: { (collectionView, indexPath, artist) -> UICollectionViewCell? in
+            cellProvider: { collectionView, indexPath, artist in
                 
-            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ArtistCVCell.reuseID, for: indexPath) as! ArtistCVCell
-            
-            cell.set(artist: artist)
-            
-            if artist.isTracked {
-                cell.backgroundColor = UIColor.systemGray.withAlphaComponent(0.5)
-            } else {
-                cell.backgroundColor = .clear
-            }
-            cell.layer.cornerRadius = 5
-            
-            return cell
-        })
+                let cell = collectionView.dequeueReusableCell(withReuseIdentifier: ArtistCVCell.reuseID, for: indexPath) as! ArtistCVCell
+                
+                cell.set(artist: artist)
+                
+                guard let catID = artist.catalogID else { return cell }
+//                cell.isHighlighted = self.selectedArtistIDs.contains(catID.rawValue)
+                if self.selectedArtistIDs.contains(catID.rawValue) {
+                    cell.backgroundColor = UIColor.systemGray.withAlphaComponent(0.5) // Or any other highlight color
+                } else {
+                    cell.backgroundColor = .clear
+                }
+                
+                return cell
+            })
     }
     
     private func updateCVUI(with artists: [MTArtist]) {
@@ -172,23 +177,45 @@ class SavedArtistsVC: MTDataLoadingVC {
         updateNavBar()
     }
 
+//    @objc private func unfollowButtonTapped() {
+//        // MARK: - CHECK LOGIC BELOW
+//        editButtonTapped()
+//        
+//        // delete isTracked in savedArtists
+//        for artist in selectedArtists {
+//            guard let index = savedArtists.firstIndex(of: artist) else { return }
+//            deleteArtist(index)
+//        }
+//        
+//        selectedArtists.removeAll()
+//    }
+    
     @objc private func unfollowButtonTapped() {
         // MARK: - CHECK LOGIC BELOW
         editButtonTapped()
         
         // delete isTracked in savedArtists
-        for artist in selectedArtists {
-            guard let index = savedArtists.firstIndex(of: artist) else { return }
-            deleteArtist(index)
+        for artistID in selectedArtistIDs {
+            if let index = savedArtists.firstIndex(where: { $0.catalogID?.rawValue == artistID }) {
+                deleteArtist(index)
+            }
         }
         
-        selectedArtists.removeAll()
+        selectedArtistIDs.removeAll()
+//        updateData(on: savedAr)
     }
     
     
     @objc private func cancelButtonTapped() {
+        print("CANCEL BUTTON TAPPED")
+        selectedArtistIDs.removeAll()
         editButtonTapped()
-        resetTracked()
+        
+        // Reload the entire section or collectionView
+        var snapshot = dataSource.snapshot()
+        snapshot.reloadSections([.main])
+        dataSource.apply(snapshot, animatingDifferences: true)
+        
         updateData(on: savedArtists)
     }
     
@@ -227,15 +254,40 @@ extension SavedArtistsVC: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
         if isEditMode && !isSearching {
-            savedArtists[indexPath.item].isTracked.toggle()
-            
+//            savedArtists[indexPath.item].isTracked.toggle()
+//            
+//            let selectedArtist = savedArtists[indexPath.item]
+//            selectedArtist.isTracked ?
+//            selectedArtists.append(selectedArtist) :
+//            selectedArtists.removeAll(where: { $0.name == selectedArtist.name })
+//            
+//            // Immediately update the selected cell's appearance
+//            if let cell = collectionView.cellForItem(at: indexPath) as? ArtistCVCell {
+//                if selectedArtist.isTracked {
+//                    cell.backgroundColor = UIColor.systemGray.withAlphaComponent(0.5)
+//                } else {
+//                    cell.backgroundColor = .clear
+//                }
+//                cell.layer.cornerRadius = 5
+//            }
+//            
+//            updateData(on: savedArtists)
+//            updateNavBar()
             let selectedArtist = savedArtists[indexPath.item]
-            selectedArtist.isTracked ?
-            selectedArtists.append(selectedArtist) :
-            selectedArtists.removeAll(where: { $0.name == selectedArtist.name })
+            guard let catID = selectedArtist.catalogID else { return }
+            if selectedArtistIDs.contains(catID.rawValue) {
+                selectedArtistIDs.remove(catID.rawValue)
+            } else {
+                selectedArtistIDs.insert(catID.rawValue)
+            }
             
-            updateData(on: savedArtists)
-            updateNavBar()
+            // Update navigation bar
+            navigationItem.rightBarButtonItem?.isEnabled = !selectedArtistIDs.isEmpty
+
+            // Create and apply a new snapshot to reflect the changes
+            var snapshot = dataSource.snapshot()
+            snapshot.reloadItems([selectedArtist])
+            dataSource.apply(snapshot, animatingDifferences: true)
         } else {
             //        let currentArtists = isSearching ? filteredArtists : savedArtists
             //        let selectedArtist = currentArtists[indexPath.item]

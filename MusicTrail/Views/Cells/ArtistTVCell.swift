@@ -71,8 +71,8 @@ class ArtistTVCell: UITableViewCell {
     }
     
     private func setCheckmark(_ state: ArtistViewState) {
-        if artist.isTracked && state == .library {
-            checkImage.isHidden = false
+        if state == .library {
+            updateCheckmark(artist.isTracked)
         } else {
             checkImage.isHidden = true
         }

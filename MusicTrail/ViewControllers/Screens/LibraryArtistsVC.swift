@@ -78,7 +78,10 @@ class LibraryArtistsVC: MTDataLoadingVC {
         mtTableView.tableView.register(ArtistTVCell.self, forCellReuseIdentifier: ArtistTVCell.identifier)
         
         dataSource = UITableViewDiffableDataSource<Section, MTArtist>(tableView: mtTableView.tableView) { (tableView, indexPath, artist) -> UITableViewCell? in
+            
             guard let cell = tableView.dequeueReusableCell(withIdentifier: ArtistTVCell.identifier, for: indexPath) as? ArtistTVCell else { fatalError("Unable to dequeue ArtistCell in ViewController") }
+            
+            print("\(artist.name) @ \(indexPath.row) == \(artist.isTracked)")
             cell.configure(with: artist, state: .library)
             return cell
         }
@@ -116,26 +119,38 @@ class LibraryArtistsVC: MTDataLoadingVC {
         toggleSelectAll(true)
         selectedArtists = libraryArtists
         updateImportStatus()
-//        updateData()
+        reloadVisibleCells()
+        updateData()
     }
     
     @objc private func deselectButtonTapped() {
         toggleSelectAll(false)
         selectedArtists.removeAll()
         updateImportStatus()
-//        updateData()
+        reloadVisibleCells()
+        updateData()
     }
+    
+    private func reloadVisibleCells() {
+        for cell in mtTableView.tableView.visibleCells {
+            guard let indexPath = mtTableView.tableView.indexPath(for: cell),
+                  let artistCell = cell as? ArtistTVCell else { continue }
+            
+            let artist = filteredArtists[indexPath.row]
+            artistCell.updateCheckmark(artist.isTracked)
+        }
+    }
+
     
     private func toggleSelectAll(_ isSelected: Bool) {
         for i in 0..<libraryArtists.count {
             libraryArtists[i].isTracked = isSelected
-            let indexPath = IndexPath(row: i, section: 0)
-            if let cell = mtTableView.tableView.cellForRow(at: indexPath) as? ArtistTVCell {
-                cell.updateCheckmark(libraryArtists[indexPath.row].isTracked)
-            }
         }
-        filteredArtists = libraryArtists
+        filteredArtists = libraryArtists // Ensure filteredArtists reflects the updated isTracked properties
+
+//        updateData()
     }
+
     
     
     @objc private func importButtonTapped() {
@@ -168,7 +183,6 @@ class LibraryArtistsVC: MTDataLoadingVC {
                 updateData()
                 dismissLoadingView()
                 configurePostNavBar()
-//                testSelectArtists(900)
             } catch {
                 if let mtError = error as? MTError {
                     // present MTAlert with error.rawvalue
@@ -193,8 +207,10 @@ class LibraryArtistsVC: MTDataLoadingVC {
     func updateData() {
         var snapshot = NSDiffableDataSourceSnapshot<Section, MTArtist>()
         snapshot.appendSections([.main])
-        snapshot.appendItems(filteredArtists)
-        dataSource.apply(snapshot, animatingDifferences: false)
+        snapshot.appendItems(self.filteredArtists)
+        DispatchQueue.main.async {
+            self.dataSource.apply(snapshot, animatingDifferences: false)
+        }
     }
 
     
@@ -214,6 +230,9 @@ class LibraryArtistsVC: MTDataLoadingVC {
         if let cell = mtTableView.tableView.cellForRow(at: indexPath) as? ArtistTVCell {
             cell.updateCheckmark(filteredArtists[indexPath.row].isTracked)
         }
+        
+//        reloadVisibleCells()
+//        updateData()
     }
     
     private func updateImportStatus() {
@@ -231,6 +250,13 @@ class LibraryArtistsVC: MTDataLoadingVC {
 
 // MARK: - UITableView Protocols
 extension LibraryArtistsVC: UITableViewDelegate {
+    
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+        guard let artistCell = cell as? ArtistTVCell else { return }
+        let artist = filteredArtists[indexPath.row]
+        artistCell.updateCheckmark(artist.isTracked)
+    }
+
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         updateTrackedArtist(indexPath)
