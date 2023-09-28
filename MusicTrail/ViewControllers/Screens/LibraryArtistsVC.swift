@@ -15,6 +15,8 @@ protocol LibraryArtistVCDelegate: AnyObject {
 
 class LibraryArtistsVC: MTDataLoadingVC {
     
+    enum Section { case main }
+    
     // MARK: - Variables
     var libraryArtists: [MTArtist] = []
     var filteredArtists: [MTArtist] = []
@@ -24,15 +26,32 @@ class LibraryArtistsVC: MTDataLoadingVC {
     
     weak var delegate: LibraryArtistVCDelegate?
     
+    private var dataSource: UITableViewDiffableDataSource<Section, MTArtist>!
+    
     // MARK: - UI Components
     let mtTableView = MTArtistImportTableView()
+    
+    lazy var checkMenu: UIMenu = {
+        let selectImage = UIImage(systemName: "checklist.checked")
+        let deselectImage = UIImage(systemName: "checklist.unchecked")
+        let selectItem = UIAction(title: "Select All", image: selectImage) { _ in
+            self.selectButtonTapped()
+        }
+
+        let deselectItem = UIAction(title: "Deselect All", image: deselectImage) { _ in
+            self.deselectButtonTapped()
+        }
+        let menu = UIMenu(title: "Options", children: [selectItem, deselectItem])
+        
+        return menu
+    }()
 
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         
         getLibraryArtists()
-        configurePreNavBar()
+        configureNavBar()
         configureTableView()
         configureImportButton()
         configureSearchBar()
@@ -41,16 +60,11 @@ class LibraryArtistsVC: MTDataLoadingVC {
     
     
     // MARK: - UI Setup
-    private func configurePreNavBar() {
+    private func configureNavBar() {
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Back", style: .plain, target: self, action: #selector(backButtonTapped))
-    }
-    
-    private func configurePostNavBar() {
-        let selectImage = UIImage(systemName: "checklist.checked")
-        let deselectImage = UIImage(systemName: "checklist.unchecked")
-        let selectButton = UIBarButtonItem(image: selectImage, style: .plain, target: self, action: #selector(selectButtonTapped))
-        let deselectButton = UIBarButtonItem(image: deselectImage, style: .plain, target: self, action: #selector(deselectButtonTapped))
-        navigationItem.setRightBarButtonItems([selectButton, deselectButton], animated: true)
+        
+        let dropDownImage = UIImage(systemName: "chevron.down.circle")
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: dropDownImage, menu: checkMenu)
     }
 
     
@@ -59,8 +73,9 @@ class LibraryArtistsVC: MTDataLoadingVC {
         view.addSubview(mtTableView)
         mtTableView.translatesAutoresizingMaskIntoConstraints = false
         
+        
         NSLayoutConstraint.activate([
-            mtTableView.topAnchor.constraint(equalTo: view.topAnchor),
+            mtTableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             mtTableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             mtTableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             mtTableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
@@ -69,8 +84,17 @@ class LibraryArtistsVC: MTDataLoadingVC {
         mtTableView.tableView.backgroundColor = .systemBackground
         mtTableView.tableView.rowHeight = 64
         mtTableView.tableView.delegate = self
-        mtTableView.tableView.dataSource = self
+//        mtTableView.tableView.dataSource = self
         mtTableView.tableView.register(ArtistTVCell.self, forCellReuseIdentifier: ArtistTVCell.identifier)
+        
+        dataSource = UITableViewDiffableDataSource<Section, MTArtist>(tableView: mtTableView.tableView) { (tableView, indexPath, artist) -> UITableViewCell? in
+            
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: ArtistTVCell.identifier, for: indexPath) as? ArtistTVCell else { fatalError("Unable to dequeue ArtistCell in ViewController") }
+            
+            print("\(artist.name) @ \(indexPath.row) == \(artist.isTracked)")
+            cell.configure(with: artist, state: .library)
+            return cell
+        }
     }
     
     private func configureImportButton() {
@@ -102,26 +126,32 @@ class LibraryArtistsVC: MTDataLoadingVC {
     }
     
     @objc private func selectButtonTapped() {
+        navigationController?.navigationBar.isUserInteractionEnabled = false
+        
         toggleSelectAll(true)
         selectedArtists = libraryArtists
         updateImportStatus()
-//        updateData()
+        updateData()
+        navigationController?.navigationBar.isUserInteractionEnabled = true
     }
     
     @objc private func deselectButtonTapped() {
+        navigationController?.navigationBar.isUserInteractionEnabled = false
         toggleSelectAll(false)
         selectedArtists.removeAll()
         updateImportStatus()
-//        updateData()
+        updateData()
+        navigationController?.navigationBar.isUserInteractionEnabled = true
     }
     
     private func toggleSelectAll(_ isSelected: Bool) {
         for i in 0..<libraryArtists.count {
             libraryArtists[i].isTracked = isSelected
             let indexPath = IndexPath(row: i, section: 0)
-            if let cell = mtTableView.tableView.cellForRow(at: indexPath) as? ArtistTVCell {
-                cell.updateCheckmark(libraryArtists[indexPath.row].isTracked)
-            }
+//            if let cell = mtTableView.tableView.cellForRow(at: indexPath) as? ArtistTVCell {
+//
+//                cell.updateCheckmark(libraryArtists[indexPath.row].isTracked)
+//            }
         }
         filteredArtists = libraryArtists
     }
@@ -156,7 +186,7 @@ class LibraryArtistsVC: MTDataLoadingVC {
                 filteredArtists = libraryArtists
                 updateData()
                 dismissLoadingView()
-                configurePostNavBar()
+//                configurePostNavBar()
 //                testSelectArtists(900)
             } catch {
                 if let mtError = error as? MTError {
@@ -179,11 +209,21 @@ class LibraryArtistsVC: MTDataLoadingVC {
     }
     
     
-    private func updateData() {
-        DispatchQueue.main.async { [weak self] in
-            self?.mtTableView.tableView.reloadData()
+//    private func updateData() {
+//        DispatchQueue.main.async { [weak self] in
+//            self?.mtTableView.tableView.reloadData()
+//        }
+//    }
+    
+    func updateData() {
+        var snapshot = NSDiffableDataSourceSnapshot<Section, MTArtist>()
+        snapshot.appendSections([.main])
+        snapshot.appendItems(self.filteredArtists)
+        DispatchQueue.main.async {
+            self.dataSource.apply(snapshot, animatingDifferences: false)
         }
     }
+
     
     
     private func updateTrackedArtist(_ indexPath: IndexPath) {
@@ -198,9 +238,10 @@ class LibraryArtistsVC: MTDataLoadingVC {
             selectedArtists.removeAll(where: {$0.name == filteredArtists[indexPath.row].name})
         }
         
-        if let cell = mtTableView.tableView.cellForRow(at: indexPath) as? ArtistTVCell {
-            cell.updateCheckmark(filteredArtists[indexPath.row].isTracked)
-        }
+//        if let cell = mtTableView.tableView.cellForRow(at: indexPath) as? ArtistTVCell {
+//            cell.updateCheckmark(filteredArtists[indexPath.row].isTracked)
+//        }
+        updateData()
     }
     
     private func updateImportStatus() {
@@ -217,29 +258,36 @@ class LibraryArtistsVC: MTDataLoadingVC {
 
 
 // MARK: - UITableView Protocols
-extension LibraryArtistsVC: UITableViewDelegate, UITableViewDataSource {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return filteredArtists.count
-    }
+extension LibraryArtistsVC: UITableViewDelegate {
+//extension LibraryArtistsVC: UITableViewDelegate, UITableViewDataSource {
+//    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+//        return filteredArtists.count
+//    }
+//    
+//    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+//        guard let cell = tableView.dequeueReusableCell(withIdentifier: ArtistTVCell.identifier, for: indexPath) as? ArtistTVCell else { fatalError("Unable to dequeue ArtistCell in ViewController") }
+//        
+//        let artist = filteredArtists[indexPath.row]
+//        cell.configure(with: artist, state: .library)
+//        
+//        return cell
+//    }
     
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: ArtistTVCell.identifier, for: indexPath) as? ArtistTVCell else { fatalError("Unable to dequeue ArtistCell in ViewController") }
-        
-        let artist = filteredArtists[indexPath.row]
-        cell.configure(with: artist, state: .library)
-        
-        return cell
-    }
+    
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        updateTrackedArtist(indexPath)
-        updateImportStatus()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+            self?.updateTrackedArtist(indexPath)
+            self?.updateImportStatus()
+        }
 
 //        DispatchQueue.main.async { [weak self] in
 //            self?.mtTableView.tableView.reloadRows(at: [indexPath], with: .automatic)
 //        }
-
-        tableView.deselectRow(at: indexPath, animated: true)
+        
+//        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+//            tableView.deselectRow(at: indexPath, animated: false)
+//        }
     }
     
     func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {

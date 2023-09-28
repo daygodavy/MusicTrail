@@ -63,9 +63,8 @@ class ArtistTVCell: UITableViewCell {
     }
     
     func configure(with artist: MTArtist, state: ArtistViewState) {
-        
-        self.artistImage.downloadArtworkImage(artist.imageUrl)
         self.artist = artist
+        self.artistImage.downloadArtworkImage(artist.imageUrl)
         self.nameLabel.text = artist.name
         setCheckmark(state)
     }
