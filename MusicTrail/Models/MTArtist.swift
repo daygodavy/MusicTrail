@@ -54,3 +54,4 @@ struct MTArtist: Codable, Hashable {
     }
 
 }
+ 
