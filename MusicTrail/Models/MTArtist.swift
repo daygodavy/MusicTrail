@@ -30,3 +30,4 @@ struct MTArtist: Codable, Hashable {
     var genres: String? // REFACTOR MKMANAGER TO RETRIEVE
     var isTracked = false
 }
+ 
