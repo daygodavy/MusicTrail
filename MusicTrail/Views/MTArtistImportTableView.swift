@@ -53,12 +53,13 @@ class MTArtistImportTableView: UIView {
             tableView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
             tableView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor),
             
-            importButton.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 140),
-            importButton.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -140),
-            importButton.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -100),
+            importButton.leadingAnchor.constraint(equalTo: tableView.leadingAnchor, constant: 140),
+            importButton.trailingAnchor.constraint(equalTo: tableView.trailingAnchor, constant: -140),
+            importButton.bottomAnchor.constraint(equalTo: tableView.bottomAnchor, constant: -100),
             importButton.heightAnchor.constraint(equalToConstant: 50),
         ])
 
+        
     }
     
 }

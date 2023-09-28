@@ -68,6 +68,8 @@ class LibraryArtistsVC: MTDataLoadingVC {
         
         mtTableView.tableView.backgroundColor = .systemBackground
         mtTableView.tableView.rowHeight = 64
+        mtTableView.tableView.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: 140, right: 0)
+        
         mtTableView.tableView.delegate = self
         mtTableView.tableView.dataSource = self
         mtTableView.tableView.register(ArtistTVCell.self, forCellReuseIdentifier: ArtistTVCell.identifier)
@@ -143,7 +145,6 @@ class LibraryArtistsVC: MTDataLoadingVC {
                 Logger.shared.debug("ERROR!!!!!!!!!!!")
                 return
             }
-            
         }
     }
     
@@ -240,18 +241,6 @@ extension LibraryArtistsVC: UITableViewDelegate, UITableViewDataSource {
 //        }
 
         tableView.deselectRow(at: indexPath, animated: true)
-    }
-    
-    func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
-        
-        let footerView = UIView(frame: CGRect(x: 0, y: 0, width: tableView.bounds.width, height: 140))
-        footerView.backgroundColor = .clear
-        
-        return footerView
-    }
-    
-    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
-        return 140
     }
 
 }
