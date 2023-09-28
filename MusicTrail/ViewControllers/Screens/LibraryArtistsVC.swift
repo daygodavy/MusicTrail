@@ -269,10 +269,15 @@ extension LibraryArtistsVC: UISearchResultsUpdating {
         }
         
         isSearching = true
-        filteredArtists = libraryArtists.filter {
+        let newFilteredArtist  = libraryArtists.filter {
             $0.name.lowercased().contains(filter.lowercased())
         }
-        updateData()
+        
+        if newFilteredArtist != filteredArtists {
+            filteredArtists = newFilteredArtist
+            updateData()
+        }
+//        updateData()
     }
     
 }
